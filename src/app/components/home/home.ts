@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { FooterComponent } from '../../shared/footer/footer';
 
 @Component({
@@ -13,6 +14,13 @@ import { FooterComponent } from '../../shared/footer/footer';
 export class HomeComponent {
   menuOpen = false;
 
+  constructor(private scroller: ViewportScroller) {}
+
+  scrollTo(sectionId: string) {
+    this.scroller.scrollToAnchor(sectionId);
+    this.closeMenu();
+  }
+
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
     document.body.style.overflow = this.menuOpen ? 'hidden' : '';
@@ -21,5 +29,8 @@ export class HomeComponent {
   closeMenu() {
     this.menuOpen = false;
     document.body.style.overflow = '';
+  }
+  reloadPage() {
+    window.location.reload();
   }
 }

@@ -1,95 +1,128 @@
 .dashboard-navbar {
-  height: 72px;
-  background: white;
-  border-bottom: 1px solid #E2E8F0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 72px;
+  padding: 0 6%;
+  height: 68px;
+  background: white;
+  border-bottom: 1px solid #E2E8F0;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.dashboard-left {
-  display: flex;
-  align-items: center;
-  gap: 42px;
-}
-
+/* Logo — idéntico al home */
 .dashboard-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #0F172A;
   text-decoration: none;
 }
 
-.dashboard-logo img  { width: 38px; }
-.dashboard-logo span { font-size: 1rem; font-weight: 800; color: #1E1B4B; }
+.dashboard-logo img { height: 42px; width: auto; }
 
-.dashboard-menu { display: flex; gap: 32px; }
+/* Links — idéntico al home */
+.dashboard-menu {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
 .dashboard-menu a {
-  text-decoration: none;
-  color: #334155;
-  font-size: .92rem;
+  color: #64748B;
+  font-size: .9rem;
   font-weight: 500;
   transition: color .2s;
+  text-decoration: none;
 }
 
 .dashboard-menu a:hover,
-.dashboard-menu a.active { color: #2563EB; }
+.dashboard-menu a.active { color: #3B82F6; }
 
+/* Derecha — mismo gap y alineación que .nav-actions del home */
 .dashboard-right {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 10px;
 }
 
 .nav-circle {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  border: 1.5px solid #E2E8F0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
+  background: transparent;
   color: #334155;
   cursor: pointer;
+  font-size: .875rem;
+  font-weight: 600;
+  transition: border-color .2s, color .2s;
 }
 
+.nav-circle:hover { border-color: #3B82F6; color: #3B82F6; }
+
+/* Perfil — estilo igual al btn--primary del home */
 .profile-wrapper { position: relative; }
 
 .profile-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   cursor: pointer;
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 100%);
+  padding: 7px 14px 7px 8px;
+  border-radius: 8px;
+  transition: opacity .2s;
 }
+
+.profile-box:hover { opacity: .88; }
 
 .profile-box img {
-  width: 40px;
-  height: 40px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
+  border: 1.5px solid rgba(255,255,255,.5);
 }
 
-.profile-info strong { display: block; font-size: .92rem; color: #1E1B4B; }
-.profile-info span   { font-size: .74rem; color: #64748B; }
+.profile-info strong {
+  display: block;
+  font-size: .875rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+}
 
-.profile-arrow { font-size: .8rem; color: #64748B; }
+.profile-info span {
+  font-size: .7rem;
+  color: rgba(255,255,255,.8);
+}
 
+.profile-arrow {
+  font-size: .75rem;
+  color: rgba(255,255,255,.9);
+  margin-left: 2px;
+}
+
+/* Dropdown */
 .profile-dropdown {
   position: absolute;
-  top: 58px;
+  top: calc(100% + 10px);
   right: 0;
-  width: 220px;
+  width: 210px;
   background: white;
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid #E2E8F0;
-  box-shadow: 0 14px 40px rgba(0,0,0,.08);
-  padding: 10px 0;
+  box-shadow: 0 12px 36px rgba(0,0,0,.09);
+  padding: 8px 0;
   display: none;
   z-index: 999;
 }
@@ -99,12 +132,16 @@
 .profile-dropdown a {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 13px 18px;
+  gap: 10px;
+  padding: 11px 16px;
   text-decoration: none;
   color: #334155;
-  font-size: .9rem;
-  transition: background .15s;
+  font-size: .875rem;
+  font-weight: 500;
+  transition: background .15s, color .15s;
 }
 
-.profile-dropdown a:hover { background: #F8FAFC; }
+.profile-dropdown a:hover { background: #F1F5F9; color: #3B82F6; }
+
+.profile-dropdown a:last-child { color: #EF4444; }
+.profile-dropdown a:last-child:hover { background: #FEF2F2; color: #DC2626; }
