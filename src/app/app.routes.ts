@@ -1,3 +1,53 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth-guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+  {
+    path: 'home',
+    loadComponent: () => import('./components/home/home').then((m) => m.HomeComponent),
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./components/login/login').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'registro',
+    loadComponent: () =>
+      import('./components/registro-paso1/registro-paso1').then((m) => m.RegistroPaso1Component),
+  },
+  {
+    path: 'registro/datos',
+    loadComponent: () =>
+      import('./components/registro-paso2/registro-paso2').then((m) => m.RegistroPaso2Component),
+  },
+  {
+    path: 'busqueda',
+    loadComponent: () =>
+      import('./components/busqueda-medicos/busqueda-medicos').then(
+        (m) => m.BusquedaMedicosComponent,
+      ),
+  },
+
+  // Rutas protegidas
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
+  },
+  {
+    path: 'dashboard/citas',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-citas/mis-citas').then((m) => m.MisCitasComponent),
+  },
+  {
+    path: 'dashboard/perfil',
+    canActivate: [authGuard],
+    loadComponent: () => import('./components/perfil/perfil').then((m) => m.PerfilComponent),
+  },
+
+  { path: '**', redirectTo: 'home' },
+];

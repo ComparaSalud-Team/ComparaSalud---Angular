@@ -1,1 +1,112 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================
+   ESTILOS GLOBALES — ComparaSalud Angular
+   src/styles.css
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
+
+/* ── VARIABLES ── */
+:root {
+  /* Colores principales */
+  --primary:       #3B82F6;
+  --primary-dark:  #2563EB;
+  --accent:        #10B981;
+  --purple:        #7C3AED;
+  --orange:        #F59E0B;
+
+  /* Textos */
+  --text-dark:  #0F172A;
+  --text-mid:   #334155;
+  --text-soft:  #64748B;
+
+  /* Fondos y bordes */
+  --border:    #E2E8F0;
+  --bg-light:  #F1F5F9;
+  --white:     #ffffff;
+
+  /* Gradientes */
+  --gradient-brand:   linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #10B981 100%);
+  --gradient-pricing: linear-gradient(160deg, #38BDF8 0%, #3B82F6 40%, #10B981 100%);
+  --gradient-trust:   linear-gradient(160deg, #06B6D4 0%, #059669 100%);
+
+  /* Tipografía */
+  --font: 'Be Vietnam Pro', sans-serif;
+
+  /* Espaciado */
+  --section-pad: 80px 6%;
+  --max-w: 1180px;
+}
+
+/* ── RESET ── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  color: var(--text-dark);
+  background: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img   { display: block; max-width: 100%; }
+a     { text-decoration: none; }
+ul    { list-style: none; }
+button { font-family: var(--font); cursor: pointer; border: none; }
+
+/* ── UTILIDADES COMPARTIDAS ── */
+
+/* Botones globales */
+.btn {
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-block;
+  text-align: center;
+  line-height: 1;
+  cursor: pointer;
+  font-family: var(--font);
+}
+
+.btn--outline {
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text-mid);
+}
+.btn--outline:hover { border-color: var(--primary); color: var(--primary); }
+
+.btn--primary {
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 100%);
+  color: var(--white);
+  border: none;
+}
+.btn--primary:hover { opacity: 0.88; }
+
+.btn--cta {
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 100%);
+  color: var(--white);
+  padding: 13px 28px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  display: inline-block;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.btn--cta:hover { opacity: 0.88; }
+
+/* Tag genérico (reutilizado en varios componentes) */
+.tag {
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 600;
+}

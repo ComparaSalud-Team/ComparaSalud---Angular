@@ -1,0 +1,110 @@
+.dashboard-navbar {
+  height: 72px;
+  background: white;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 72px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.dashboard-left {
+  display: flex;
+  align-items: center;
+  gap: 42px;
+}
+
+.dashboard-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.dashboard-logo img  { width: 38px; }
+.dashboard-logo span { font-size: 1rem; font-weight: 800; color: #1E1B4B; }
+
+.dashboard-menu { display: flex; gap: 32px; }
+
+.dashboard-menu a {
+  text-decoration: none;
+  color: #334155;
+  font-size: .92rem;
+  font-weight: 500;
+  transition: color .2s;
+}
+
+.dashboard-menu a:hover,
+.dashboard-menu a.active { color: #2563EB; }
+
+.dashboard-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  color: #334155;
+  cursor: pointer;
+}
+
+.profile-wrapper { position: relative; }
+
+.profile-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.profile-box img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info strong { display: block; font-size: .92rem; color: #1E1B4B; }
+.profile-info span   { font-size: .74rem; color: #64748B; }
+
+.profile-arrow { font-size: .8rem; color: #64748B; }
+
+.profile-dropdown {
+  position: absolute;
+  top: 58px;
+  right: 0;
+  width: 220px;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 14px 40px rgba(0,0,0,.08);
+  padding: 10px 0;
+  display: none;
+  z-index: 999;
+}
+
+.profile-wrapper.active .profile-dropdown { display: block; }
+
+.profile-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 18px;
+  text-decoration: none;
+  color: #334155;
+  font-size: .9rem;
+  transition: background .15s;
+}
+
+.profile-dropdown a:hover { background: #F8FAFC; }

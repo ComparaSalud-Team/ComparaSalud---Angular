@@ -1,0 +1,245 @@
+.citas-page {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 40px 72px 80px;
+}
+
+.citas-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.citas-page-header h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1E1B4B;
+  margin-bottom: 6px;
+}
+
+.citas-page-header p { font-size: .88rem; color: #64748B; }
+
+.btn-historial {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid #E2E8F0;
+  background: white;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .86rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s;
+}
+
+.btn-historial:hover { border-color: #2563EB; color: #2563EB; }
+
+.citas-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.citas-stat-card {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.03);
+}
+
+.citas-stat-icon          { font-size: 1.3rem; }
+.citas-stat-icon.blue     { color: #2563EB; }
+.citas-stat-icon.teal     { color: #0EA5E9; }
+.citas-stat-icon.green    { color: #10B981; }
+.citas-stat-icon.red      { color: #EF4444; }
+
+.citas-stat-number { font-size: 1.8rem; font-weight: 800; color: #1E1B4B; line-height: 1; }
+.citas-stat-label  { font-size: .78rem; color: #94A3B8; margin-top: 3px; }
+
+.citas-filter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.citas-tabs { display: flex; gap: 8px; }
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1.5px solid #E2E8F0;
+  background: white;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .84rem;
+  font-weight: 600;
+  color: #64748B;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.tab-btn .tab-count {
+  background: #F1F5F9;
+  border-radius: 20px;
+  padding: 1px 8px;
+  font-size: .74rem;
+  font-weight: 700;
+}
+
+.tab-btn.active { background: #2563EB; border-color: #2563EB; color: white; }
+.tab-btn.active .tab-count { background: rgba(255,255,255,.25); color: white; }
+.tab-btn:not(.active):hover { border-color: #2563EB; color: #2563EB; }
+
+.btn-filtros {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1.5px solid #E2E8F0;
+  background: white;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .84rem;
+  font-weight: 600;
+  color: #64748B;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+
+.btn-filtros:hover { border-color: #2563EB; color: #2563EB; }
+
+.citas-list { display: flex; flex-direction: column; gap: 16px; }
+
+.cita-list-card {
+  background: white;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.03);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.cita-doctor-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 14px;
+  object-fit: cover;
+  object-position: top center;
+  flex-shrink: 0;
+}
+
+.cita-list-content { flex: 1; min-width: 0; }
+
+.cita-list-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.cita-list-top h3 { font-size: 1rem; font-weight: 700; color: #1E1B4B; }
+
+.badge { padding: 3px 12px; border-radius: 20px; font-size: .74rem; font-weight: 700; }
+.badge-proxima    { background: #DBEAFE; color: #2563EB; }
+.badge-confirmada { background: #D1FAE5; color: #059669; }
+.badge-completada { background: #F1F5F9; color: #475569; }
+.badge-cancelada  { background: #FEE2E2; color: #EF4444; }
+
+.cita-especialidad { font-size: .82rem; color: #64748B; margin-bottom: 8px; }
+
+.cita-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #1E1B4B;
+  margin-bottom: 12px;
+}
+
+.cita-rating i { color: #F59E0B; font-size: .8rem; }
+
+.cita-list-meta { display: flex; align-items: center; gap: 32px; }
+
+.cita-meta-item { display: flex; flex-direction: column; gap: 2px; }
+.cita-meta-item .meta-label { font-size: .7rem; color: #94A3B8; font-weight: 500; }
+
+.cita-meta-item .meta-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .82rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+.cita-meta-item .meta-value i { color: #94A3B8; font-size: .78rem; }
+
+.cita-list-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.cita-list-actions button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity .15s;
+}
+
+.btn-ver-detalles { background: #2563EB; color: white; border: none; }
+.btn-reprogramar  { background: white; color: #334155; border: 1.5px solid #E2E8F0; }
+.btn-cancelar     { background: white; color: #EF4444; border: 1.5px solid #EF4444; }
+.btn-ver-resumen  { background: white; color: #10B981; border: 1.5px solid #10B981; }
+.btn-reagendar    { background: white; color: #334155; border: 1.5px solid #E2E8F0; }
+
+.cita-list-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.cita-id    { font-size: .72rem; color: #94A3B8; }
+.cita-price { font-size: 1.1rem; font-weight: 800; color: #2563EB; }
+
+.citas-note {
+  background: #F8FAFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px 24px;
+  margin-top: 24px;
+  font-size: .82rem;
+  color: #64748B;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.citas-note strong { color: #1E1B4B; }

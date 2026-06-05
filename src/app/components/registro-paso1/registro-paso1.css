@@ -1,0 +1,188 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: #F8FAFC;
+}
+
+.auth-left {
+  width: 32%;
+  background: linear-gradient(160deg, #38BDF8 0%, #3B82F6 40%, #10B981 75%, #059669 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 36px 32px 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 28px;
+}
+.auth-logo img  { height: 48px; width: auto; }
+.auth-logo span { font-weight: 800; font-size: 1.3rem; color: white; }
+
+.auth-left-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.auth-left-desc {
+  color: rgba(255,255,255,.85);
+  font-size: .95rem;
+  line-height: 1.65;
+  margin-bottom: 24px;
+}
+
+.auth-left-bottom {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+.auth-left-img {
+  width: 84%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  margin: 0 auto;
+}
+
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 64px;
+  background: white;
+  overflow-y: auto;
+}
+
+.auth-form-box {
+  width: 100%;
+  max-width: 860px;
+}
+
+.auth-form-box h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.auth-form-box h1 .highlight {
+  background: linear-gradient(90deg, #3B82F6 0%, #10B981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-form-subtitle {
+  color: #64748B;
+  font-size: .95rem;
+  text-align: center;
+  margin-bottom: 36px;
+  line-height: 1.5;
+}
+
+.profile-cards-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.profile-card {
+  flex: 1;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 28px 20px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-card:hover {
+  border-color: #BFDBFE;
+  box-shadow: 0 4px 16px rgba(59,130,246,.1);
+}
+
+.profile-card-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top;
+  margin-bottom: 14px;
+}
+
+.profile-card .card-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3B82F6;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.profile-card p {
+  font-size: .85rem;
+  color: #64748B;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  flex: 1;
+}
+
+.btn-card {
+  display: block;
+  width: 100%;
+  padding: 12px 8px;
+  border-radius: 10px;
+  font-size: .82rem;
+  font-weight: 700;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  transition: opacity .2s;
+}
+.btn-card:hover  { opacity: .88; }
+.btn-card.blue   { background: #1E3A8A; }
+.btn-card.orange { background: #F97316; }
+.btn-card.purple { background: #7C3AED; }
+
+.auth-bottom-link {
+  text-align: center;
+  font-size: .88rem;
+  color: #64748B;
+}
+
+.auth-bottom-link a {
+  color: #3B82F6;
+  font-weight: 700;
+  text-decoration: none;
+}
+.auth-bottom-link a:hover { text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .auth-wrapper    { flex-direction: column; }
+  .auth-left       { width: 100%; min-height: auto; padding: 28px 24px; }
+  .auth-left-img   { max-width: 220px; }
+  .auth-right      { padding: 32px 24px; }
+  .profile-cards-row { flex-direction: column; }
+}

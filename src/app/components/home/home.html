@@ -1,0 +1,233 @@
+<nav class="navbar">
+  <a routerLink="/home" class="nav-logo">
+    <img src="assets/icons/logo.png" alt="ComparaSalud" />
+    <span>ComparaSalud</span>
+  </a>
+  <ul class="nav-links">
+    <li><a [routerLink]="['/home']" fragment="beneficios">Beneficios</a></li>
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#categorias">Categorías</a></li>
+    <li><a href="#planes">Planes</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a routerLink="/login" class="btn btn--outline">Iniciar Sesión</a>
+    <a routerLink="/registro" class="btn btn--primary">Registrarse</a>
+  </div>
+  <button class="hamburger" [class.open]="menuOpen" (click)="toggleMenu()" aria-label="Abrir menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-nav" [class.open]="menuOpen">
+  <a href="#beneficios"    (click)="closeMenu()">Beneficios</a>
+  <a href="#como-funciona" (click)="closeMenu()">Cómo funciona</a>
+  <a href="#categorias"    (click)="closeMenu()">Categorías</a>
+  <a href="#planes"        (click)="closeMenu()">Planes</a>
+  <div class="mobile-nav-actions">
+    <a routerLink="/login"    class="btn btn--outline"  (click)="closeMenu()">Iniciar Sesión</a>
+    <a routerLink="/registro" class="btn btn--primary"  (click)="closeMenu()">Registrarse</a>
+  </div>
+</div>
+
+<div class="hero-wrapper">
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Encuentra <span class="highlight">doctores, precios y citas</span> en segundos</h1>
+      <p>Toma decisiones informadas sobre tu salud comparando precios, calificaciones y disponibilidad de proveedores médicos en tiempo real.</p>
+      <a routerLink="/busqueda" class="btn btn--cta">Encuentra tu médico</a>
+      <div class="hero-stats">
+        <div class="stat"><strong>50k+</strong><span>Pacientes activos</span></div>
+        <div class="stat"><strong>2.5k+</strong><span>Proveedores</span></div>
+        <div class="stat"><strong>4.8</strong><span>Calificación</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img class="hero-img" src="assets/images/hero-woman.png" alt="Mujer usando Salud" />
+    </div>
+  </section>
+</div>
+
+<section class="benefits" id="beneficios">
+  <h2 class="section-title">Transformamos tu experiencia en salud</h2>
+  <p class="section-sub">Conectamos pacientes con los mejores proveedores de salud mediante transparencia y tecnología</p>
+  <div class="benefits-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon blue"><img src="assets/icons/icon-up.png" alt="Transparencia" /></div>
+      <h3>Transparencia Radical</h3>
+      <p>Accede a precios reales, calificaciones verificadas y disponibilidad actualizada de todos los servicios de salud.</p>
+      <ul class="check-list">
+        <li>Precios desglosados sin sorpresas</li>
+        <li>Reseñas de pacientes reales</li>
+        <li>Disponibilidad en tiempo real</li>
+      </ul>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon purple"><img src="assets/icons/icon-light.png" alt="Agendamiento" /></div>
+      <h3>Agendamiento Instantáneo</h3>
+      <p>Reserva citas en segundos con confirmación inmediata y recordatorios automáticos.</p>
+      <ul class="check-list">
+        <li>Agenda 24/7 desde cualquier dispositivo</li>
+        <li>Confirmación inmediata</li>
+        <li>Recordatorios automáticos</li>
+      </ul>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon green"><img src="assets/icons/icon-security.png" alt="Seguridad" /></div>
+      <h3>Seguridad y confianza</h3>
+      <p>Tus datos médicos están protegidos con los más altos estándares de seguridad y privacidad.</p>
+      <ul class="check-list">
+        <li>Datos encriptados end-to-end</li>
+        <li>Cumplimiento HIPAA</li>
+        <li>Verificación de proveedores</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="audience" id="como-funciona">
+  <div class="audience-inner">
+    <div class="audience-row">
+      <div class="audience-text">
+        <h2>Para <span class="green">pacientes</span></h2>
+        <p>Toma el control de tu salud con información transparente y herramientas poderosas.</p>
+        <div class="feature-item"><h4>Compara precios Realmente</h4><p>Evita sorpresas desagradables. Compara costos entre diferentes proveedores.</p></div>
+        <div class="feature-item"><h4>Agenda en segundos</h4><p>Encuentra horarios disponibles y reserva tu cita al instante.</p></div>
+        <div class="feature-item"><h4>Experiencias reales</h4><p>Lee reseñas verificadas de otros pacientes y elige con confianza.</p></div>
+      </div>
+      <div class="audience-visual">
+        <img src="assets/images/patients-couple.png" alt="Pacientes" />
+      </div>
+    </div>
+    <div class="audience-row reverse">
+      <div class="audience-text">
+        <h2>Para <span class="blue">doctores y empresas</span></h2>
+        <p>Optimiza tu práctica médica, aumenta tu visibilidad y atrae más pacientes.</p>
+        <div class="feature-item"><h4>Mayor Visibilidad</h4><p>Conéctate con miles de pacientes buscando tus servicios en tu área.</p></div>
+        <div class="feature-item"><h4>Gestión Simplificada</h4><p>Administra tu agenda, pacientes y pagos desde una sola plataforma.</p></div>
+        <div class="feature-item"><h4>Insights Valiosos</h4><p>Accede a analytics detallados sobre tu práctica y el mercado.</p></div>
+        <a href="#planes" class="btn btn--cta-teal" style="margin-top:8px;">Explora lo que ofrecemos →</a>
+      </div>
+      <div class="audience-visual">
+        <div class="visual-stack">
+          <img class="doctor-img" src="assets/images/doctor.png" alt="Doctor" />
+          <img class="clinic-img" src="assets/images/clinic.png" alt="Clínica" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="categories" id="categorias">
+  <h2 class="section-title">Categorías principales</h2>
+  <div class="cat-grid">
+    <div class="cat-card cat-card-flip">
+      <div class="cat-card-flip-inner">
+        <div class="cat-card-front">
+          <div class="cat-icon-wrap"><img src="assets/icons/oftalmologia.png" alt="Oftalmología" /></div>
+          <h3>Oftalmología</h3>
+          <div class="cat-arrow-wrap"><img src="assets/icons/vector.png" alt="" class="cat-arrow-img" /></div>
+        </div>
+        <div class="cat-card-back"><h3>Oftalmología</h3><p>Evaluación, diagnóstico y tratamiento de problemas visuales.</p></div>
+      </div>
+    </div>
+    <div class="cat-card cat-card-flip">
+      <div class="cat-card-flip-inner">
+        <div class="cat-card-front">
+          <div class="cat-icon-wrap"><img src="assets/icons/medicina.png" alt="Medicina general" /></div>
+          <h3>Medicina<br>general</h3>
+          <div class="cat-arrow-wrap"><img src="assets/icons/vector.png" alt="" class="cat-arrow-img" /></div>
+        </div>
+        <div class="cat-card-back"><h3>Medicina general</h3><p>Atención médica integral para diagnósticos y tratamiento de enfermedades comunes.</p></div>
+      </div>
+    </div>
+    <div class="cat-card cat-card-flip">
+      <div class="cat-card-flip-inner">
+        <div class="cat-card-front">
+          <div class="cat-icon-wrap"><img src="assets/icons/pediatria.png" alt="Pediatría" /></div>
+          <h3>Pediatría</h3>
+          <div class="cat-arrow-wrap"><img src="assets/icons/vector.png" alt="" class="cat-arrow-img" /></div>
+        </div>
+        <div class="cat-card-back"><h3>Pediatría</h3><p>Atención médica especializada para niños, enfocada en su desarrollo y bienestar.</p></div>
+      </div>
+    </div>
+    <div class="cat-card cat-card-flip">
+      <div class="cat-card-flip-inner">
+        <div class="cat-card-front">
+          <div class="cat-icon-wrap"><img src="assets/icons/cardiologia.png" alt="Cardiología" /></div>
+          <h3>Cardiología y<br>Neurología</h3>
+          <div class="cat-arrow-wrap"><img src="assets/icons/vector.png" alt="" class="cat-arrow-img" /></div>
+        </div>
+        <div class="cat-card-back"><h3>Cardiología y Neurología</h3><p>Especialistas en el cuidado del corazón y el sistema nervioso.</p></div>
+      </div>
+    </div>
+    <div class="cat-card cat-card-flip">
+      <div class="cat-card-flip-inner">
+        <div class="cat-card-front">
+          <div class="cat-icon-wrap"><img src="assets/icons/odontologia.png" alt="Odontología" /></div>
+          <h3>Odontología</h3>
+          <div class="cat-arrow-wrap"><img src="assets/icons/vector.png" alt="" class="cat-arrow-img" /></div>
+        </div>
+        <div class="cat-card-back"><h3>Odontología</h3><p>Servicios dentales completos para mantener una salud bucal óptima.</p></div>
+      </div>
+    </div>
+    <div class="cat-card explore">
+      <h3>Explora las<br>especialidades</h3>
+      <p>Encuentra el doctor o clínica ideal entre nuestras categorías.</p>
+      <div class="cat-arrow-wrap explore-arrow-wrap">
+        <img src="assets/icons/vector.png" alt="" class="cat-arrow-img" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="pricing-trust-wrapper">
+  <section class="pricing" id="planes">
+    <h2 class="section-title">Únete a la Revolución de la Salud Transparente</h2>
+    <p class="section-sub">Comienza a tomar decisiones informadas sobre tu salud hoy mismo.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="plan-label">Pacientes</div>
+        <div class="price">Gratis</div>
+        <ul class="price-features">
+          <li>Buscar médicos</li>
+          <li>Comparar precios</li>
+          <li>Agenda en segundos</li>
+          <li>Leer reseñas</li>
+        </ul>
+        <button class="btn-plan dark">Empieza ahora</button>
+      </div>
+      <div class="price-card">
+        <div class="plan-label" style="color:var(--orange);">Doctores</div>
+        <div class="price orange"><sup>$</sup>30</div>
+        <ul class="price-features">
+          <li>Perfil destacado</li>
+          <li>Más visibilidad</li>
+          <li>Agenda inteligente</li>
+          <li>Cobros Automatizados</li>
+        </ul>
+        <button class="btn-plan orange">Empieza ahora</button>
+      </div>
+      <div class="price-card">
+        <div class="plan-label" style="color:var(--purple);">Clínica</div>
+        <div class="price purple"><sup>$</sup>50</div>
+        <ul class="price-features">
+          <li>Multi doctores</li>
+          <li>Análisis de ingresos</li>
+          <li>Gestión completa</li>
+          <li>Soporte prioritario 24/7</li>
+        </ul>
+        <button class="btn-plan purple">Empieza ahora</button>
+      </div>
+    </div>
+  </section>
+  <section class="trust">
+    <p class="trust-label">Confían en nosotros</p>
+    <div class="trust-badges">
+      <img src="assets/badges/badge-icf.png" alt="ICF Member" />
+      <img src="assets/badges/badge-iso.png" alt="ISO 27001" />
+      <img src="assets/badges/badge-soc2.png" alt="SOC 2" />
+    </div>
+  </section>
+</div>
+
+<app-footer></app-footer>
