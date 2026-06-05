@@ -1,0 +1,56 @@
+<nav class="public-navbar">
+
+  <a routerLink="/dashboard" class="public-navbar__logo">
+    <img src="assets/icons/logo.png" alt="ComparaSalud">
+    <span>ComparaSalud</span>
+  </a>
+
+  <ul class="public-navbar__menu">
+    <li><a routerLink="/buscar"     routerLinkActive="active">Buscar</a></li>
+    <li><a routerLink="/mis-citas"  routerLinkActive="active">Mis citas</a></li>
+    <li><a routerLink="/favoritos"  routerLinkActive="active">Mis favoritos</a></li>
+    <li><a routerLink="/documentos" routerLinkActive="active">Documentos</a></li>
+  </ul>
+
+  <div class="public-navbar__right">
+
+    <button class="nav-icon-btn" title="Ayuda">
+      <i class="fa-regular fa-circle-question"></i>
+    </button>
+
+    <button class="nav-icon-btn" title="Notificaciones">
+      <i class="fa-regular fa-bell"></i>
+    </button>
+
+    <div class="profile-wrapper" [class.open]="dropdownOpen" (clickOutside)="closeDropdown()">
+
+      <button class="profile-trigger" (click)="toggleDropdown()">
+        <img [src]="user?.avatar || 'assets/images/profile-user.png'" [alt]="user?.nombre || 'Usuario'">
+        <div class="profile-trigger__info">
+          <strong>{{ user?.nombre || 'Usuario' }}</strong>
+          <span>{{ user?.rol || 'Paciente' }}</span>
+        </div>
+        <i class="fa-solid fa-chevron-down" [class.rotated]="dropdownOpen"></i>
+      </button>
+
+      <div class="profile-dropdown" *ngIf="dropdownOpen">
+        <a routerLink="/perfil" (click)="closeDropdown()">
+          <i class="fa-regular fa-user"></i>
+          Mi perfil
+        </a>
+        <a routerLink="/configuracion" (click)="closeDropdown()">
+          <i class="fa-solid fa-gear"></i>
+          Configuración
+        </a>
+        <hr>
+        <button (click)="logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Cerrar sesión
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>

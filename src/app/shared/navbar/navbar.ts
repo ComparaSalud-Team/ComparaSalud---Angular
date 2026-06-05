@@ -1,14 +1,14 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink],
   templateUrl: './navbar.html',
-  styleUrls: ['./navbar.css'],
+  styleUrl: './navbar.css',
 })
 export class NavbarComponent implements OnInit {
   dropdownOpen = false;
@@ -39,6 +39,7 @@ export class NavbarComponent implements OnInit {
     this.auth.logout();
     this.router.navigate(['/home']);
   }
+
   reloadPage() {
     window.location.reload();
   }

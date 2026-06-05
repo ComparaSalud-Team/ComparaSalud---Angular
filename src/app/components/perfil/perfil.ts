@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { NavbarComponent } from '../../shared/navbar/navbar';
-import { FooterComponent } from '../../shared/footer/footer';
+import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
+import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
 interface StatItem {
   icon: string;
@@ -43,7 +43,7 @@ interface HistorialItem {
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
+  imports: [CommonModule, RouterLink, PublicNavbarComponent, PublicFooterComponent],
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
 })

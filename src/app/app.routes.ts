@@ -30,7 +30,6 @@ export const routes: Routes = [
       ),
   },
 
-  // Rutas protegidas
   {
     path: 'dashboard',
     canActivate: [authGuard],
@@ -38,16 +37,21 @@ export const routes: Routes = [
       import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
   {
-    path: 'dashboard/citas',
+    path: 'mis-citas',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./components/mis-citas/mis-citas').then((m) => m.MisCitasComponent),
   },
   {
-    path: 'dashboard/perfil',
+    path: 'perfil',
     canActivate: [authGuard],
     loadComponent: () => import('./components/perfil/perfil').then((m) => m.PerfilComponent),
   },
+
+  { path: 'buscar', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'favoritos', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'documentos', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'configuracion', redirectTo: 'perfil', pathMatch: 'full' },
 
   { path: '**', redirectTo: 'home' },
 ];

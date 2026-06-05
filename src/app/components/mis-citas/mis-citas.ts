@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
-import { NavbarComponent } from '../../shared/navbar/navbar';
-import { FooterComponent } from '../../shared/footer/footer';
+import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
+import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
 @Component({
   selector: 'app-mis-citas',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent, FooterComponent],
+  imports: [CommonModule, RouterModule, PublicNavbarComponent, PublicFooterComponent],
   templateUrl: './mis-citas.html',
   styleUrl: './mis-citas.css',
 })

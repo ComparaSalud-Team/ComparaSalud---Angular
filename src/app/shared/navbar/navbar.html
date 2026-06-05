@@ -1,19 +1,18 @@
 <nav class="dashboard-navbar">
-  <a routerLink="/home" class="dashboard-logo" (click)="reloadPage()">
+  <a [routerLink]="['/home']" class="dashboard-logo">
     <img src="assets/icons/logo.png" alt="ComparaSalud">
     <span>ComparaSalud</span>
   </a>
 
   <ul class="dashboard-menu">
-    <li><a href="#">Beneficios</a></li>
-    <li><a href="#">Cómo funciona</a></li>
-    <li><a href="#">Categorías</a></li>
-    <li><a href="#">Planes</a></li>
+    <li><a [routerLink]="['/home']" fragment="beneficios">Beneficios</a></li>
+    <li><a [routerLink]="['/home']" fragment="como-funciona">Cómo funciona</a></li>
+    <li><a [routerLink]="['/home']" fragment="categorias">Categorías</a></li>
+    <li><a [routerLink]="['/home']" fragment="planes">Planes</a></li>
   </ul>
 
-
   <div class="dashboard-right">
-    <a routerLink="/login"    class="btn btn--outline">Iniciar Sesión</a>
+    <a routerLink="/login" class="btn btn--outline">Iniciar Sesión</a>
     <a routerLink="/registro" class="btn btn--primary">Registrarse</a>
   </div>
 </nav>
