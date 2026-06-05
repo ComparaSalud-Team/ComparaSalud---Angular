@@ -1,13 +1,13 @@
 <nav class="navbar">
-  <a routerLink="/home" class="nav-logo">
+  <a routerLink="/home" class="nav-logo" (click)="reloadPage()">
     <img src="assets/icons/logo.png" alt="ComparaSalud" />
     <span>ComparaSalud</span>
   </a>
   <ul class="nav-links">
-    <li><a [routerLink]="['/home']" fragment="beneficios">Beneficios</a></li>
-    <li><a href="#como-funciona">Cómo funciona</a></li>
-    <li><a href="#categorias">Categorías</a></li>
-    <li><a href="#planes">Planes</a></li>
+    <li><a (click)="scrollTo('beneficios')"   style="cursor:pointer">Beneficios</a></li>
+    <li><a (click)="scrollTo('como-funciona')" style="cursor:pointer">Cómo funciona</a></li>
+    <li><a (click)="scrollTo('categorias')"   style="cursor:pointer">Categorías</a></li>
+    <li><a (click)="scrollTo('planes')"       style="cursor:pointer">Planes</a></li>
   </ul>
   <div class="nav-actions">
     <a routerLink="/login" class="btn btn--outline">Iniciar Sesión</a>
@@ -19,10 +19,10 @@
 </nav>
 
 <div class="mobile-nav" [class.open]="menuOpen">
-  <a href="#beneficios"    (click)="closeMenu()">Beneficios</a>
-  <a href="#como-funciona" (click)="closeMenu()">Cómo funciona</a>
-  <a href="#categorias"    (click)="closeMenu()">Categorías</a>
-  <a href="#planes"        (click)="closeMenu()">Planes</a>
+  <a (click)="scrollTo('beneficios')"    style="cursor:pointer">Beneficios</a>
+  <a (click)="scrollTo('como-funciona')" style="cursor:pointer">Cómo funciona</a>
+  <a (click)="scrollTo('categorias')"    style="cursor:pointer">Categorías</a>
+  <a (click)="scrollTo('planes')"        style="cursor:pointer">Planes</a>
   <div class="mobile-nav-actions">
     <a routerLink="/login"    class="btn btn--outline"  (click)="closeMenu()">Iniciar Sesión</a>
     <a routerLink="/registro" class="btn btn--primary"  (click)="closeMenu()">Registrarse</a>

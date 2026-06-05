@@ -1,37 +1,19 @@
 <nav class="dashboard-navbar">
-  <div class="dashboard-left">
-    <a routerLink="/home" class="dashboard-logo">
-      <img src="assets/icons/logo.png" alt="ComparaSalud">
-      <span>ComparaSalud</span>
-    </a>
-    <div class="dashboard-menu">
-      <a routerLink="/dashboard"       routerLinkActive="active">Buscar</a>
-      <a routerLink="/dashboard/citas" routerLinkActive="active">Mis citas</a>
-      <a href="#">Mis favoritos</a>
-      <a href="#">Documentos</a>
-    </div>
-  </div>
+  <a routerLink="/home" class="dashboard-logo">
+    <img src="assets/icons/logo.png" alt="ComparaSalud">
+    <span>ComparaSalud</span>
+  </a>
+
+  <ul class="dashboard-menu">
+    <li><a href="#">Beneficios</a></li>
+    <li><a href="#">Cómo funciona</a></li>
+    <li><a href="#">Categorías</a></li>
+    <li><a href="#">Planes</a></li>
+  </ul>
+
 
   <div class="dashboard-right">
-    <div class="nav-circle"><i class="fa-regular fa-circle-question"></i></div>
-    <div class="nav-circle"><i class="fa-regular fa-bell"></i></div>
-
-    <div class="profile-wrapper" [class.active]="dropdownOpen">
-      <div class="profile-box" (click)="toggleDropdown()">
-        <img src="assets/images/profile-user.png" alt="Perfil">
-        <div class="profile-info">
-          <strong>{{ user?.nombre || 'Usuario' }}</strong>
-          <span>Paciente</span>
-        </div>
-        <div class="profile-arrow"><i class="fa-solid fa-chevron-down"></i></div>
-      </div>
-      <div class="profile-dropdown">
-        <a routerLink="/dashboard/perfil"><i class="fa-regular fa-user"></i> Mi perfil</a>
-        <a href="#"><i class="fa-solid fa-gear"></i> Configuración</a>
-        <a (click)="logout()" style="cursor:pointer">
-          <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar sesión
-        </a>
-      </div>
-    </div>
+    <a routerLink="/login"    class="btn btn--outline">Iniciar Sesión</a>
+    <a routerLink="/registro" class="btn btn--primary">Registrarse</a>
   </div>
 </nav>
