@@ -200,7 +200,12 @@ input[type="range"]::-webkit-slider-thumb {
   font-family: 'Be Vietnam Pro', sans-serif;
 }
 
-.doctor-list { display: flex; flex-direction: column; gap: 18px; }
+.doctor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
 
 .doctor-card {
   background: white;
