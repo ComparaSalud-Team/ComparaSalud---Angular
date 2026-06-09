@@ -80,6 +80,7 @@
       <button class="clear-btn" (click)="limpiarFiltros()">Limpiar filtros</button>
     </aside>
 
+
     <section class="doctor-list">
       @for (doctor of doctoresFiltrados; track doctor.id) {
         <div class="doctor-card">
@@ -123,7 +124,7 @@
             </div>
             <div class="doctor-bottom">
               <div class="doctor-stats">
-                <div class="stat"><strong>{{ doctor.rating }}</strong><span>{{ doctor.resenas }} reseñas</span></div>
+                <div class="stat"><strong>{{ doctor.rating }} ★</strong><span>{{ doctor.resenas }} reseñas</span></div>
                 <div class="stat"><strong>{{ doctor.pacientes }}</strong><span>pacientes</span></div>
                 <div class="stat"><strong>{{ doctor.sesiones }}</strong><span>sesiones</span></div>
                 <div class="stat"><strong>{{ doctor.reservas }}</strong><span>reservas</span></div>
