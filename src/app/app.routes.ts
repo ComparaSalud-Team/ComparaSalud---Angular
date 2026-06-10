@@ -18,10 +18,17 @@ export const routes: Routes = [
       import('./components/registro-paso1/registro-paso1').then((m) => m.RegistroPaso1Component),
   },
   {
-    path: 'registro/datos',
+    path: 'registro-paso2',
     loadComponent: () =>
       import('./components/registro-paso2/registro-paso2').then((m) => m.RegistroPaso2Component),
   },
+
+  {
+    path: 'registro-doctor',
+    loadComponent: () =>
+      import('./components/registro-doctor/registro-doctor').then((m) => m.RegistroDoctorComponent),
+  },
+
   {
     path: 'busqueda',
     loadComponent: () =>
