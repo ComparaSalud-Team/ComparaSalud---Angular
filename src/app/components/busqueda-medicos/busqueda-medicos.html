@@ -4,20 +4,18 @@
 
   <div class="top-search">
     <div class="search-box">
-      <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery">
-      <button class="search-btn">
+      <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery" (keyup.enter)="buscar()">
+      <button class="search-btn" (click)="buscar()">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="7"></circle>
           <path d="m21 21-4.3-4.3"></path>
         </svg>
       </button>
     </div>
-
     <div class="top-filters">
       <select class="filter-select country-select">
         <option>🇵🇪</option>
       </select>
-
       @for (f of topFilters; track f.value) {
         <select class="filter-select" [(ngModel)]="f.value">
           @for (opt of f.options; track opt.value) {
@@ -29,7 +27,6 @@
   </div>
 
   <div class="content">
-
     <aside class="sidebar">
       <h3>Filtros</h3>
       <div class="filter-group">
@@ -49,8 +46,15 @@
       <div class="filter-group">
         <label>Rango de precio</label>
         <div class="range-wrap">
-          <input type="range" min="50" max="500" [(ngModel)]="sidebarFiltros.precio">
-          <div class="range-value"><span>$50</span><span>$500</span></div>
+          <div class="range-tooltip-wrap">
+            <input class="range-tooltip editable"
+                   type="number" min="50" max="500"
+                   [(ngModel)]="sidebarFiltros.precio"
+                   [style.left]="getTooltipLeft(sidebarFiltros.precio, 50, 500)">
+            <input type="range" min="50" max="500" [(ngModel)]="sidebarFiltros.precio"
+                   [style.background]="getRangeBackground(sidebarFiltros.precio, 50, 500)">
+          </div>
+          <div class="range-value"><span>S/50</span><span>S/500</span></div>
         </div>
       </div>
       <div class="filter-group">
@@ -72,14 +76,20 @@
       <div class="filter-group">
         <label>Calificación</label>
         <div class="range-wrap">
-          <input type="range" min="1" max="5" [(ngModel)]="sidebarFiltros.calificacion">
+          <div class="range-tooltip-wrap">
+            <input class="range-tooltip editable"
+                   type="number" min="1" max="5"
+                   [(ngModel)]="sidebarFiltros.calificacion"
+                   [style.left]="getTooltipLeft(sidebarFiltros.calificacion, 1, 5)">
+            <input type="range" min="1" max="5" [(ngModel)]="sidebarFiltros.calificacion"
+                   [style.background]="getRangeBackground(sidebarFiltros.calificacion, 1, 5)">
+          </div>
           <div class="range-value"><span>1 ★</span><span>5 ★</span></div>
         </div>
       </div>
       <button class="apply-btn" (click)="aplicarFiltros()">Aplicar filtros</button>
       <button class="clear-btn" (click)="limpiarFiltros()">Limpiar filtros</button>
     </aside>
-
 
     <section class="doctor-list">
       @for (doctor of doctoresFiltrados; track doctor.id) {
@@ -136,8 +146,126 @@
         </div>
       }
     </section>
-
   </div>
 </div>
+
+<!-- Modal éxito -->
+@if (mostrarExito) {
+  <div class="modal-overlay" (click)="mostrarExito = false">
+    <div class="modal modal-exito" (click)="$event.stopPropagation()">
+      <button class="modal-close exito-close" (click)="mostrarExito = false">✕</button>
+      <div class="exito-icon-wrap">
+        <div class="exito-sparkle s1">✦</div>
+        <div class="exito-sparkle s2">✦</div>
+        <div class="exito-sparkle s3">✦</div>
+        <div class="exito-sparkle s4">✦</div>
+        <div class="exito-sparkle s5">✦</div>
+        <div class="exito-sparkle s6">✦</div>
+        <div class="exito-circle">
+          <svg width="48" height="48" fill="none" stroke="white" stroke-width="3.5" viewBox="0 0 24 24">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+      </div>
+      <h2 class="exito-title">¡Cita agendada con éxito!</h2>
+      <p class="exito-sub">Tu cita ha sido registrada correctamente.</p>
+      <button class="exito-btn" (click)="mostrarExito = false">Entendido</button>
+    </div>
+  </div>
+}
+
+<!-- Modal agendar cita -->
+@if (modalAbierto) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h2 class="modal-title">Agendar cita</h2>
+        <button class="modal-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="modal-stepper">
+        <div class="step" [class.active]="pasoActual >= 1">
+          <span class="step-num">1</span>
+          <span class="step-label">Seleccionar fecha</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="pasoActual >= 2">
+          <span class="step-num">2</span>
+          <span class="step-label">Seleccionar hora</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="pasoActual >= 3">
+          <span class="step-num">3</span>
+          <span class="step-label">Confirmar cita</span>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <p class="modal-section-title">Selecciona una fecha</p>
+        <div class="date-grid">
+          @for (d of fechasDisponibles; track d.fecha) {
+            <button class="date-btn" [class.selected]="fechaSeleccionada === d.fecha" (click)="seleccionarFecha(d.fecha)">
+              <span class="date-day">{{ d.dia }}</span>
+              <span class="date-num">{{ d.num }}</span>
+              <span class="date-month">{{ d.mes }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <p class="modal-section-title">Horarios disponibles</p>
+        @if (cargandoHorarios) {
+          <p class="modal-note">Cargando horarios...</p>
+        } @else if (horariosDisponibles.length === 0) {
+          <p class="modal-note">No hay horarios disponibles para esta fecha.</p>
+        } @else {
+          <div class="time-grid">
+            @for (h of horariosDisponibles; track h) {
+              <button class="time-btn" [class.selected]="horaSeleccionada === h" (click)="seleccionarHora(h)">
+                {{ h }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="modal-section">
+        <p class="modal-section-title">Modalidad</p>
+        <div class="modalidad-grid">
+          <button class="modalidad-btn" [class.selected]="modalidadSeleccionada === 'online'"
+                  (click)="modalidadSeleccionada = 'online'">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+              <path d="M8 21h8M12 17v4"></path>
+            </svg>
+            Online
+          </button>
+          <button class="modalidad-btn" [class.selected]="modalidadSeleccionada === 'presencial'"
+                  (click)="modalidadSeleccionada = 'presencial'">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7z"/>
+            </svg>
+            Presencial
+          </button>
+        </div>
+        <p class="modal-note">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 8v4M12 16h.01"></path>
+          </svg>
+          Los horarios disponibles dependen de la agenda del especialista.
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-cancel-btn" (click)="cerrarModal()">Cancelar</button>
+        <button class="modal-confirm-btn" (click)="confirmarCita()">Confirmar cita</button>
+      </div>
+
+    </div>
+  </div>
+}
 
 <app-footer></app-footer>
