@@ -1,0 +1,234 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  background: #f8fafc;
+}
+
+/* PANEL IZQUIERDO */
+
+.auth-left {
+  width: 42%;
+  background: linear-gradient(
+    180deg,
+    #38bdf8 0%,
+    #3b82f6 35%,
+    #10b981 70%,
+    #059669 100%
+  );
+  display: flex;
+  flex-direction: column;
+  padding: 36px;
+  overflow: hidden;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 30px;
+}
+
+.auth-logo img {
+  height: 48px;
+}
+
+.auth-logo span {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.auth-left-title {
+  color: white;
+  font-size: 2.3rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.auth-left-desc {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.7;
+  margin-bottom: 30px;
+}
+
+.auth-left-bottom {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-left-img {
+  width: 85%;
+  max-width: 520px;
+  object-fit: contain;
+}
+
+/* PANEL DERECHO */
+
+.auth-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  background: #fff;
+}
+
+.auth-form-box {
+  width: 100%;
+  max-width: 900px;
+}
+
+.auth-form-box h1 {
+  text-align: center;
+  color: #0f172a;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.auth-form-subtitle {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 35px;
+}
+
+/* GRID */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 0.92rem;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-group textarea {
+  resize: none;
+  min-height: 100px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* CHECKBOX */
+
+.terms-label {
+  margin-top: 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.terms-label a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* BOTON */
+
+.btn-auth {
+  width: 100%;
+  margin-top: 22px;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  background: linear-gradient(
+    90deg,
+    #3b82f6 0%,
+    #10b981 100%
+  );
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-auth:hover {
+  opacity: 0.9;
+}
+
+/* LOGIN */
+
+.auth-bottom-link {
+  margin-top: 20px;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.auth-bottom-link a {
+  color: #3b82f6;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .auth-wrapper {
+    flex-direction: column;
+  }
+
+  .auth-left {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .auth-right {
+    padding: 24px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full {
+    grid-column: span 1;
+  }
+}
