@@ -4,8 +4,8 @@
 
   <div class="top-search">
     <div class="search-box">
-      <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery">
-      <button class="search-btn">
+      <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery" (keyup.enter)="buscar()">
+      <button class="search-btn" (click)="buscar()">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <circle cx="11" cy="11" r="7"></circle>
           <path d="m21 21-4.3-4.3"></path>
@@ -49,8 +49,15 @@
       <div class="filter-group">
         <label>Rango de precio</label>
         <div class="range-wrap">
-          <input type="range" min="50" max="500" [(ngModel)]="sidebarFiltros.precio">
-          <div class="range-value"><span>$50</span><span>$500</span></div>
+          <div class="range-tooltip-wrap">
+            <input class="range-tooltip editable"
+                   type="number" min="50" max="500"
+                   [(ngModel)]="sidebarFiltros.precio"
+                   [style.left]="getTooltipLeft(sidebarFiltros.precio, 50, 500)">
+            <input type="range" min="50" max="500" [(ngModel)]="sidebarFiltros.precio"
+                   [style.background]="getRangeBackground(sidebarFiltros.precio, 50, 500)">
+          </div>
+          <div class="range-value"><span>S/50</span><span>S/500</span></div>
         </div>
       </div>
       <div class="filter-group">
@@ -72,7 +79,14 @@
       <div class="filter-group">
         <label>Calificación</label>
         <div class="range-wrap">
-          <input type="range" min="1" max="5" [(ngModel)]="sidebarFiltros.calificacion">
+          <div class="range-tooltip-wrap">
+            <input class="range-tooltip editable"
+                   type="number" min="1" max="5"
+                   [(ngModel)]="sidebarFiltros.calificacion"
+                   [style.left]="getTooltipLeft(sidebarFiltros.calificacion, 1, 5)">
+            <input type="range" min="1" max="5" [(ngModel)]="sidebarFiltros.calificacion"
+                   [style.background]="getRangeBackground(sidebarFiltros.calificacion, 1, 5)">
+          </div>
           <div class="range-value"><span>1 ★</span><span>5 ★</span></div>
         </div>
       </div>
