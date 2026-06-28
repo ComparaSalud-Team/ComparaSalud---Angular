@@ -26,8 +26,14 @@ export class LoginComponent {
   }
 
   onSubmit() {
-    if (this.auth.login(this.email, this.password)) {
-      this.router.navigate(['/dashboard']);
-    }
+    this.auth.login(this.email, this.password).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        console.error('Error al iniciar sesión:', err);
+        alert('Correo o contraseña incorrectos');
+      },
+    });
   }
 }

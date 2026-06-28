@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +14,6 @@ interface FilterOption {
   value: string;
 }
 
-
 @Component({
   selector: 'app-busqueda-medicos',
   standalone: true,
@@ -24,78 +23,48 @@ interface FilterOption {
 })
 export class BusquedaMedicosComponent implements OnInit {
   providers: Provider[] = [];
-
+  todosLosDoctores: any[] = [];
   doctoresFiltrados: any[] = [];
-
   searchQuery = '';
+  ordenarPor = '';
+  ordenDireccion = 'asc';
 
-  constructor(private providerService: ProviderService) {}
-
-  topFilters: { value: string; options: FilterOption[] }[] = [
-    {
-      value: 'medicina-general',
-      options: [
-        { label: 'Medicina general', value: 'medicina-general' },
-        { label: 'Cardiología', value: 'cardiologia' },
-        { label: 'Dermatología', value: 'dermatologia' },
-      ],
-    },
-    {
-      value: 'esta-semana',
-      options: [
-        { label: 'Esta semana', value: 'esta-semana' },
-        { label: 'Este mes', value: 'este-mes' },
-        { label: 'Disponible hoy', value: 'hoy' },
-      ],
-    },
-    {
-      value: 'español',
-      options: [
-        { label: 'Español', value: 'español' },
-        { label: 'Inglés', value: 'ingles' },
-      ],
-    },
-    {
-      value: 'online',
-      options: [
-        { label: 'Online', value: 'online' },
-        { label: 'Presencial', value: 'presencial' },
-        { label: 'Ambos', value: 'ambos' },
-      ],
-    },
-    {
-      value: 'experiencia',
-      options: [
-        { label: 'Experiencia', value: 'experiencia' },
-        { label: 'Calificación', value: 'calificacion' },
-        { label: 'Precio', value: 'precio' },
-      ],
-    },
-  ];
+  constructor(
+    private providerService: ProviderService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   sidebarFiltros = {
     ubicacion: '',
-    categoria: 'medicina-general',
-    disponibilidad: 'esta-semana',
-    modalidad: 'online',
-    precio: 70,
-    calificacion: 70,
+    categoria: '',
+    idioma: '',
+    disponibilidad: '',
+    modalidad: '',
+    precio: 500,
+    calificacion: 0,
   };
 
   categoriaOptions: FilterOption[] = [
-    { label: 'Medicina general', value: 'medicina-general' },
-    { label: 'Cardiología', value: 'cardiologia' },
-    { label: 'Dermatología', value: 'dermatologia' },
-    { label: 'Pediatría', value: 'pediatria' },
+    { label: 'Todas', value: '' },
+    { label: 'Cardiología', value: 'cardiología' },
+    { label: 'Pediatría', value: 'pediatría' },
+    { label: 'Dermatología', value: 'dermatología' },
+    { label: 'Neurología', value: 'neurología' },
+    { label: 'Ginecología', value: 'ginecología' },
+    { label: 'Traumatología', value: 'traumatología' },
+    { label: 'Oftalmología', value: 'oftalmología' },
+    { label: 'Medicina General', value: 'medicina general' },
   ];
 
   disponibilidadOptions: FilterOption[] = [
+    { label: 'Cualquiera', value: '' },
     { label: 'Esta semana', value: 'esta-semana' },
     { label: 'Este mes', value: 'este-mes' },
     { label: 'Disponible hoy', value: 'hoy' },
   ];
 
   modalidadOptions: FilterOption[] = [
+    { label: 'Cualquiera', value: '' },
     { label: 'Online', value: 'online' },
     { label: 'Presencial', value: 'presencial' },
     { label: 'Ambos', value: 'ambos' },
@@ -109,40 +78,30 @@ export class BusquedaMedicosComponent implements OnInit {
     this.providerService.getProviders().subscribe({
       next: (data) => {
         this.providers = data;
-
-        this.doctoresFiltrados = data.map((provider, index) => ({
+        this.todosLosDoctores = data.map((provider, index) => ({
           id: provider.id,
           nombre: provider.fullName,
           bandera: '🇵🇪',
-
           rol:
             provider.specialty +
             (provider.experienceYears ? ` | ${provider.experienceYears} años de experiencia` : ''),
-
           descripcion: provider.description || 'Especialista médico registrado en ComparaSalud.',
-
           idiomas: 'Español',
-
           imagen: `assets/images/doctor-card-${(index % 4) + 1}.png`,
-
-          tags: [
-            {
-              label: provider.specialty || 'Especialidad',
-              beige: true,
-            },
-          ],
-
-          rating: provider.averageRating || 0,
+          especialidad: (provider.specialty || '').toLowerCase(),
+          tags: [{ label: provider.specialty || 'Especialidad', beige: true }],
+          rating: Number(provider.averageRating) || 0,
           resenas: 0,
           pacientes: 0,
           sesiones: 0,
           reservas: 0,
+          experienceYears: Number(provider.experienceYears) || 0,
+          precioPuro: Number(provider.pricePerAppointment) || 0,
           precio: `S/${provider.pricePerAppointment || 0}`,
           socials: [],
         }));
-
-        console.log('Doctores transformados:', this.doctoresFiltrados);
-        console.log('Cantidad:', this.doctoresFiltrados.length);
+        this.doctoresFiltrados = [...this.todosLosDoctores];
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error cargando providers', error);
@@ -150,24 +109,80 @@ export class BusquedaMedicosComponent implements OnInit {
     });
   }
 
+  buscar(): void {
+    const q = this.searchQuery.toLowerCase().trim();
 
+    this.doctoresFiltrados = this.todosLosDoctores.filter((doctor) => {
+      const coincideTexto =
+        !q ||
+        doctor.nombre.toLowerCase().includes(q) ||
+        doctor.especialidad.includes(q) ||
+        doctor.descripcion.toLowerCase().includes(q);
+
+      const coincideCategoria =
+        !this.sidebarFiltros.categoria ||
+        doctor.especialidad.includes(this.sidebarFiltros.categoria.toLowerCase());
+
+      const coincidePrecio =
+        doctor.precioPuro === 0 || doctor.precioPuro <= this.sidebarFiltros.precio;
+
+      const coincideCalificacion =
+        Number(doctor.rating) >= Number(this.sidebarFiltros.calificacion);
+
+      return coincideTexto && coincideCategoria && coincidePrecio && coincideCalificacion;
+    });
+
+    if (this.ordenarPor === 'precio') {
+      this.doctoresFiltrados.sort((a, b) =>
+        this.ordenDireccion === 'asc' ? a.precioPuro - b.precioPuro : b.precioPuro - a.precioPuro,
+      );
+    } else if (this.ordenarPor === 'calificacion') {
+      this.doctoresFiltrados.sort((a, b) =>
+        this.ordenDireccion === 'asc' ? a.rating - b.rating : b.rating - a.rating,
+      );
+    } else if (this.ordenarPor === 'experiencia') {
+      this.doctoresFiltrados.sort((a, b) =>
+        this.ordenDireccion === 'asc'
+          ? a.experienceYears - b.experienceYears
+          : b.experienceYears - a.experienceYears,
+      );
+    }
+
+    this.cdr.detectChanges();
+  }
 
   aplicarFiltros(): void {
-    console.log('Filtros aplicados', this.sidebarFiltros);
+    this.buscar();
   }
 
   limpiarFiltros(): void {
+    this.searchQuery = '';
+    this.ordenarPor = '';
+    this.ordenDireccion = 'asc';
     this.sidebarFiltros = {
       ubicacion: '',
-      categoria: 'medicina-general',
-      disponibilidad: 'esta-semana',
-      modalidad: 'online',
-      precio: 70,
-      calificacion: 70,
+      categoria: '',
+      idioma: '',
+      disponibilidad: '',
+      modalidad: '',
+      precio: 500,
+      calificacion: 0,
     };
+    this.doctoresFiltrados = [...this.todosLosDoctores];
+    this.cdr.detectChanges();
   }
 
   agendarCita(doctor: any): void {
     console.log('Agendar cita:', doctor);
+  }
+
+  getRangeBackground(value: number, min: number, max: number): string {
+    const pct = ((value - min) / (max - min)) * 100;
+    return `linear-gradient(90deg, #8B5CF6 ${pct}%, #E2E8F0 ${pct}%)`;
+  }
+
+  getTooltipLeft(value: number, min: number, max: number): string {
+    const pct = ((value - min) / (max - min)) * 100;
+    return `calc(${pct}% + ${8 - pct * 0.16}px)`;
   }
 }

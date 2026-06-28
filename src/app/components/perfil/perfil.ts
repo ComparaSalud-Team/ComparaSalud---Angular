@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
+import { AuthService } from '../../services/auth';
 
 interface StatItem {
   icon: string;
@@ -49,14 +50,13 @@ interface HistorialItem {
 })
 export class PerfilComponent implements OnInit {
   usuario = {
-    nombre: 'Marisol Gomez Sánchez',
-    subtitulo:
-      'Paciente activa desde marzo 2024. Seguimiento constante de citas y documentos médicos.',
-    email: 'Marisol.Gomez@example.com',
-    telefono: '+51 999 555 777',
-    ubicacion: 'Lima, Perú',
-    tags: ['Femenino', '0+', '38 años'],
-    avatar: 'assets/images/profile-user.png',
+    nombre: '',
+    subtitulo: '',
+    email: '',
+    telefono: '',
+    ubicacion: '',
+    tags: [] as string[],
+    avatar: '',
   };
 
   stats: StatItem[] = [
@@ -100,12 +100,12 @@ export class PerfilComponent implements OnInit {
       iconColor: 'blue',
       title: 'Información personal',
       rows: [
-        { label: 'Fecha de nacimiento', value: '15 de agosto de 1998' },
-        { label: 'DNI', value: '75311243' },
-        { label: 'Estado civil', value: 'Soltera' },
-        { label: 'Profesión', value: 'Diseñadora gráfica' },
+        { label: 'Fecha de nacimiento', value: '—' },
+        { label: 'DNI', value: '—' },
+        { label: 'Estado civil', value: '—' },
+        { label: 'Profesión', value: '—' },
         { label: 'Idioma preferido', value: 'Español' },
-        { label: 'Dirección', value: 'Av. Javier Prado 1234, Miraflores' },
+        { label: 'Dirección', value: '—' },
       ],
     },
     {
@@ -113,11 +113,11 @@ export class PerfilComponent implements OnInit {
       iconColor: 'red',
       title: 'Información médica',
       rows: [
-        { label: 'Tipo de sangre', value: '0+' },
-        { label: 'Alergias', value: 'Penicilina, Polen, Aínes' },
-        { label: 'Condiciones médicas', value: 'Asma leve' },
-        { label: 'Medicamentos actuales', value: 'Salbutamol (inhalador)' },
-        { label: 'Seguro médico', value: 'Rímac salud (Plan clásico)' },
+        { label: 'Tipo de sangre', value: '—' },
+        { label: 'Alergias', value: '—' },
+        { label: 'Condiciones médicas', value: '—' },
+        { label: 'Medicamentos actuales', value: '—' },
+        { label: 'Seguro médico', value: '—' },
       ],
     },
     {
@@ -125,10 +125,10 @@ export class PerfilComponent implements OnInit {
       iconColor: 'green',
       title: 'Contacto de emergencia',
       rows: [
-        { label: 'Nombre', value: 'Carlos Goméz' },
-        { label: 'Parentesco', value: 'Padre' },
-        { label: 'Teléfono', value: '+51 923 123 432' },
-        { label: 'Dirección', value: 'Lima, Perú' },
+        { label: 'Nombre', value: '—' },
+        { label: 'Parentesco', value: '—' },
+        { label: 'Teléfono', value: '—' },
+        { label: 'Dirección', value: '—' },
       ],
       showEmergencyBtn: true,
     },
@@ -160,5 +160,24 @@ export class PerfilComponent implements OnInit {
     { title: 'Estudios e imágenes', count: 3 },
   ];
 
-  ngOnInit(): void {}
+  constructor(private auth: AuthService) {}
+
+  ngOnInit(): void {
+    const session = this.auth.getUser();
+    const profile = session?.profile || session;
+
+    this.usuario = {
+      nombre: profile?.name || 'Usuario',
+      subtitulo: 'Paciente activo en ComparaSalud.',
+      email: profile?.email || '—',
+      telefono: profile?.phone || '—',
+      ubicacion: profile?.country || '—',
+      tags: ['—'],
+      avatar:
+        profile?.photoUrl ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'U')}&background=0EA5E9&color=fff&size=128`,
+    };
+
+    this.infoCards[0].rows[5].value = profile?.country || '—';
+  }
 }

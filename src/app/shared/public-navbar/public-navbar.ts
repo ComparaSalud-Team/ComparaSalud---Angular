@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -24,7 +24,8 @@ export class PublicNavbarComponent implements OnInit {
     this.user = this.auth.getUser();
   }
 
-  toggleDropdown() {
+  toggleDropdown(event: MouseEvent) {
+    event.stopPropagation();
     this.dropdownOpen = !this.dropdownOpen;
   }
 
@@ -32,8 +33,18 @@ export class PublicNavbarComponent implements OnInit {
     this.dropdownOpen = false;
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.profile-wrapper')) {
+      this.dropdownOpen = false;
+    }
+  }
+
   logout() {
     this.auth.logout();
     this.router.navigate(['/login']);
   }
+
+  protected readonly encodeURIComponent = encodeURIComponent;
 }

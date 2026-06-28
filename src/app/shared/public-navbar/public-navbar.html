@@ -22,13 +22,14 @@
       <i class="fa-regular fa-bell"></i>
     </button>
 
-    <div class="profile-wrapper" [class.open]="dropdownOpen" (clickOutside)="closeDropdown()">
+    <div class="profile-wrapper" [class.open]="dropdownOpen" (click)="$event.stopPropagation()">
 
-      <button class="profile-trigger" (click)="toggleDropdown()">
-        <img [src]="user?.avatar || 'assets/images/profile-user.png'" [alt]="user?.nombre || 'Usuario'">
+      <button class="profile-trigger" (click)="toggleDropdown($event)">
+        <img [src]="user?.profile?.photoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user?.profile?.name || user?.profile?.fullName || 'U') + '&background=0EA5E9&color=fff&size=128'"
+             [alt]="user?.profile?.name || user?.profile?.fullName || 'Usuario'">
         <div class="profile-trigger__info">
-          <strong>{{ user?.nombre || 'Usuario' }}</strong>
-          <span>{{ user?.rol || 'Paciente' }}</span>
+          <strong>{{ user?.profile?.name || user?.profile?.fullName || user?.email || 'Usuario' }}</strong>
+          <span>{{ user?.role === 'PROVIDER' ? 'Proveedor' : 'Paciente' }}</span>
         </div>
         <i class="fa-solid fa-chevron-down" [class.rotated]="dropdownOpen"></i>
       </button>
