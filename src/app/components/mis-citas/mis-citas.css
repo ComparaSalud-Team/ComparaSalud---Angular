@@ -5,6 +5,18 @@
   padding: 40px 72px 80px;
 }
 
+@media (max-width: 1024px) {
+  .citas-page {
+    padding: 24px 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .citas-page {
+    padding: 16px;
+  }
+}
+
 .citas-page-header {
   display: flex;
   align-items: flex-start;
