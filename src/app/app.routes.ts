@@ -55,9 +55,21 @@ export const routes: Routes = [
     loadComponent: () => import('./components/perfil/perfil').then((m) => m.PerfilComponent),
   },
 
+  {
+    path: 'favoritos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-favoritos/mis-favoritos').then((m) => m.MisFavoritosComponent),
+  },
+
+  {
+    path: 'mis-busquedas',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-busquedas/mis-busquedas').then((m) => m.MisBusquedasComponent),
+  },
   { path: 'buscar', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'favoritos', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'documentos', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'documentos', redirectTo: 'mis-busquedas', pathMatch: 'full' },
   { path: 'configuracion', redirectTo: 'perfil', pathMatch: 'full' },
 
   { path: '**', redirectTo: 'home' },

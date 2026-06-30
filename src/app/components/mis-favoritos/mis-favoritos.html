@@ -1,0 +1,130 @@
+<div class="container">
+
+  <app-public-navbar></app-public-navbar>
+
+  <div class="page-body">
+
+    <section class="favoritos-header">
+      <h1>Mis proveedores favoritos</h1>
+      <p>Tus clínicas y hospitales guardados para acceder rápidamente a sus servicios.</p>
+    </section>
+
+    <section class="favoritos-toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input
+          type="text"
+          placeholder="Buscar en favoritos"
+          [(ngModel)]="busqueda"
+          (ngModelChange)="aplicarFiltros()"
+        />
+      </div>
+
+      <select [(ngModel)]="filtroZona" (ngModelChange)="aplicarFiltros()">
+        <option value="">Filtrar por zona</option>
+        <option *ngFor="let zona of zonasDisponibles" [value]="zona">{{ zona }}</option>
+      </select>
+
+      <select [(ngModel)]="ordenarPor" (ngModelChange)="aplicarFiltros()">
+        <option value="">Ordenar por</option>
+        <option value="rating">Mejor calificados</option>
+        <option value="precioAsc">Precio: menor a mayor</option>
+        <option value="precioDesc">Precio: mayor a menor</option>
+        <option value="nombre">Nombre (A-Z)</option>
+      </select>
+    </section>
+
+    <!-- Estado: cargando -->
+    <div class="estado-mensaje" *ngIf="cargando">
+      <p>Cargando tus proveedores favoritos...</p>
+    </div>
+
+    <!-- Estado: error -->
+    <div class="estado-mensaje error" *ngIf="!cargando && error">
+      <p>{{ error }}</p>
+    </div>
+
+    <!-- Estado: sin favoritos -->
+    <div class="estado-mensaje vacio" *ngIf="!cargando && !error && favoritos.length === 0">
+      <i class="fa-regular fa-heart"></i>
+      <h3>Todavía no tienes favoritos</h3>
+      <p>Guarda tus clínicas y proveedores preferidos para encontrarlos aquí fácilmente.</p>
+      <a routerLink="/buscar" class="btn-explorar">Buscar proveedores</a>
+    </div>
+
+    <!-- Grid de favoritos -->
+    <section
+      class="favoritos-grid"
+      *ngIf="!cargando && !error && favoritosFiltrados.length > 0"
+    >
+      <article
+        class="favorito-card"
+        *ngFor="let favorito of favoritosFiltrados; let i = index"
+      >
+        <div class="card-header" [style.background]="gradienteFor(i)">
+          <i class="fa-solid fa-hospital card-icon"></i>
+          <button
+            class="btn-heart"
+            title="Quitar de favoritos"
+            (click)="eliminarFavorito(favorito, $event)"
+          >
+            <i class="fa-solid fa-heart"></i>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <div class="card-title-row">
+            <h3>{{ favorito.fullName }}</h3>
+            <span class="rating" *ngIf="favorito.averageRating">
+              <i class="fa-solid fa-star"></i>{{ favorito.averageRating | number: '1.1-1' }}
+            </span>
+          </div>
+
+          <p class="specialty">{{ favorito.specialty }}</p>
+
+          <p class="ubicacion" *ngIf="favorito.district || favorito.city">
+            <i class="fa-solid fa-location-dot"></i>
+            {{ favorito.district }}<span *ngIf="favorito.district && favorito.city">, </span>{{ favorito.city }}
+          </p>
+
+          <p class="experiencia" *ngIf="favorito.experienceYears">
+            <i class="fa-solid fa-briefcase-medical"></i>
+            {{ favorito.experienceYears }} años de experiencia
+          </p>
+
+          <div class="card-footer">
+            <div class="precio" *ngIf="favorito.pricePerAppointment">
+              Desde <strong>S/ {{ favorito.pricePerAppointment }}</strong>
+            </div>
+            <div class="acciones">
+              <button class="btn-servicios" (click)="verServicios(favorito)">Ver servicios</button>
+              <button class="btn-eliminar" title="Eliminar favorito" (click)="eliminarFavorito(favorito, $event)">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Estado: filtro sin resultados -->
+    <div
+      class="estado-mensaje vacio"
+      *ngIf="!cargando && !error && favoritos.length > 0 && favoritosFiltrados.length === 0"
+    >
+      <p>No encontramos favoritos que coincidan con tu búsqueda.</p>
+    </div>
+
+    <section class="favoritos-tip" *ngIf="!cargando && !error && favoritos.length > 0">
+      <i class="fa-regular fa-lightbulb"></i>
+      <p>
+        <strong>Consejo:</strong> guarda tus clínicas y hospitales favoritos para acceder rápidamente
+        a sus servicios y comparar precios. Puedes eliminarlos en cualquier momento.
+      </p>
+    </section>
+
+  </div>
+
+  <app-public-footer></app-public-footer>
+
+</div>
