@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth';
 
 @Component({
@@ -11,23 +11,36 @@ import { AuthService } from '../../services/auth';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   email = '';
   password = '';
   showPassword = false;
 
+  private returnUrl = '/dashboard';
+
   constructor(
     private auth: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
+
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+  }
 
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
   onSubmit() {
-    if (this.auth.login(this.email, this.password)) {
-      this.router.navigate(['/dashboard']);
-    }
+    this.auth.login(this.email, this.password).subscribe({
+      next: () => {
+        this.router.navigateByUrl(this.returnUrl);
+      },
+      error: (err) => {
+        console.error('Error al iniciar sesión:', err);
+        alert('Correo o contraseña incorrectos');
+      },
+    });
   }
 }

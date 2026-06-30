@@ -18,10 +18,17 @@ export const routes: Routes = [
       import('./components/registro-paso1/registro-paso1').then((m) => m.RegistroPaso1Component),
   },
   {
-    path: 'registro/datos',
+    path: 'registro-paso2',
     loadComponent: () =>
       import('./components/registro-paso2/registro-paso2').then((m) => m.RegistroPaso2Component),
   },
+
+  {
+    path: 'registro-doctor',
+    loadComponent: () =>
+      import('./components/registro-doctor/registro-doctor').then((m) => m.RegistroDoctorComponent),
+  },
+
   {
     path: 'busqueda',
     loadComponent: () =>
@@ -48,9 +55,29 @@ export const routes: Routes = [
     loadComponent: () => import('./components/perfil/perfil').then((m) => m.PerfilComponent),
   },
 
+  {
+    path: 'compartir-perfil',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/compartir-perfil/compartir-perfil').then(
+        (m) => m.CompartirPerfilComponent,
+      ),
+  },
+  {
+    path: 'favoritos',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-favoritos/mis-favoritos').then((m) => m.MisFavoritosComponent),
+  },
+
+  {
+    path: 'mis-busquedas',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-busquedas/mis-busquedas').then((m) => m.MisBusquedasComponent),
+  },
   { path: 'buscar', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'favoritos', redirectTo: 'dashboard', pathMatch: 'full' },
-  { path: 'documentos', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'documentos', redirectTo: 'mis-busquedas', pathMatch: 'full' },
   { path: 'configuracion', redirectTo: 'perfil', pathMatch: 'full' },
 
   { path: '**', redirectTo: 'home' },

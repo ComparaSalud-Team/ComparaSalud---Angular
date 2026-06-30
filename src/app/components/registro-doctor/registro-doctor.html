@@ -1,0 +1,193 @@
+<div class="auth-wrapper">
+
+  <!-- Panel izquierdo -->
+  <div class="auth-left">
+    <a routerLink="/home" class="auth-logo">
+      <img src="assets/icons/logo.png" alt="ComparaSalud" />
+      <span>ComparaSalud</span>
+    </a>
+
+    <h2 class="auth-left-title">
+      Tu salud, transparente y al alcance
+    </h2>
+
+    <p class="auth-left-desc">
+      Accede a tu cuenta para gestionar tus citas médicas, comparar precios y tomar el control de tu bienestar.
+    </p>
+
+    <div class="auth-left-bottom">
+      <img
+        class="auth-left-img"
+        src="assets/images/hero-woman.png"
+        alt="ComparaSalud"
+      />
+    </div>
+  </div>
+
+  <!-- Panel derecho -->
+  <div class="auth-right">
+    <div class="auth-form-box">
+
+      <h1>Registro de Doctor</h1>
+
+      <p class="auth-form-subtitle">
+        Completa tu información profesional para aparecer en el directorio médico.
+      </p>
+
+      <div class="form-grid">
+
+        <!-- Nombre -->
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input
+            type="text"
+            placeholder="Ingresa tu nombre completo"
+            [(ngModel)]="nombre"
+            name="nombre">
+        </div>
+
+        <!-- Especialidad -->
+        <div class="form-group">
+          <label>Especialidad</label>
+          <select [(ngModel)]="especialidad" name="especialidad">
+            <option value="">Seleccionar</option>
+            <option>Cardiología</option>
+            <option>Pediatría</option>
+            <option>Dermatología</option>
+            <option>Neurología</option>
+            <option>Ginecología</option>
+            <option>Traumatología</option>
+            <option>Oftalmología</option>
+            <option>Medicina General</option>
+          </select>
+        </div>
+
+        <!-- Correo -->
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input
+            type="email"
+            placeholder="doctor@gmail.com"
+            [(ngModel)]="email"
+            name="email">
+        </div>
+
+        <!-- Modalidad -->
+        <div class="form-group">
+          <label>Modalidad de atención</label>
+          <select [(ngModel)]="modalidad" name="modalidad">
+            <option>Presencial</option>
+            <option>Virtual</option>
+            <option>Híbrida</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Idioma de atención</label>
+          <select [(ngModel)]="idioma" name="idioma">
+            <option>Español</option>
+            <option>Inglés</option>
+            <option>Quechua</option>
+            <option>Portugués</option>
+          </select>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="password"
+            name="password">
+        </div>
+
+        <!-- Clínica -->
+        <div class="form-group">
+          <label>Nombre de la clínica o consultorio</label>
+          <input
+            type="text"
+            placeholder="Nombre de clínica"
+            [(ngModel)]="clinica"
+            name="clinica">
+        </div>
+
+        <!-- Teléfono -->
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input
+            type="text"
+            placeholder="999999999"
+            [(ngModel)]="telefono"
+            name="telefono">
+        </div>
+
+        <!-- Experiencia -->
+        <div class="form-group">
+          <label>Años de experiencia</label>
+          <input
+            type="number"
+            min="0"
+            placeholder="0"
+            [(ngModel)]="experiencia"
+            name="experiencia">
+        </div>
+
+        <!-- Distrito -->
+        <div class="form-group">
+          <label>Distrito</label>
+          <input
+            type="text"
+            placeholder="San Isidro"
+            [(ngModel)]="distrito"
+            name="distrito">
+        </div>
+
+        <!-- Ciudad -->
+        <div class="form-group">
+          <label>Ciudad</label>
+          <input
+            type="text"
+            placeholder="Lima"
+            [(ngModel)]="ciudad"
+            name="ciudad">
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group full-width">
+          <label>Descripción profesional</label>
+          <textarea
+            rows="4"
+            placeholder="Describe tu experiencia profesional, especialidades y trayectoria médica."
+            [(ngModel)]="descripcion"
+            name="descripcion">
+          </textarea>
+        </div>
+
+      </div>
+
+      <label class="terms-label">
+        <input
+          type="checkbox"
+          [(ngModel)]="aceptaTerminos"
+          name="terminos">
+
+        Acepto los
+        <a href="#">Términos de Servicio</a>
+        y
+        <a href="#">Política de Privacidad</a>
+      </label>
+
+      <button class="btn-auth" (click)="onSubmit()">
+        Registrar Doctor
+      </button>
+
+      <div class="auth-bottom-link">
+        ¿Ya tienes cuenta?
+        <a routerLink="/login">Inicia sesión</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>

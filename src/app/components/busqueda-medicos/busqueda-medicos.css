@@ -233,6 +233,12 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 16px;
 }
 
+
+.doctor-modalidad {
+  font-size: .74rem;
+  color: #475569;
+  margin-bottom: 10px;
+}
 .doctor-name  { font-size: 1rem; font-weight: 800; color: #1E1B4B; margin-bottom: 2px; }
 .doctor-role  { font-size: .82rem; font-weight: 700; margin-bottom: 8px; color: #1E293B; }
 
@@ -362,3 +368,5 @@ input[type="range"]::-webkit-slider-thumb {
 .range-tooltip.editable::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
+
+

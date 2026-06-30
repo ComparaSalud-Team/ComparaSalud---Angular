@@ -21,6 +21,7 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.user = this.auth.getUser();
+    const session = this.auth.getUser();
+    this.user = session?.profile || session;
   }
 }
