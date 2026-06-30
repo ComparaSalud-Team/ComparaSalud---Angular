@@ -56,6 +56,14 @@ export const routes: Routes = [
   },
 
   {
+    path: 'compartir-perfil',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/compartir-perfil/compartir-perfil').then(
+        (m) => m.CompartirPerfilComponent,
+      ),
+  },
+  {
     path: 'favoritos',
     canActivate: [authGuard],
     loadComponent: () =>

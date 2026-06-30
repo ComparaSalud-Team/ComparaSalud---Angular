@@ -1,0 +1,105 @@
+<app-public-navbar></app-public-navbar>
+
+<div class="compartir-page">
+  <div class="compartir-header">
+    <h1>Compartir mi perfil médico</h1>
+    <p>Comparte tu información médica de forma segura con proveedores para una mejor atención.</p>
+  </div>
+
+  <div class="privacy-banner">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div>
+      <strong>Tu privacidad es nuestra prioridad</strong>
+      <p>Solo tú decides qué información compartir y con quién. Puedes revocar el acceso en cualquier momento desde tu perfil. Toda la información está encriptada y protegida según normas de seguridad médica.</p>
+    </div>
+  </div>
+
+  <div class="compartir-grid">
+    <div class="compartir-main">
+      <h2>Selecciona la información a compartir</h2>
+
+      @for (categoria of categorias; track categoria.title) {
+        <div class="categoria-card">
+          <div class="categoria-titulo">
+            <span class="categoria-icon" [class]="categoria.iconColor">
+              <i [class]="categoria.icon"></i>
+            </span>
+            <strong>{{ categoria.title }}</strong>
+          </div>
+          <div class="campos-list">
+            @for (campo of categoria.campos; track campo.label) {
+              <label class="campo-item" [class.disabled]="campo.requerido">
+                <input
+                  type="checkbox"
+                  [checked]="campo.seleccionado"
+                  [disabled]="campo.requerido"
+                  (change)="toggleCampo(campo)"
+                />
+                {{ campo.label }}@if (campo.requerido) {<span class="requerido-mark">*</span>}
+              </label>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="aviso-requeridos">
+        <i class="fa-solid fa-circle-info"></i>
+        Los campos marcados con * son obligatorios para compartir con proveedores médicos.
+      </div>
+    </div>
+
+    <div class="compartir-sidebar">
+      <div class="sidebar-card">
+        <h3>Compartir con</h3>
+        <div class="search-input">
+          <input type="text" placeholder="Buscar proveedor..." [(ngModel)]="busquedaProveedor" />
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <div class="proveedores-list">
+          @for (p of proveedoresFiltrados; track p.id) {
+            <label class="proveedor-item" [class.selected]="p.seleccionado">
+              <input type="checkbox" [checked]="p.seleccionado" (change)="toggleProveedor(p)" />
+              <span class="proveedor-icon"><i [class]="p.icon"></i></span>
+              <div class="proveedor-info">
+                <strong>{{ p.nombre }}</strong>
+                <span><i class="fa-solid fa-location-dot"></i> {{ p.ubicacion }}</span>
+              </div>
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Duración del acceso</h3>
+        <div class="duracion-list">
+          @for (opt of duracionOptions; track opt.value) {
+            <label class="duracion-item" [class.selected]="duracionSeleccionada === opt.value">
+              <input type="radio" name="duracion" [value]="opt.value" [(ngModel)]="duracionSeleccionada" />
+              {{ opt.label }}
+            </label>
+          }
+        </div>
+      </div>
+
+      <div class="sidebar-card resumen-card">
+        <h3>Resumen</h3>
+        <ul class="resumen-list">
+          <li><i class="fa-solid fa-check"></i> <strong>{{ camposSeleccionados }} campos</strong>&nbsp;seleccionados para compartir</li>
+          <li><i class="fa-solid fa-check"></i> <strong>{{ proveedoresSeleccionados }} proveedor(es)</strong>&nbsp;recibirá(n) acceso</li>
+          <li><i class="fa-solid fa-check"></i> Acceso válido por&nbsp;<strong>{{ duracionLabel }}</strong></li>
+        </ul>
+        <button class="btn-compartir" (click)="compartirInformacion()">
+          <i class="fa-solid fa-share-nodes"></i> Compartir información
+        </button>
+        <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="importante-banner">
+    <i class="fa-solid fa-circle-info"></i>
+    <span><strong>Importante:</strong> Una vez compartida, el proveedor podrá acceder a la información seleccionada durante el periodo establecido. Puedes gestionar y revocar accesos desde la configuración de privacidad en cualquier momento.</span>
+  </div>
+</div>
+
+<app-public-footer></app-public-footer>

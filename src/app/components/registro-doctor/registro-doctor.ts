@@ -22,7 +22,7 @@ export class RegistroDoctorComponent {
 
   telefono = '';
   experiencia = 0;
-
+  idioma = 'Español';
   distrito = '';
   ciudad = '';
 
@@ -52,6 +52,12 @@ export class RegistroDoctorComponent {
       return;
     }
 
+    const modalidadMap: Record<string, string> = {
+      Presencial: 'presencial',
+      Virtual: 'online',
+      Híbrida: 'ambos',
+    };
+
     const doctor = {
       email: this.email,
       password: this.password,
@@ -61,6 +67,8 @@ export class RegistroDoctorComponent {
       description: this.descripcion,
 
       experienceYears: this.experiencia,
+      language: this.idioma,
+      modality: modalidadMap[this.modalidad] || 'presencial',
 
       district: this.distrito,
       city: this.ciudad,

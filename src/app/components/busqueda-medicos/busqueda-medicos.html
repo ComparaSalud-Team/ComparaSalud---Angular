@@ -5,8 +5,8 @@
   <div class="top-search">
     <div class="search-row">
       <div class="search-box">
-        <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery" (keyup.enter)="buscar()">
-        <button class="search-btn" (click)="buscar()">
+        <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery" (keyup.enter)="aplicarFiltros()">
+        <button class="search-btn" (click)="aplicarFiltros()">
           <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7"></circle>
             <path d="m21 21-4.3-4.3"></path>
@@ -52,7 +52,9 @@
         <select [(ngModel)]="sidebarFiltros.idioma">
           <option value="">Todos</option>
           <option value="español">Español</option>
-          <option value="ingles">Inglés</option>
+          <option value="inglés">Inglés</option>
+          <option value="quechua">Quechua</option>
+          <option value="portugués">Portugués</option>
         </select>
       </div>
 
@@ -144,6 +146,11 @@
               </svg>
               Yo hablo: {{ doctor.idiomas }}
             </div>
+
+            <div class="doctor-modalidad">
+              📍 {{ getModalidadLabel(doctor.modalidad) }}
+            </div>
+
             <div class="doctor-tags">
               @for (tag of doctor.tags; track tag.label) {
                 <div [class]="'tag' + (tag.beige ? ' beige' : '')">{{ tag.label }}</div>
