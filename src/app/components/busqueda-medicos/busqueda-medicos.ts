@@ -28,6 +28,7 @@ export class BusquedaMedicosComponent implements OnInit {
   searchQuery = '';
   ordenarPor = '';
   ordenDireccion = 'asc';
+  idsDisponibles: Set<number> | null = null;
 
   constructor(
     private providerService: ProviderService,
@@ -86,7 +87,8 @@ export class BusquedaMedicosComponent implements OnInit {
             provider.specialty +
             (provider.experienceYears ? ` | ${provider.experienceYears} años de experiencia` : ''),
           descripcion: provider.description || 'Especialista médico registrado en ComparaSalud.',
-          idiomas: 'Español',
+          idiomas: provider.language || 'Español',
+          modalidad: (provider.modality || 'presencial').toLowerCase(),
           imagen: `assets/images/doctor-card-${(index % 4) + 1}.png`,
           especialidad: (provider.specialty || '').toLowerCase(),
           tags: [{ label: provider.specialty || 'Especialidad', beige: true }],
@@ -129,7 +131,34 @@ export class BusquedaMedicosComponent implements OnInit {
       const coincideCalificacion =
         Number(doctor.rating) >= Number(this.sidebarFiltros.calificacion);
 
-      return coincideTexto && coincideCategoria && coincidePrecio && coincideCalificacion;
+      const normalizar = (s: string) =>
+        (s || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+
+      const coincideIdioma =
+        !this.sidebarFiltros.idioma ||
+        normalizar(doctor.idiomas) === normalizar(this.sidebarFiltros.idioma);
+
+      const coincideModalidad =
+        !this.sidebarFiltros.modalidad ||
+        doctor.modalidad === this.sidebarFiltros.modalidad.toLowerCase();
+
+      const coincideDisponibilidad =
+        !this.sidebarFiltros.disponibilidad ||
+        !this.idsDisponibles ||
+        this.idsDisponibles.has(doctor.id);
+
+      return (
+        coincideTexto &&
+        coincideCategoria &&
+        coincidePrecio &&
+        coincideCalificacion &&
+        coincideIdioma &&
+        coincideModalidad &&
+        coincideDisponibilidad
+      );
     });
 
     if (this.ordenarPor === 'precio') {
@@ -152,7 +181,22 @@ export class BusquedaMedicosComponent implements OnInit {
   }
 
   aplicarFiltros(): void {
-    this.buscar();
+    if (this.sidebarFiltros.disponibilidad) {
+      this.providerService.filtrarPorDisponibilidad(this.sidebarFiltros.disponibilidad).subscribe({
+        next: (providers) => {
+          this.idsDisponibles = new Set(providers.map((p) => p.id));
+          this.buscar();
+        },
+        error: (error) => {
+          console.error('Error filtrando por disponibilidad', error);
+          this.idsDisponibles = new Set();
+          this.buscar();
+        },
+      });
+    } else {
+      this.idsDisponibles = null;
+      this.buscar();
+    }
   }
 
   limpiarFiltros(): void {
@@ -169,11 +213,21 @@ export class BusquedaMedicosComponent implements OnInit {
       calificacion: 0,
     };
     this.doctoresFiltrados = [...this.todosLosDoctores];
+    this.idsDisponibles = null;
     this.cdr.detectChanges();
   }
 
   agendarCita(doctor: any): void {
     console.log('Agendar cita:', doctor);
+  }
+
+  getModalidadLabel(modalidad: string): string {
+    const labels: Record<string, string> = {
+      presencial: 'Atención presencial',
+      online: 'Atención virtual',
+      ambos: 'Presencial y virtual',
+    };
+    return labels[modalidad] || 'Atención presencial';
   }
 
   getRangeBackground(value: number, min: number, max: number): string {

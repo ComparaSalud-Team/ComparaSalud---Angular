@@ -14,6 +14,8 @@ export interface Provider {
 
   pricePerAppointment: number;
   experienceYears: number;
+  language: string;
+  modality: string;
 
   street: string;
   district: string;

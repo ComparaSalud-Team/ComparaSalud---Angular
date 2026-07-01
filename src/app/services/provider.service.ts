@@ -15,6 +15,13 @@ export class ProviderService {
   getProviders(): Observable<Provider[]> {
     return this.http.get<Provider[]>(this.apiUrl);
   }
+
+  filtrarPorDisponibilidad(period: string): Observable<Provider[]> {
+    return this.http.get<Provider[]>(`${this.apiUrl}/filter/availability`, {
+      params: { period },
+    });
+  }
+
   registerProvider(provider: any): Observable<any> {
     return this.http.post(this.registerUrl, provider);
   }

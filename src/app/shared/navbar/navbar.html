@@ -12,7 +12,27 @@
   </ul>
 
   <div class="dashboard-right">
-    <a routerLink="/login" class="btn btn--outline">Iniciar Sesión</a>
-    <a routerLink="/registro" class="btn btn--primary">Registrarse</a>
+    @if (user) {
+      <div class="profile-wrapper" [class.active]="dropdownOpen">
+        <div class="profile-box" (click)="toggleDropdown()">
+          <img [src]="user?.profile?.photoUrl || 'https://ui-avatars.com/api/?name=' + (user?.profile?.name || user?.profile?.fullName || user?.email || 'U') + '&background=0EA5E9&color=fff&size=128'"
+               [alt]="user?.profile?.name || user?.profile?.fullName || 'Usuario'">
+          <div class="profile-info">
+            <strong>{{ user?.profile?.name || user?.profile?.fullName || user?.email || 'Usuario' }}</strong>
+            <span>{{ user?.role === 'PROVIDER' ? 'Proveedor' : 'Paciente' }}</span>
+          </div>
+          <span class="profile-arrow">▼</span>
+        </div>
+        <div class="profile-dropdown">
+          <a routerLink="/perfil" (click)="dropdownOpen = false">Mi perfil</a>
+          <a routerLink="/mis-citas" (click)="dropdownOpen = false">Mis citas</a>
+          <a routerLink="/favoritos" (click)="dropdownOpen = false">Mis favoritos</a>
+          <a (click)="logout()">Cerrar sesión</a>
+        </div>
+      </div>
+    } @else {
+      <a routerLink="/login" class="btn btn--outline">Iniciar Sesión</a>
+      <a routerLink="/registro" class="btn btn--primary">Registrarse</a>
+    }
   </div>
 </nav>

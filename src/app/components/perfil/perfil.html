@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <button class="btn-share"><i class="fa-solid fa-share-nodes"></i> Compartir perfil médico</button>
+      <button class="btn-share" routerLink="/compartir-perfil"><i class="fa-solid fa-share-nodes"></i> Compartir perfil médico</button>
     </div>
 
     <div class="stats-card">
@@ -42,7 +42,7 @@
     </div>
 
     <div class="info-cards-grid">
-      @for (card of infoCards; track card.title) {
+      @for (card of infoCards; track card.title; let i = $index) {
         <div class="info-card">
           <div class="info-card-header">
             <div class="info-card-title">
@@ -51,7 +51,11 @@
               </div>
               <h3>{{ card.title }}</h3>
             </div>
-            <button class="edit-btn"><i class="fa-regular fa-pen-to-square"></i></button>
+            <button class="edit-btn"
+                    [routerLink]="['/editar-perfil']"
+                    [queryParams]="{ seccion: i === 0 ? 'personal' : i === 1 ? 'medica' : 'emergencia' }">
+              <i class="fa-regular fa-pen-to-square"></i>
+            </button>
           </div>
           <div class="info-rows">
             @for (row of card.rows; track row.label) {
