@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 import { AuthService } from '../../services/auth';
@@ -44,7 +44,7 @@ interface HistorialItem {
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule, RouterLink, PublicNavbarComponent, PublicFooterComponent],
+  imports: [CommonModule, RouterLink, RouterModule, PublicNavbarComponent, PublicFooterComponent],
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
 })
