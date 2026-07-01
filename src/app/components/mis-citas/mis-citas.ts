@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
+import { CitasService } from '../../services/citas';
+import { Cita, AppointmentHistoryDTO } from '../../models/cita';
 import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
@@ -16,86 +18,9 @@ export class MisCitasComponent implements OnInit {
   user: any = null;
   tabActivo = 'todas';
 
-  citas = [
-    {
-      id: 'APT-2026-001234',
-      doctor: 'Dr. Armando Castillo',
-      imagen: 'assets/images/doctor-card-1.png',
-      especialidad: 'Medicina General',
-      calificacion: 4.8,
-      fecha: 'Lunes, 12 de Mayo 2026',
-      hora: '10:00',
-      duracion: 50,
-      ubicacion: 'Clínica Ricardo Palma - San Isidro',
-      estado: 'proxima',
-      precio: 150,
-    },
-    {
-      id: 'APT-2026-001199',
-      doctor: 'Dra. María Fernández',
-      imagen: 'assets/images/doctor-card-2.png',
-      especialidad: 'Cardiología',
-      calificacion: 4.9,
-      fecha: 'Miércoles, 14 de Mayo 2026',
-      hora: '15:30',
-      duracion: 40,
-      ubicacion: 'Hospital Nacional Dos de Mayo',
-      estado: 'confirmada',
-      precio: 200,
-    },
-    {
-      id: 'APT-2026-001102',
-      doctor: 'Dr. Carlos Mendoza',
-      imagen: 'assets/images/doctor-card-3.png',
-      especialidad: 'Dermatología',
-      calificacion: 4.7,
-      fecha: 'Viernes, 16 de Mayo 2026',
-      hora: '09:00',
-      duracion: 30,
-      ubicacion: 'Clínica San Felipe - Jesús María',
-      estado: 'confirmada',
-      precio: 180,
-    },
-    {
-      id: 'APT-2026-000987',
-      doctor: 'Dr. Jorge Ramirez',
-      imagen: 'assets/images/doctor-card-1.png',
-      especialidad: 'Pediatría',
-      calificacion: 4.6,
-      fecha: 'Martes, 6 de Mayo 2026',
-      hora: '11:00',
-      duracion: 45,
-      ubicacion: 'Clínica Anglo Americana - San Isidro',
-      estado: 'completada',
-      precio: 170,
-    },
-    {
-      id: 'APT-2026-000856',
-      doctor: 'Dra. Ana Torres',
-      imagen: 'assets/images/doctor-card-2.png',
-      especialidad: 'Oftalmología',
-      calificacion: 4.8,
-      fecha: 'Jueves, 1 de Mayo 2026',
-      hora: '14:00',
-      duracion: 35,
-      ubicacion: 'Clínica Internacional - San Borja',
-      estado: 'completada',
-      precio: 220,
-    },
-    {
-      id: 'APT-2026-000745',
-      doctor: 'Dr. Luis Vargas',
-      imagen: 'assets/images/doctor-card-3.png',
-      especialidad: 'Traumatología',
-      calificacion: 4.5,
-      fecha: 'Lunes, 28 de Abril 2026',
-      hora: '16:30',
-      duracion: 50,
-      ubicacion: 'Clínica San Pablo - Surco',
-      estado: 'cancelada',
-      precio: 0,
-    },
-  ];
+  citas: Cita[] = [];
+  cargando = true;
+  error: string | null = null;
 
   get citasFiltradas() {
     if (this.tabActivo === 'todas') return this.citas;
@@ -105,17 +30,105 @@ export class MisCitasComponent implements OnInit {
     );
   }
 
+  get totalCitas() {
+    return this.citas.length;
+  }
+
+  get totalProximas() {
+    return this.citas.filter((c) => c.estado === 'proxima' || c.estado === 'confirmada').length;
+  }
+
+  get totalCompletadas() {
+    return this.citas.filter((c) => c.estado === 'completada').length;
+  }
+
+  get totalCanceladas() {
+    return this.citas.filter((c) => c.estado === 'cancelada').length;
+  }
+
   constructor(
     private auth: AuthService,
+    private citasService: CitasService,
     private router: Router,
   ) {}
 
   ngOnInit() {
     this.user = this.auth.getUser();
+    this.cargarCitas();
+  }
+
+  cargarCitas() {
+    const userId = this.user?.userId;
+    if (!userId) {
+      this.cargando = false;
+      this.error = 'No se pudo identificar al usuario. Inicia sesión nuevamente.';
+      return;
+    }
+
+    this.cargando = true;
+    this.error = null;
+
+    this.citasService.obtenerHistorial(userId).subscribe({
+      next: (historial: AppointmentHistoryDTO[]) => {
+        this.citas = historial.map((h) => this.mapearCita(h));
+        this.cargando = false;
+      },
+      error: (err) => {
+        this.cargando = false;
+        if (err.status === 404) {
+          // Backend responde 404 cuando el paciente aún no tiene citas registradas
+          this.citas = [];
+        } else {
+          this.error = 'No se pudieron cargar tus citas. Intenta nuevamente.';
+        }
+      },
+    });
+  }
+
+  private mapearCita(h: AppointmentHistoryDTO): Cita {
+    return {
+      id: `APT-${h.appointmentId}`,
+      appointmentId: h.appointmentId,
+      doctorNombre: h.doctor,
+      doctorImagen: 'assets/images/doctor-card-1.png',
+      especialidad: '',
+      calificacion: 0,
+      fecha: h.date,
+      hora: h.time,
+      duracionMin: 0,
+      ubicacion: '',
+      estado: this.mapearEstado(h.status),
+      precio: 0,
+      moneda: 'PEN',
+    };
+  }
+
+  private mapearEstado(status: string): Cita['estado'] {
+    switch (status) {
+      case 'COMPLETED':
+        return 'completada';
+      case 'CANCELLED':
+        return 'cancelada';
+      case 'SCHEDULED':
+        return 'confirmada';
+      case 'PENDING':
+        return 'proxima';
+      default:
+        return 'proxima';
+    }
   }
 
   setTab(tab: string) {
     this.tabActivo = tab;
+  }
+
+  cancelarCita(cita: Cita) {
+    if (!confirm(`¿Seguro que deseas cancelar la cita ${cita.id}?`)) return;
+
+    this.citasService.cancelarCita(cita.appointmentId).subscribe({
+      next: () => this.cargarCitas(),
+      error: () => alert('No se pudo cancelar la cita. Intenta nuevamente.'),
+    });
   }
 
   getBadgeClass(estado: string) {
