@@ -67,6 +67,16 @@
 }
 .form-group input:disabled { background: #F8FAFC; color: #94A3B8; }
 .form-group textarea { resize: vertical; }
+.form-group select {
+  border: 1px solid #E2E8F0;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-size: .85rem;
+  color: #0F172A;
+  font-family: inherit;
+  background: white;
+  cursor: pointer;
+}
 .editar-sidebar { display: flex; flex-direction: column; gap: 18px; }
 .sidebar-card {
   background: white; border: 1px solid #E2E8F0; border-radius: 14px; padding: 18px;

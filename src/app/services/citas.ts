@@ -19,6 +19,11 @@ export class CitasService {
       params: { userId },
     });
   }
+  obtenerProximasCitas(userId: number): Observable<AppointmentHistoryDTO[]> {
+    return this.http.get<AppointmentHistoryDTO[]>(`${this.apiUrl}/upcoming`, {
+      params: { userId },
+    });
+  }
 
   // HU34 – Cancelar cita
   cancelarCita(appointmentId: number): Observable<any> {

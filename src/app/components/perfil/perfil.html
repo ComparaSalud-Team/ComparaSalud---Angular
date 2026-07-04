@@ -66,7 +66,11 @@
             }
           </div>
           @if (card.showEmergencyBtn) {
-            <button class="emergency-btn">Añadir contacto de emergencia</button>
+            <button class="emergency-btn"
+                    [routerLink]="['/editar-perfil']"
+                    [queryParams]="{ seccion: 'emergencia' }">
+              Añadir contacto de emergencia
+            </button>
           }
         </div>
       }
@@ -81,22 +85,28 @@
         <a href="#" class="section-card-link">Ver todos</a>
       </div>
       <div class="citas-grid">
-        @for (cita of citas; track cita.doctor) {
-          <div class="cita-card">
-            <div class="cita-date">
-              <div class="day-num">{{ cita.day }}</div>
-              <div class="month">{{ cita.month }}</div>
-            </div>
-            <div class="cita-info">
-              <strong>{{ cita.doctor }}</strong>
-              <p class="especialidad">{{ cita.especialidad }}</p>
-              <div class="cita-meta">
-                <span><i class="fa-regular fa-clock"></i> {{ cita.hora }}</span>
-                <span><i class="fa-solid fa-location-dot"></i> {{ cita.lugar }}</span>
+        @if (cargandoCitas) {
+          <p class="citas-empty">Cargando citas...</p>
+        } @else if (citas.length === 0) {
+          <p class="citas-empty">No tienes citas próximas agendadas.</p>
+        } @else {
+          @for (cita of citas; track cita.doctor) {
+            <div class="cita-card">
+              <div class="cita-date">
+                <div class="day-num">{{ cita.day }}</div>
+                <div class="month">{{ cita.month }}</div>
               </div>
+              <div class="cita-info">
+                <strong>{{ cita.doctor }}</strong>
+                <p class="especialidad">{{ cita.especialidad }}</p>
+                <div class="cita-meta">
+                  <span><i class="fa-regular fa-clock"></i> {{ cita.hora }}</span>
+                  <span><i class="fa-solid fa-location-dot"></i> {{ cita.lugar }}</span>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right cita-arrow"></i>
             </div>
-            <i class="fa-solid fa-chevron-right cita-arrow"></i>
-          </div>
+          }
         }
         <div class="nueva-cita-card" routerLink="/dashboard">
           <i class="fa-regular fa-calendar-plus"></i>

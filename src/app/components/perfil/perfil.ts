@@ -1,9 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { PatientService } from '../../services/patient';
+import { Patient } from '../../models/patient.model';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterModule } from '@angular/router';
 import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 import { AuthService } from '../../services/auth';
+import { CitasService } from '../../services/citas';
+
 
 interface StatItem {
   icon: string;
@@ -134,24 +138,8 @@ export class PerfilComponent implements OnInit {
     },
   ];
 
-  citas: Cita[] = [
-    {
-      day: '20',
-      month: 'MAY',
-      doctor: 'Dr. Carlos Méndez',
-      especialidad: 'Cardiología',
-      hora: '10:30 am',
-      lugar: 'Clínica Ricardo Palma',
-    },
-    {
-      day: '05',
-      month: 'JUN',
-      doctor: 'Dra. Ana Torres',
-      especialidad: 'Dermatología',
-      hora: '9:00 am',
-      lugar: 'Clínica San Felipe',
-    },
-  ];
+  citas: Cita[] = [];
+  cargandoCitas = true;
 
   historial: HistorialItem[] = [
     { title: 'Resultados de análisis', count: 8 },
@@ -160,7 +148,12 @@ export class PerfilComponent implements OnInit {
     { title: 'Estudios e imágenes', count: 3 },
   ];
 
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private patientService: PatientService,
+    private citasService: CitasService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     const session = this.auth.getUser();
@@ -178,6 +171,78 @@ export class PerfilComponent implements OnInit {
         `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'U')}&background=0EA5E9&color=fff&size=128`,
     };
 
-    this.infoCards[0].rows[5].value = profile?.country || '—';
+    this.patientService.getMyProfile().subscribe({
+      next: (data: Patient) => {
+        this.usuario.nombre = data.name || this.usuario.nombre;
+        this.usuario.email = data.email || this.usuario.email;
+        this.usuario.telefono = data.phone || this.usuario.telefono;
+        this.usuario.ubicacion = data.country || this.usuario.ubicacion;
+
+        this.infoCards[0].rows[0].value = data.birthday || '—';
+        this.infoCards[0].rows[1].value = data.dni || '—';
+        this.infoCards[0].rows[2].value = data.estadoCivil || '—';
+        this.infoCards[0].rows[3].value = data.profesion || '—';
+        this.infoCards[0].rows[4].value = data.idiomaPreferido || '—';
+        this.infoCards[0].rows[5].value = data.direccion || data.country || '—';
+
+        this.infoCards[1].rows[0].value = data.tipoSangre || '—';
+        this.infoCards[1].rows[1].value = data.alergias || '—';
+        this.infoCards[1].rows[2].value = data.condicionesMedicas || '—';
+        this.infoCards[1].rows[3].value = data.medicamentosActuales || '—';
+        this.infoCards[1].rows[4].value = data.seguroMedicoNombre || '—';
+
+        this.infoCards[2].rows[0].value = data.emergenciaNombre || '—';
+        this.infoCards[2].rows[1].value = data.emergenciaParentesco || '—';
+        this.infoCards[2].rows[2].value = data.emergenciaTelefono || '—';
+        this.infoCards[2].rows[3].value = data.emergenciaDireccion || '—';
+
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error cargando perfil desde backend', err);
+      },
+    });
+    const userId = session?.id || session?.profile?.authUserId;
+    if (userId) {
+      this.citasService.obtenerProximasCitas(userId).subscribe({
+        next: (data) => {
+          const meses = [
+            'ENE',
+            'FEB',
+            'MAR',
+            'ABR',
+            'MAY',
+            'JUN',
+            'JUL',
+            'AGO',
+            'SEP',
+            'OCT',
+            'NOV',
+            'DIC',
+          ];
+          this.citas = data.map((c) => {
+            const fecha = new Date(c.date + 'T00:00:00');
+            return {
+              day: String(fecha.getDate()).padStart(2, '0'),
+              month: meses[fecha.getMonth()],
+              doctor: c.doctor,
+              especialidad: c.status,
+              hora: c.time,
+              lugar: '',
+            };
+          });
+          this.stats[0].count = this.citas.length;
+          this.cargandoCitas = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.citas = [];
+          this.cargandoCitas = false;
+          this.cdr.detectChanges();
+        },
+      });
+    } else {
+      this.cargandoCitas = false;
+    }
   }
 }

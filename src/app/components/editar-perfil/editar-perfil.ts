@@ -81,6 +81,24 @@ export class EditarPerfilComponent implements OnInit {
     });
   }
 
+  get porcentajePerfil(): number {
+    const campos = [
+      this.patient.phone,
+      this.patient.birthday,
+      this.patient.dni,
+      this.patient.estadoCivil,
+      this.patient.profesion,
+      this.patient.idiomaPreferido,
+      this.patient.direccion,
+      this.patient.genero,
+      this.patient.emergenciaNombre,
+      this.patient.emergenciaParentesco,
+      this.patient.emergenciaTelefono,
+    ];
+    const llenos = campos.filter((v) => v && v.trim() !== '').length;
+    return Math.round((llenos / campos.length) * 100);
+  }
+
   irASeccion(seccion: Seccion): void {
     this.seccionActiva = seccion;
   }
