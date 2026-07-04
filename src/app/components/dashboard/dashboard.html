@@ -10,10 +10,20 @@
         <p class="hero-sub">Encuentra los mejores especialistas, compara precios, lee opiniones reales y agenda tu cita en minutos.</p>
         <div class="hero-search">
           <div class="search-grid">
-            <select><option>¿Qué necesitas?</option></select>
-            <select><option>Ubicación</option></select>
-            <input type="date">
-            <button>Buscar</button>
+            <select [(ngModel)]="busquedaRapida.especialidad">
+              <option value="">¿Qué necesitas?</option>
+              @for (especialidad of especialidades; track especialidad.id) {
+                <option [value]="especialidad.name">{{ especialidad.name }}</option>
+              }
+            </select>
+            <select [(ngModel)]="busquedaRapida.ubicacion">
+              <option value="">Ubicación</option>
+              @for (distrito of ubicacionesDisponibles; track distrito) {
+                <option [value]="distrito">{{ distrito }}</option>
+              }
+            </select>
+            <input type="date" [(ngModel)]="busquedaRapida.fecha">
+            <button (click)="buscar()">Buscar</button>
           </div>
         </div>
         <div class="hero-location">Ubicación actual: Lima, Perú <a href="#" (click)="$event.preventDefault()">Cambiar</a></div>
@@ -56,15 +66,25 @@
     <div class="dashboard-content">
 
       <section class="section">
-        <div class="section-header"><h2>Explora por especialidad</h2><a href="#">Ver todas las categorías</a></div>
-        <div class="specialties-grid">
-          <div class="specialty-card"><img src="assets/icons/icon-general.png" alt=""><h4>Medicina general</h4><p>Consulta general</p></div>
-          <div class="specialty-card"><img src="assets/icons/icon-odontologia.png" alt=""><h4>Odontología</h4><p>Cuidado dental</p></div>
-          <div class="specialty-card"><img src="assets/icons/icon-oftalmo.png" alt=""><h4>Oftalmología</h4><p>Salud visual</p></div>
-          <div class="specialty-card"><img src="assets/icons/icon-cardio.png" alt=""><h4>Cardiología</h4><p>Salud del corazón</p></div>
-          <div class="specialty-card"><img src="assets/icons/icon-pediatria.png" alt=""><h4>Pediatría</h4><p>Niños y bebés</p></div>
-          <div class="specialty-card"><img src="assets/icons/icon-lab.png" alt=""><h4>Laboratorios</h4><p>Análisis clínico</p></div>
-        </div>
+        <div class="section-header"><h2>Explora por especialidad</h2></div>
+
+        @if (cargandoEspecialidades) {
+          <div class="suggest-note">Cargando especialidades...</div>
+        } @else if (errorEspecialidades) {
+          <div class="suggest-note">{{ errorEspecialidades }}</div>
+        } @else if (especialidades.length === 0) {
+          <div class="suggest-note">No hay especialidades disponibles por ahora.</div>
+        } @else {
+          <div class="specialties-grid">
+            @for (especialidad of especialidades; track especialidad.id) {
+              <div class="specialty-card" (click)="buscarPorEspecialidad(especialidad)">
+                <img [src]="iconoEspecialidad(especialidad)" [alt]="especialidad.name">
+                <h4>{{ especialidad.name }}</h4>
+                <p>{{ especialidad.description }}</p>
+              </div>
+            }
+          </div>
+        }
       </section>
 
       <section class="section">
@@ -88,12 +108,26 @@
 
       <section class="section">
         <div class="section-header"><div><h2>Sugeridos para ti</h2><p style="color:#64748B;font-size:.9rem;margin-top:6px;">Basado en tus búsquedas recientes, favoritos y ubicación.</p></div></div>
-        <div class="suggest-grid">
-          <div class="suggest-card"><img class="suggest-image" src="assets/images/doctor-card-2.png" alt=""><h4>Dra. Maura Casas</h4><p>Cardiólogo</p><small>Surco, Lima</small><button>Ver perfil</button></div>
-          <div class="suggest-card"><img class="suggest-image" src="assets/images/clinic1.png" alt=""><h4>Clínica dental Sonría</h4><p>Odontología</p><small>Miraflores, Lima</small><button>Ver clínica</button></div>
-          <div class="suggest-card"><img class="suggest-image" src="assets/images/doctor-card-1.png" alt=""><h4>Dr. Armando Castillo</h4><p>Cardiólogo</p><small>San Borja, Lima</small><button>Ver perfil</button></div>
-          <div class="suggest-card"><img class="suggest-image" src="assets/images/lab1.png" alt=""><h4>Laboratorio Roe</h4><p>Análisis clínico</p><small>Lince, Lima</small><button>Ver laboratorio</button></div>
-        </div>
+
+        @if (cargandoSugeridos) {
+          <div class="suggest-note">Cargando sugerencias...</div>
+        } @else if (errorSugeridos) {
+          <div class="suggest-note">{{ errorSugeridos }}</div>
+        } @else if (sugeridos.length === 0) {
+          <div class="suggest-note">Todavía no tenemos sugerencias para ti.</div>
+        } @else {
+          <div class="suggest-grid">
+            @for (provider of sugeridos; track provider.id; let i = $index) {
+              <div class="suggest-card">
+                <img class="suggest-image" [src]="imagenFor(i)" [alt]="provider.fullName">
+                <h4>{{ provider.fullName }}</h4>
+                <p>{{ provider.specialty }}</p>
+                <small>{{ ubicacionFor(provider) }}</small>
+                <button (click)="verPerfil(provider)">Ver perfil</button>
+              </div>
+            }
+          </div>
+        }
       </section>
 
     </div>

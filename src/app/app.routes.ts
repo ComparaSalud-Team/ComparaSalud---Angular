@@ -83,6 +83,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/mis-busquedas/mis-busquedas').then((m) => m.MisBusquedasComponent),
   },
+  {
+    path: 'clinicas/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/clinica-detalle/clinica-detalle').then((m) => m.ClinicaDetalleComponent),
+  },
   { path: 'buscar', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'documentos', redirectTo: 'mis-busquedas', pathMatch: 'full' },
   { path: 'configuracion', redirectTo: 'perfil', pathMatch: 'full' },

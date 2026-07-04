@@ -2,6 +2,7 @@
   background: #0F172A;
   padding: 22px 6%;
   width: 100%;
+  flex-shrink: 0;
 }
 
 .footer-inner {

@@ -1,0 +1,150 @@
+<div class="container">
+
+  <app-public-navbar></app-public-navbar>
+
+  <div class="page-body">
+
+    <button class="btn-volver" (click)="volver()">
+      <i class="fa-solid fa-arrow-left"></i> Volver
+    </button>
+
+    <!-- Estado: cargando clínica -->
+    <div class="estado-mensaje" *ngIf="cargandoClinica">
+      <p>Cargando información de la clínica...</p>
+    </div>
+
+    <!-- Estado: error clínica -->
+    <div class="estado-mensaje error" *ngIf="!cargandoClinica && errorClinica">
+      <p>{{ errorClinica }}</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoClinica && !errorClinica && clinica">
+
+      <div class="layout">
+
+        <!-- Columna principal -->
+        <div class="col-principal">
+
+          <section class="clinica-header">
+            <span class="tag">Clínica</span>
+            <h1>{{ clinica.name }}</h1>
+
+            <p class="ubicacion" *ngIf="ubicacion()">
+              <i class="fa-solid fa-location-dot"></i> {{ ubicacion() }}
+            </p>
+
+            <div class="stats">
+              <div class="stat">
+                <i class="fa-solid fa-user-doctor"></i>
+                <div>
+                  <strong>{{ clinica.providerCount }}</strong>
+                  <span>{{ clinica.providerCount === 1 ? 'Médico' : 'Médicos' }}</span>
+                </div>
+              </div>
+              <div class="stat" *ngIf="clinica.specialties?.length">
+                <i class="fa-solid fa-stethoscope"></i>
+                <div>
+                  <strong>{{ clinica.specialties.length }}</strong>
+                  <span>{{ clinica.specialties.length === 1 ? 'Especialidad' : 'Especialidades' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="acciones-header">
+              <a *ngIf="clinica.phone" class="btn-primario" [href]="'tel:' + clinica.phone">
+                <i class="fa-solid fa-phone"></i> Llamar
+              </a>
+              <a *ngIf="clinica.email" class="btn-secundario" [href]="'mailto:' + clinica.email">
+                <i class="fa-regular fa-envelope"></i> Escribir
+              </a>
+            </div>
+          </section>
+
+          <section class="card" *ngIf="clinica.description">
+            <h2>Acerca de la clínica</h2>
+            <p class="descripcion">{{ clinica.description }}</p>
+          </section>
+
+          <section class="card" *ngIf="clinica.specialties?.length">
+            <h2>Especialidades</h2>
+            <div class="especialidades-grid">
+              <div class="especialidad-chip" *ngFor="let especialidad of clinica.specialties">
+                <i class="fa-solid fa-check"></i> {{ especialidad }}
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2>Médicos de la clínica</h2>
+
+            <div class="estado-mensaje" *ngIf="cargandoMedicos">
+              <p>Cargando médicos...</p>
+            </div>
+
+            <div class="estado-mensaje error" *ngIf="!cargandoMedicos && errorMedicos">
+              <p>{{ errorMedicos }}</p>
+            </div>
+
+            <div class="estado-mensaje vacio" *ngIf="!cargandoMedicos && !errorMedicos && medicos.length === 0">
+              <p>Todavía no hay médicos registrados en esta clínica.</p>
+            </div>
+
+            <div class="medicos-lista" *ngIf="!cargandoMedicos && !errorMedicos && medicos.length > 0">
+              <div class="medico-card" *ngFor="let medico of medicos">
+                <div class="medico-info">
+                  <h4>{{ medico.fullName }}</h4>
+                  <p class="specialty">{{ medico.specialty }}</p>
+                  <p class="medico-meta">
+                    <span *ngIf="medico.averageRating">
+                      <i class="fa-solid fa-star"></i> {{ medico.averageRating | number: '1.1-1' }}
+                    </span>
+                    <span *ngIf="medico.experienceYears">
+                      <i class="fa-solid fa-briefcase-medical"></i> {{ medico.experienceYears }} años
+                    </span>
+                    <span *ngIf="medico.pricePerAppointment">
+                      Desde S/ {{ medico.pricePerAppointment }}
+                    </span>
+                  </p>
+                </div>
+                <button class="btn-secundario" (click)="verPerfilMedico(medico)">Ver perfil</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Columna lateral -->
+        <div class="col-lateral">
+          <section class="card">
+            <h2>Información de contacto</h2>
+
+            <div class="contacto-item" *ngIf="clinica.phone">
+              <i class="fa-solid fa-phone"></i>
+              <div><span class="label">Teléfono</span><span class="valor">{{ clinica.phone }}</span></div>
+            </div>
+
+            <div class="contacto-item" *ngIf="clinica.email">
+              <i class="fa-regular fa-envelope"></i>
+              <div><span class="label">Correo</span><span class="valor">{{ clinica.email }}</span></div>
+            </div>
+
+            <div class="contacto-item" *ngIf="direccionCompleta()">
+              <i class="fa-solid fa-location-dot"></i>
+              <div><span class="label">Dirección</span><span class="valor">{{ direccionCompleta() }}</span></div>
+            </div>
+
+            <p class="sin-datos" *ngIf="!clinica.phone && !clinica.email && !direccionCompleta()">
+              Esta clínica todavía no registró datos de contacto.
+            </p>
+          </section>
+        </div>
+
+      </div>
+
+    </ng-container>
+
+  </div>
+
+  <app-public-footer></app-public-footer>
+
+</div>

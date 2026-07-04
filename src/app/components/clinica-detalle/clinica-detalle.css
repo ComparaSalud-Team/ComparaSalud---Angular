@@ -1,0 +1,245 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-body {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 28px 32px 64px;
+}
+
+app-public-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  width: 100%;
+}
+
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #2563EB;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.btn-volver:hover { text-decoration: underline; }
+
+.estado-mensaje {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748B;
+}
+
+.estado-mensaje.error { color: #DC2626; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .03);
+}
+
+.card h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1E1B4B;
+  margin: 0 0 16px;
+}
+
+/* Header de la clínica */
+.clinica-header {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .03);
+}
+
+.tag {
+  display: inline-block;
+  background: #EEF2FF;
+  color: #4338CA;
+  font-size: .74rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.clinica-header h1 {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #1E1B4B;
+  margin: 0 0 8px;
+}
+
+.ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748B;
+  font-size: .9rem;
+  margin: 0 0 20px;
+}
+
+.ubicacion i { color: #94A3B8; }
+
+.stats {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat i {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #EFF6FF;
+  color: #2563EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .95rem;
+  flex-shrink: 0;
+}
+
+.stat strong { display: block; font-size: 1.15rem; font-weight: 800; color: #1E1B4B; line-height: 1.1; }
+.stat span { font-size: .76rem; color: #64748B; }
+
+.acciones-header { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.btn-primario,
+.btn-secundario {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+}
+
+.btn-primario { background: #2563EB; color: #fff; }
+.btn-primario:hover { background: #1D4ED8; }
+
+.btn-secundario { background: #fff; color: #334155; border: 1.5px solid #E2E8F0; }
+.btn-secundario:hover { border-color: #2563EB; color: #2563EB; }
+
+.descripcion {
+  color: #475569;
+  font-size: .92rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.especialidades-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.especialidad-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F0FDF4;
+  color: #15803D;
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-size: .84rem;
+  font-weight: 600;
+}
+
+.especialidad-chip i { font-size: .74rem; }
+
+.medicos-lista { display: flex; flex-direction: column; gap: 14px; }
+
+.medico-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+}
+
+.medico-info h4 { font-size: .96rem; font-weight: 700; color: #1E1B4B; margin: 0 0 3px; }
+.medico-info .specialty { color: #2563EB; font-size: .84rem; font-weight: 600; margin: 0 0 6px; }
+
+.medico-meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: #64748B;
+  font-size: .8rem;
+  margin: 0;
+}
+
+.medico-meta i { color: #F59E0B; margin-right: 3px; }
+
+/* Columna lateral / contacto */
+.contacto-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.contacto-item:last-child { margin-bottom: 0; }
+
+.contacto-item i {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  color: #2563EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .82rem;
+  flex-shrink: 0;
+}
+
+.contacto-item .label { display: block; font-size: .74rem; color: #94A3B8; }
+.contacto-item .valor { display: block; font-size: .88rem; color: #1E1B4B; font-weight: 600; word-break: break-word; }
+
+.sin-datos { color: #94A3B8; font-size: .85rem; margin: 0; }

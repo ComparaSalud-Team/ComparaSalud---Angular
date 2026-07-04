@@ -11,4 +11,6 @@ export interface Favorito {
   experienceYears: number;
   district: string;
   city: string;
+  clinicIds: number[];
+  clinicNames: string[];
 }

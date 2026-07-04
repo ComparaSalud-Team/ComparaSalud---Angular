@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
@@ -50,6 +50,7 @@ export class MisCitasComponent implements OnInit {
     private auth: AuthService,
     private citasService: CitasService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -62,6 +63,7 @@ export class MisCitasComponent implements OnInit {
     if (!userId) {
       this.cargando = false;
       this.error = 'No se pudo identificar al usuario. Inicia sesión nuevamente.';
+      this.cdr.detectChanges();
       return;
     }
 
@@ -72,6 +74,7 @@ export class MisCitasComponent implements OnInit {
       next: (historial: AppointmentHistoryDTO[]) => {
         this.citas = historial.map((h) => this.mapearCita(h));
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.cargando = false;
@@ -81,6 +84,7 @@ export class MisCitasComponent implements OnInit {
         } else {
           this.error = 'No se pudieron cargar tus citas. Intenta nuevamente.';
         }
+        this.cdr.detectChanges();
       },
     });
   }
