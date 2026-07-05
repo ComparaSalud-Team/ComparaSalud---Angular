@@ -85,7 +85,12 @@ export const routes: Routes = [
   },
   { path: 'buscar', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'documentos', redirectTo: 'mis-busquedas', pathMatch: 'full' },
-  { path: 'configuracion', redirectTo: 'perfil', pathMatch: 'full' },
+  {
+    path: 'configuracion',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/configuracion/configuracion').then((m) => m.ConfiguracionComponent),
+  },
 
   { path: '**', redirectTo: 'home' },
 ];

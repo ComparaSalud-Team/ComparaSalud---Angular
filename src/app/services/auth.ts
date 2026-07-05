@@ -57,4 +57,34 @@ export class AuthService {
     const user = this.getUser();
     return user ? user.role : null;
   }
+
+  cambiarPassword(
+    authUserId: number,
+    currentPassword: string,
+    newPassword: string,
+  ): Observable<any> {
+    return this.http.put(`${this.apiUrl}/auth/change-password`, {
+      authUserId,
+      currentPassword,
+      newPassword,
+    });
+  }
+
+  cambiarEmail(authUserId: number, newEmail: string, currentPassword: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/auth/change-email`, {
+      authUserId,
+      newEmail,
+      currentPassword,
+    });
+  }
+
+  eliminarCuenta(authUserId: number, password: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/auth/delete-account/${authUserId}`, {
+      params: { password },
+    });
+  }
+
+  obtenerActividadReciente(authUserId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/security-activity/${authUserId}`);
+  }
 }

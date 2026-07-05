@@ -1,0 +1,436 @@
+<app-public-navbar></app-public-navbar>
+
+<div class="config-page">
+  <h1>Configuración</h1>
+
+  @if (errorMsg) {
+    <div class="error-banner">{{ errorMsg }}</div>
+  }
+
+  @if (guardado) {
+    <div class="success-banner">✓ Preferencias guardadas correctamente.</div>
+  }
+
+  <div class="config-grid">
+    <!-- Sidebar -->
+    <div class="config-sidebar">
+      <button class="tab-item" [class.active]="seccionActiva === 'preferencias'" (click)="irASeccion('preferencias')">
+        <i class="fa-regular fa-user"></i> Preferencias
+      </button>
+      <button class="tab-item" [class.active]="seccionActiva === 'privacidad'" (click)="irASeccion('privacidad')">
+        <i class="fa-solid fa-lock"></i> Privacidad y seguridad
+      </button>
+      <button class="tab-item" [class.active]="seccionActiva === 'facturacion'" (click)="irASeccion('facturacion')">
+        <i class="fa-regular fa-credit-card"></i> Facturación
+      </button>
+      <button class="tab-item" [class.active]="seccionActiva === 'ayuda'" (click)="irASeccion('ayuda')">
+        <i class="fa-regular fa-circle-question"></i> Ayuda y soporte
+      </button>
+      <button class="tab-item logout" (click)="cerrarSesion()">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </div>
+
+    <!-- Main -->
+    <div class="config-main">
+      @if (cargando) {
+        <p class="cargando-text">Cargando preferencias...</p>
+      } @else if (seccionActiva === 'preferencias') {
+
+        <!-- Idioma y región -->
+        <div class="config-card">
+          <h2>Idioma y región</h2>
+          <div class="form-group">
+            <label>Idioma de la interfaz</label>
+            <select [(ngModel)]="prefs.idioma" name="idioma">
+              @for (opt of idiomasOptions; track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+            <span class="hint">El idioma se aplicará a toda la interfaz de usuario</span>
+          </div>
+          <div class="form-group">
+            <label>Zona horaria</label>
+            <select [(ngModel)]="prefs.zonaHoraria" name="zonaHoraria">
+              @for (opt of zonasHorarias; track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Formato de fecha y hora -->
+        <div class="config-card">
+          <h2>Formato de fecha y hora</h2>
+          <div class="form-group">
+            <label>Formato de fecha</label>
+            <div class="format-options">
+              @for (fmt of ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD']; track fmt) {
+                <label class="format-option" [class.selected]="prefs.formatoFecha === fmt">
+                  <input type="radio" name="formatoFecha" [value]="fmt" [(ngModel)]="prefs.formatoFecha" />
+                  <span class="fmt-label">{{ fmt }}</span>
+                  <span class="fmt-example">{{ fechaEjemplo }}</span>
+                </label>
+              }
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Formato de hora</label>
+            <div class="format-options">
+              <label class="format-option" [class.selected]="prefs.formatoHora === '12h'">
+                <input type="radio" name="formatoHora" value="12h" [(ngModel)]="prefs.formatoHora" />
+                <span class="fmt-label">12 horas</span>
+                <span class="fmt-example">02:30 PM</span>
+              </label>
+              <label class="format-option" [class.selected]="prefs.formatoHora === '24h'">
+                <input type="radio" name="formatoHora" value="24h" [(ngModel)]="prefs.formatoHora" />
+                <span class="fmt-label">24 horas</span>
+                <span class="fmt-example">14:30</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notificaciones -->
+        <div class="config-card">
+          <h2>Preferencias de notificaciones</h2>
+
+          <div class="notif-group">
+            <div class="notif-item">
+              <div class="notif-info">
+                <span class="notif-icon blue"><i class="fa-regular fa-envelope"></i></span>
+                <div>
+                  <strong>Notificaciones por correo</strong>
+                  <p>Recibe actualizaciones en tu email</p>
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="prefs.notifCorreo" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="notif-item">
+              <div class="notif-info">
+                <span class="notif-icon green"><i class="fa-regular fa-bell"></i></span>
+                <div>
+                  <strong>Notificaciones push</strong>
+                  <p>Alertas instantáneas en tu dispositivo</p>
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="prefs.notifPush" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="notif-item">
+              <div class="notif-info">
+                <span class="notif-icon purple"><i class="fa-solid fa-mobile-screen"></i></span>
+                <div>
+                  <strong>Notificaciones por SMS</strong>
+                  <p>Mensajes de texto a tu teléfono</p>
+                </div>
+              </div>
+              <label class="toggle">
+                <input type="checkbox" [(ngModel)]="prefs.notifSms" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="notif-tipos-title">Tipos de notificaciones</div>
+          <div class="notif-group">
+            <div class="notif-item">
+              <div><strong>Recordatorios de citas</strong><p>Te avisaremos antes de tus citas programadas</p></div>
+              <label class="toggle"><input type="checkbox" [(ngModel)]="prefs.notifRecordatoriosCitas" /><span class="slider"></span></label>
+            </div>
+            <div class="notif-item">
+              <div><strong>Nuevos mensajes</strong><p>Cuando recibas mensajes de pacientes o médicos</p></div>
+              <label class="toggle"><input type="checkbox" [(ngModel)]="prefs.notifNuevosMensajes" /><span class="slider"></span></label>
+            </div>
+            <div class="notif-item">
+              <div><strong>Actualizaciones del sistema</strong><p>Novedades y mejoras de la plataforma</p></div>
+              <label class="toggle"><input type="checkbox" [(ngModel)]="prefs.notifActualizacionesSistema" /><span class="slider"></span></label>
+            </div>
+            <div class="notif-item">
+              <div><strong>Correos de marketing</strong><p>Ofertas especiales y promociones</p></div>
+              <label class="toggle"><input type="checkbox" [(ngModel)]="prefs.notifCorreosMarketing" /><span class="slider"></span></label>
+            </div>
+            <div class="notif-item">
+              <div><strong>Reportes semanales</strong><p>Resumen semanal de actividad</p></div>
+              <label class="toggle"><input type="checkbox" [(ngModel)]="prefs.notifReportesSemanales" /><span class="slider"></span></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horario no molestar -->
+        <div class="config-card">
+          <h2>Horario de notificaciones</h2>
+          <div class="no-molestar-box">
+            <div class="no-molestar-header">
+              <i class="fa-regular fa-clock"></i>
+              <div>
+                <strong>No molestar</strong>
+                <p>Define un horario en el que no quieres recibir notificaciones</p>
+              </div>
+            </div>
+            <div class="no-molestar-inputs">
+              <div class="form-group">
+                <label>Desde</label>
+                <input type="time" [(ngModel)]="prefs.noMolestarDesde" name="noMolestarDesde" />
+              </div>
+              <div class="form-group">
+                <label>Hasta</label>
+                <input type="time" [(ngModel)]="prefs.noMolestarHasta" name="noMolestarHasta" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="config-actions">
+          <button class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+          <button class="btn-guardar" (click)="guardarPreferencias()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar preferencias' }}
+          </button>
+        </div>
+
+      } @else if (seccionActiva === 'privacidad') {
+
+        @if (mensajeSeguridad) {
+          <div class="success-banner">✓ {{ mensajeSeguridad }}</div>
+        }
+        @if (errorSeguridad) {
+          <div class="error-banner">{{ errorSeguridad }}</div>
+        }
+
+        <!-- Verificación de correo -->
+        <div class="config-card">
+          <h2>Verificación de correo electrónico</h2>
+          <div class="correo-verificado">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <strong>Correo electrónico verificado</strong>
+              <p>Tu dirección <strong>{{ emailActual }}</strong> ha sido verificada.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cambiar correo -->
+        <div class="config-card">
+          <h2>Cambiar correo electrónico</h2>
+          <div class="form-group">
+            <label>Correo electrónico actual</label>
+            <div class="input-icon">
+              <i class="fa-regular fa-envelope"></i>
+              <input type="email" [value]="emailActual" disabled />
+              <i class="fa-solid fa-check check-icon"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nuevo correo electrónico</label>
+            <div class="input-icon">
+              <i class="fa-regular fa-envelope"></i>
+              <input type="email" [(ngModel)]="nuevoEmail" name="nuevoEmail" placeholder="nuevo@correo.com" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Contraseña actual (para confirmar)</label>
+            <div class="input-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input [type]="mostrarPasswordActual ? 'text' : 'password'" [(ngModel)]="passwordActual" name="passEmail" placeholder="Tu contraseña actual" />
+              <i class="fa-regular fa-eye toggle-eye" (click)="mostrarPasswordActual = !mostrarPasswordActual"></i>
+            </div>
+          </div>
+          <button class="btn-guardar" (click)="cambiarEmail()" [disabled]="guardandoSeguridad">
+            Actualizar correo electrónico
+          </button>
+        </div>
+
+        <!-- Cambiar contraseña -->
+        <div class="config-card">
+          <h2>Cambiar contraseña</h2>
+          <div class="form-group">
+            <label>Contraseña actual</label>
+            <div class="input-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input [type]="mostrarPasswordActual ? 'text' : 'password'" [(ngModel)]="passwordActual" name="currentPass" placeholder="Ingresa tu contraseña actual" />
+              <i class="fa-regular fa-eye toggle-eye" (click)="mostrarPasswordActual = !mostrarPasswordActual"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <div class="input-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input [type]="mostrarNuevaPassword ? 'text' : 'password'" [(ngModel)]="nuevaPassword" name="newPass" placeholder="Ingresa tu nueva contraseña" />
+              <i class="fa-regular fa-eye toggle-eye" (click)="mostrarNuevaPassword = !mostrarNuevaPassword"></i>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Confirmar nueva contraseña</label>
+            <div class="input-icon">
+              <i class="fa-solid fa-lock"></i>
+              <input [type]="mostrarConfirmarPassword ? 'text' : 'password'" [(ngModel)]="confirmarPassword" name="confirmPass" placeholder="Confirma tu nueva contraseña" />
+              <i class="fa-regular fa-eye toggle-eye" (click)="mostrarConfirmarPassword = !mostrarConfirmarPassword"></i>
+            </div>
+          </div>
+          <div class="requisitos">
+            <strong>Requisitos de contraseña:</strong>
+            <ul>
+              <li [class.ok]="nuevaPassword.length >= 8">Mínimo 8 caracteres</li>
+              <li [class.ok]="/[A-Z]/.test(nuevaPassword)">Al menos una letra mayúscula</li>
+              <li [class.ok]="/[0-9]/.test(nuevaPassword)">Al menos un número</li>
+              <li [class.ok]="/[@#$%^&*!]/.test(nuevaPassword)">Al menos un carácter especial</li>
+            </ul>
+          </div>
+          <div class="config-actions">
+            <button class="btn-cancelar" (click)="passwordActual=''; nuevaPassword=''; confirmarPassword=''">Cancelar</button>
+            <button class="btn-guardar" (click)="cambiarPassword()" [disabled]="guardandoSeguridad">
+              {{ guardandoSeguridad ? 'Guardando...' : 'Cambiar contraseña' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- 2FA (visual) -->
+        <div class="config-card">
+          <h2>Autenticación de dos factores (2FA)</h2>
+          <div class="twofa-box">
+            <div class="twofa-info">
+              <i class="fa-solid fa-shield-halved"></i>
+              <div>
+                <strong>Autenticación de dos factores desactivada</strong>
+                <p>Agrega una capa adicional de seguridad requiriendo un código de verificación.</p>
+              </div>
+            </div>
+            <button class="btn-2fa">Activar 2FA</button>
+          </div>
+        </div>
+
+        <!-- Sesiones activas (visual) -->
+        <div class="config-card">
+          <h2>Sesiones activas</h2>
+          <div class="sesion-item">
+            <i class="fa-solid fa-desktop"></i>
+            <div>
+              <strong>Este dispositivo</strong>
+              <p>Lima, Perú — Hace unos momentos</p>
+            </div>
+            <span class="badge-actual">Actual</span>
+          </div>
+        </div>
+
+        <!-- Eliminar cuenta -->
+        <div class="config-card danger-card">
+          <h2>Zona de peligro</h2>
+          <div class="eliminar-box">
+            <div>
+              <strong>Eliminar cuenta</strong>
+              <p>Una vez que elimines tu cuenta, no hay vuelta atrás.</p>
+            </div>
+            <div class="form-group" style="margin-top: 14px;">
+              <label>Confirma con tu contraseña</label>
+              <input type="password" [(ngModel)]="passwordEliminar" name="passEliminar" placeholder="Tu contraseña" />
+            </div>
+            <button class="btn-eliminar" (click)="eliminarCuenta()">
+              <i class="fa-solid fa-trash"></i> Eliminar mi cuenta
+            </button>
+          </div>
+        </div>
+      } @else if (seccionActiva === 'facturacion') {
+        <div class="config-card">
+          <h2>Facturación</h2>
+          <p class="coming-soon">Próximamente disponible.</p>
+        </div>
+      } @else if (seccionActiva === 'ayuda') {
+        <div class="config-card">
+          <h2>Ayuda y soporte</h2>
+          <p class="coming-soon">Próximamente disponible.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Sidebar resumen -->
+    <div class="config-resumen">
+      @if (seccionActiva === 'preferencias') {
+        <div class="resumen-card">
+          <h3>Resumen de preferencias</h3>
+          <div class="resumen-item">
+            <i class="fa-solid fa-language"></i>
+            <div><strong>Idioma</strong><p>{{ prefs.idioma }}</p></div>
+          </div>
+          <div class="resumen-item">
+            <i class="fa-regular fa-calendar"></i>
+            <div><strong>Formato de fecha</strong><p>{{ prefs.formatoFecha }}</p></div>
+          </div>
+          <div class="resumen-item">
+            <i class="fa-regular fa-bell"></i>
+            <div><strong>Notificaciones activas</strong><p>{{ notifActivasCount }} de 5 tipos</p></div>
+          </div>
+          <div class="todo-configurado">
+            <i class="fa-solid fa-circle-check"></i>
+            <div>
+              <strong>Todo configurado</strong>
+              <p>Tus preferencias se guardan automáticamente.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="resumen-card">
+          <h3>Acciones rápidas</h3>
+          <button class="accion-link" (click)="restablecerDefecto()">
+            Restablecer preferencias <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <button class="accion-link" (click)="irASeccion('privacidad')">
+            Exportar configuración <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      } @else if (seccionActiva === 'privacidad') {
+        <div class="resumen-card">
+          <h3>Consejos de seguridad</h3>
+          <div class="consejo-item">
+            <i class="fa-solid fa-circle-check consejo-icon ok"></i>
+            <div>
+              <strong>Correo verificado</strong>
+              <p>Tu correo ha sido verificado correctamente</p>
+            </div>
+          </div>
+          <div class="consejo-item">
+            <i class="fa-solid fa-triangle-exclamation consejo-icon warn"></i>
+            <div>
+              <strong>Activa 2FA</strong>
+              <p>Protege tu cuenta con verificación en dos pasos</p>
+            </div>
+          </div>
+          <div class="consejo-item">
+            <i class="fa-solid fa-shield-halved consejo-icon info"></i>
+            <div>
+              <strong>Contraseña fuerte</strong>
+              <p>Usa una contraseña única y segura</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="resumen-card">
+          <h3>Actividad reciente</h3>
+          @if (cargandoActividad) {
+            <p class="hint">Cargando...</p>
+          } @else if (actividadReciente.length === 0) {
+            <p class="hint">Sin actividad registrada todavía.</p>
+          } @else {
+            @for (item of actividadReciente; track item.createdAt) {
+              <div class="actividad-item">
+                <span class="actividad-dot"></span>
+                <div>
+                  <strong>{{ item.label }}</strong>
+                  <p>{{ item.location }}</p>
+                  <span class="actividad-fecha">{{ tiempoRelativo(item.createdAt) }}</span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<app-public-footer></app-public-footer>
