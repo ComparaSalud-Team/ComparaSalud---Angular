@@ -1,0 +1,245 @@
+<div class="patient-edit-shell">
+  <app-public-navbar-paciente></app-public-navbar-paciente>
+
+  <div class="editar-page">
+    <div class="editar-header">
+      <h1>Editar perfil</h1>
+      <div class="header-actions">
+        <button class="btn-regresar" (click)="regresar()">Regresar</button>
+        <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </div>
+
+    @if (errorMsg) {
+      <div class="error-banner">{{ errorMsg }}</div>
+    }
+
+    @if (cargando) {
+      <p class="cargando-text">Cargando perfil...</p>
+    } @else {
+      <div class="editar-grid">
+        <div class="editar-tabs">
+          <button class="tab-item" [class.active]="seccionActiva === 'personal'" (click)="irASeccion('personal')">
+            <i class="fa-regular fa-user"></i> Información personal
+          </button>
+          <button class="tab-item" [class.active]="seccionActiva === 'medica'" (click)="irASeccion('medica')">
+            <i class="fa-regular fa-heart"></i> Información médica
+          </button>
+          <button class="tab-item" [class.active]="seccionActiva === 'emergencia'" (click)="irASeccion('emergencia')">
+            <i class="fa-solid fa-phone"></i> Contacto de emergencia
+          </button>
+        </div>
+
+        <div class="editar-main">
+          @if (seccionActiva === 'personal') {
+            <div class="seccion-card">
+              <div class="seccion-titulo">
+                <i class="fa-regular fa-user"></i>
+                <div>
+                  <strong>Información personal</strong>
+                  <p>Actualiza tu información básica</p>
+                </div>
+              </div>
+              <div class="avatar-block">
+                <img [src]="avatar" alt="Foto de perfil" />
+                <span class="avatar-label">Actualizar foto</span>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Fecha de nacimiento</label>
+                  <input type="date" [(ngModel)]="patient.birthday" name="birthday" />
+                </div>
+                <div class="form-group">
+                  <label>DNI</label>
+                  <input type="text" [(ngModel)]="patient.dni" name="dni" />
+                </div>
+                <div class="form-group">
+                  <label>Estado civil</label>
+                  <select [(ngModel)]="patient.estadoCivil" name="estadoCivil">
+                    <option value="">Seleccionar...</option>
+                    <option>Soltero/a</option>
+                    <option>Casado/a</option>
+                    <option>Conviviente</option>
+                    <option>Divorciado/a</option>
+                    <option>Viudo/a</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Profesión</label>
+                  <select [(ngModel)]="patient.profesion" name="profesion">
+                    <option value="">Seleccionar...</option>
+                    <option>Médico/a</option>
+                    <option>Enfermero/a</option>
+                    <option>Ingeniero/a</option>
+                    <option>Abogado/a</option>
+                    <option>Docente</option>
+                    <option>Contador/a</option>
+                    <option>Administrador/a</option>
+                    <option>Estudiante</option>
+                    <option>Comerciante</option>
+                    <option>Independiente</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Idioma preferido</label>
+                  <select [(ngModel)]="patient.idiomaPreferido" name="idiomaPreferido">
+                    <option value="">Seleccionar...</option>
+                    <option>Español</option>
+                    <option>Inglés</option>
+                    <option>Quechua</option>
+                    <option>Portugués</option>
+                    <option>Francés</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Teléfono</label>
+                  <input type="text" [(ngModel)]="patient.phone" name="phone" />
+                </div>
+                <div class="form-group full">
+                  <label>Dirección</label>
+                  <input type="text" [(ngModel)]="patient.direccion" name="direccion" />
+                </div>
+                <div class="form-group">
+                  <label>Correo electrónico</label>
+                  <input type="email" [value]="patient.email" disabled />
+                </div>
+                <div class="form-group">
+                  <label>Género</label>
+                  <select [(ngModel)]="patient.genero" name="genero">
+                    <option value="">Seleccionar...</option>
+                    <option>Masculino</option>
+                    <option>Femenino</option>
+                    <option>Prefiero no decir</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (seccionActiva === 'medica') {
+            <div class="seccion-card">
+              <div class="seccion-titulo">
+                <i class="fa-regular fa-heart"></i>
+                <div>
+                  <strong>Información médica</strong>
+                  <p>Datos importantes para tu atención médica</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Tipo de sangre</label>
+                  <select [(ngModel)]="patient.tipoSangre" name="tipoSangre">
+                    <option value="">Seleccionar...</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Alergias</label>
+                  <input type="text" [(ngModel)]="patient.alergias" name="alergias" placeholder="Ej. Penicilina, Polen" />
+                </div>
+                <div class="form-group full">
+                  <label>Condiciones médicas</label>
+                  <textarea [(ngModel)]="patient.condicionesMedicas" name="condicionesMedicas" rows="3"></textarea>
+                </div>
+                <div class="form-group full">
+                  <label>Medicamentos actuales</label>
+                  <input type="text" [(ngModel)]="patient.medicamentosActuales" name="medicamentosActuales" />
+                </div>
+                <div class="form-group">
+                  <label>Seguro médico</label>
+                  <input type="text" [(ngModel)]="patient.seguroMedicoNombre" name="seguroMedicoNombre" placeholder="Ej. Rimac Salud" />
+                </div>
+                <div class="form-group">
+                  <label>Plan</label>
+                  <input type="text" [(ngModel)]="patient.seguroMedicoPlan" name="seguroMedicoPlan" placeholder="Ej. Plan clásico" />
+                </div>
+              </div>
+            </div>
+          }
+
+          @if (seccionActiva === 'emergencia') {
+            <div class="seccion-card">
+              <div class="seccion-titulo">
+                <i class="fa-solid fa-phone"></i>
+                <div>
+                  <strong>Contacto de emergencia</strong>
+                  <p>Persona a contactar en caso de emergencia</p>
+                </div>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Nombre completo</label>
+                  <input type="text" [(ngModel)]="patient.emergenciaNombre" name="emergenciaNombre" />
+                </div>
+                <div class="form-group">
+                  <label>Parentesco</label>
+                  <select [(ngModel)]="patient.emergenciaParentesco" name="emergenciaParentesco">
+                    <option value="">Seleccionar...</option>
+                    <option>Padre</option>
+                    <option>Madre</option>
+                    <option>Hermano/a</option>
+                    <option>Cónyuge</option>
+                    <option>Hijo/a</option>
+                    <option>Tío/a</option>
+                    <option>Primo/a</option>
+                    <option>Abuelo/a</option>
+                    <option>Amigo/a</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Teléfono</label>
+                  <input type="text" [(ngModel)]="patient.emergenciaTelefono" name="emergenciaTelefono" />
+                </div>
+                <div class="form-group">
+                  <label>Dirección</label>
+                  <input type="text" [(ngModel)]="patient.emergenciaDireccion" name="emergenciaDireccion" />
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="editar-sidebar">
+          <div class="sidebar-card">
+            <h3>Resumen del perfil</h3>
+            <div class="resumen-item">
+              <i class="fa-solid fa-circle-check ok"></i>
+              <div>
+                <strong>Información completa</strong>
+                <p>Perfil al {{ porcentajePerfil }}%</p>
+              </div>
+            </div>
+            <div class="resumen-item">
+              <i class="fa-solid fa-circle-check ok"></i>
+              <div>
+                <strong>Email verificado</strong>
+                <p>{{ patient.email }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="sidebar-card">
+            <h3>Acciones rápidas</h3>
+            <a class="accion-link" routerLink="/perfil">Cambiar contraseña</a>
+            <a class="accion-link" routerLink="/perfil">Configurar privacidad</a>
+            <a class="accion-link" routerLink="/mis-citas">Historial médico</a>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <app-public-footer></app-public-footer>
+</div>

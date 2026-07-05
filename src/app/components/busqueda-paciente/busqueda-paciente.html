@@ -1,0 +1,187 @@
+<app-public-navbar-paciente></app-public-navbar-paciente>
+
+<div class="wrapper">
+
+  <div class="top-search">
+    <div class="search-row">
+      <div class="search-box">
+        <input type="text" placeholder="Buscar médicos, especialidades..." [(ngModel)]="searchQuery" (keyup.enter)="aplicarFiltros()">
+        <button class="search-btn" (click)="aplicarFiltros()">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </svg>
+        </button>
+      </div>
+      <select class="filter-select ordenar-select" [(ngModel)]="ordenarPor" (ngModelChange)="buscar()">
+        <option value="">Ordenar por</option>
+        <option value="experiencia">Experiencia</option>
+        <option value="calificacion">Calificación</option>
+        <option value="precio">Precio</option>
+      </select>
+      <select class="filter-select ordenar-select" [(ngModel)]="ordenDireccion" (ngModelChange)="buscar()">
+        <option value="asc">Ascendente</option>
+        <option value="desc">Descendente</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <aside class="sidebar">
+      <h3>Filtros</h3>
+
+      <div class="filter-group">
+        <label>País</label>
+        <select class="filter-select-full">
+          <option value="pe">🇵🇪 Perú</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Especialidad</label>
+        <select [(ngModel)]="sidebarFiltros.categoria">
+          @for (opt of categoriaOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Ubicación</label>
+        <select [(ngModel)]="sidebarFiltros.ubicacion">
+          <option value="">Todas</option>
+          @for (distrito of ubicacionesDisponibles; track distrito) {
+            <option [value]="distrito">{{ distrito }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Idioma</label>
+        <select [(ngModel)]="sidebarFiltros.idioma">
+          <option value="">Todos</option>
+          <option value="español">Español</option>
+          <option value="inglés">Inglés</option>
+          <option value="quechua">Quechua</option>
+          <option value="portugués">Portugués</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Modalidad</label>
+        <select [(ngModel)]="sidebarFiltros.modalidad">
+          @for (opt of modalidadOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Disponibilidad</label>
+        <select [(ngModel)]="sidebarFiltros.disponibilidad">
+          @for (opt of disponibilidadOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Rango de precio</label>
+        <div class="range-wrap">
+          <div class="range-tooltip-wrap">
+            <input class="range-tooltip editable"
+                   type="number" min="50" max="500"
+                   [(ngModel)]="sidebarFiltros.precio"
+                   [style.left]="getTooltipLeft(sidebarFiltros.precio, 50, 500)">
+            <input type="range" min="50" max="500" [(ngModel)]="sidebarFiltros.precio"
+                   [style.background]="getRangeBackground(sidebarFiltros.precio, 50, 500)">
+          </div>
+          <div class="range-value"><span>S/50</span><span>S/500</span></div>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Calificación</label>
+        <div class="range-wrap">
+          <div class="range-tooltip-wrap">
+            <input class="range-tooltip editable"
+                   type="number" min="0" max="5"
+                   [(ngModel)]="sidebarFiltros.calificacion"
+                   [style.left]="getTooltipLeft(sidebarFiltros.calificacion, 0, 5)">
+            <input type="range" min="0" max="5" [(ngModel)]="sidebarFiltros.calificacion"
+                   [style.background]="getRangeBackground(sidebarFiltros.calificacion, 0, 5)">
+          </div>
+          <div class="range-value"><span>0 ★</span><span>5 ★</span></div>
+        </div>
+      </div>
+
+      <button class="apply-btn" (click)="aplicarFiltros()">Aplicar filtros</button>
+      <button class="clear-btn" (click)="limpiarFiltros()">Limpiar filtros</button>
+    </aside>
+
+    <section class="doctor-list">
+      @for (doctor of doctoresFiltrados; track doctor.id) {
+        <div class="doctor-card">
+          <img class="doctor-img" [src]="doctor.imagen" [alt]="doctor.nombre">
+          <div class="doctor-content">
+            <div class="doctor-header">
+              <div>
+                <div class="doctor-name">{{ doctor.bandera }} {{ doctor.nombre }}</div>
+                <div class="doctor-role">{{ doctor.rol }}</div>
+              </div>
+              @if (doctor.socials?.length) {
+                <div class="doctor-icons">
+                  @for (s of doctor.socials!; track s.tipo) {
+                    @if (s.tipo === 'instagram') {
+                      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="2" y="2" width="20" height="20" rx="5"></rect>
+                        <circle cx="12" cy="12" r="4"></circle>
+                        <circle cx="18" cy="6" r="1"></circle>
+                      </svg>
+                    }
+                    @if (s.tipo === 'linkedin') {
+                      <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19 0h-14c-2.8 0-5 2.2-5 5v14c0 2.8 2.2 5 5 5h14c2.8 0 5-2.2 5-5v-14c0-2.8-2.2-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.2c-1 0-1.8-.8-1.8-1.8s.8-1.8 1.8-1.8 1.8.8 1.8 1.8-.8 1.8-1.8 1.8zm13.5 11.2h-3v-5.6c0-1.3-.5-2.2-1.7-2.2-.9 0-1.4.6-1.7 1.2-.1.2-.1.5-.1.8v5.8h-3s0-9.4 0-10.4h3v1.5c.4-.7 1.1-1.7 2.8-1.7 2 0 3.5 1.3 3.5 4.2v6.4z"/>
+                      </svg>
+                    }
+                  }
+                </div>
+              }
+            </div>
+            <div class="doctor-description">{{ doctor.descripcion }}</div>
+            <div class="doctor-location">
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7z"/>
+              </svg>
+              Yo hablo: {{ doctor.idiomas }}
+            </div>
+
+            <div class="doctor-modalidad">
+              📍 {{ getModalidadLabel(doctor.modalidad) }}
+            </div>
+
+            <div class="doctor-tags">
+              @for (tag of doctor.tags; track tag.label) {
+                <div [class]="'tag' + (tag.beige ? ' beige' : '')">{{ tag.label }}</div>
+              }
+            </div>
+            <div class="doctor-bottom">
+              <div class="doctor-stats">
+                <div class="stat"><strong>{{ doctor.rating }} ★</strong><span>{{ doctor.resenas }} reseñas</span></div>
+                <div class="stat"><strong>{{ doctor.pacientes }}</strong><span>pacientes</span></div>
+                <div class="stat"><strong>{{ doctor.sesiones }}</strong><span>sesiones</span></div>
+                <div class="stat"><strong>{{ doctor.reservas }}</strong><span>reservas</span></div>
+                <div class="stat"><strong>{{ doctor.precio }}</strong><span>50-min sesión</span></div>
+              </div>
+              <button class="appointment-btn" (click)="agendarCita(doctor)">Agendar cita</button>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
+
+  </div>
+</div>
+
+<app-public-footer></app-public-footer>

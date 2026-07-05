@@ -1,6 +1,6 @@
 <div class="container">
 
-  <app-public-navbar></app-public-navbar>
+  <app-public-navbar-paciente></app-public-navbar-paciente>
 
   <div class="page-body">
 
@@ -49,7 +49,7 @@
       <i class="fa-regular fa-heart"></i>
       <h3>Todavía no tienes favoritos</h3>
       <p>Guarda tus clínicas y proveedores preferidos para encontrarlos aquí fácilmente.</p>
-      <a routerLink="/buscar" class="btn-explorar">Buscar proveedores</a>
+      <a routerLink="/busqueda-paciente" class="btn-explorar">Buscar proveedores</a>
     </div>
 
     <!-- Grid de favoritos -->
@@ -97,6 +97,15 @@
               Desde <strong>S/ {{ favorito.pricePerAppointment }}</strong>
             </div>
             <div class="acciones">
+              <select
+                class="select-clinica"
+                *ngIf="favorito.clinicIds?.length > 1"
+                [(ngModel)]="clinicaSeleccionada[favorito.providerId]"
+              >
+                <option *ngFor="let clinicId of favorito.clinicIds; let ci = index" [value]="clinicId">
+                  {{ favorito.clinicNames[ci] }}
+                </option>
+              </select>
               <button class="btn-servicios" (click)="verServicios(favorito)">Ver servicios</button>
               <button class="btn-eliminar" title="Eliminar favorito" (click)="eliminarFavorito(favorito, $event)">
                 <i class="fa-regular fa-trash-can"></i>

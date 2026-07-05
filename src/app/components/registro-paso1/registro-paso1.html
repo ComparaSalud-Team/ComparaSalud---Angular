@@ -24,7 +24,7 @@
           <img class="profile-card-img" src="assets/images/patients-couple.png" alt="Pacientes" />
           <span class="card-label">Pacientes</span>
           <p>Encuentra los mejores proveedores de salud con precios transparentes y agenda al instante.</p>
-          <button class="btn-card blue" routerLink="/registro-paso2">Registrarme como paciente →</button>
+          <button class="btn-card blue" routerLink="/registro-paso2" queryParamsHandling="preserve">Registrarme como paciente →</button>
         </div>
         <div class="profile-card">
           <img class="profile-card-img" src="assets/images/doctor.png" alt="Doctores" />
@@ -41,7 +41,7 @@
       </div>
 
       <div class="auth-bottom-link">
-        ¿Ya tienes cuenta? <a routerLink="/login">Inicia sesión</a>
+        ¿Ya tienes cuenta? <a routerLink="/login" queryParamsHandling="preserve">Inicia sesión</a>
       </div>
     </div>
   </div>

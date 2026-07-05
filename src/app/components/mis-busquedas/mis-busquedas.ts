@@ -1,18 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 import { BusquedaHistorial } from '../../models/busqueda-historial';
 import { BusquedaHistorialService } from '../../services/busqueda-historial.service';
+import { PublicNavbarComponent } from '../../shared/public-navbar-paciente/public-navbar';
 
 type Tab = 'historial' | 'guardados';
 
 @Component({
   selector: 'app-mis-busquedas',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PublicNavbarComponent, PublicFooterComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    PublicNavbarComponent,
+    PublicFooterComponent,
+    PublicNavbarComponent,
+  ],
   templateUrl: './mis-busquedas.html',
   styleUrl: './mis-busquedas.css',
 })
@@ -38,6 +45,7 @@ export class MisBusquedasComponent implements OnInit {
   constructor(
     private historialService: BusquedaHistorialService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +60,7 @@ export class MisBusquedasComponent implements OnInit {
     if (tab === 'guardados' && !this.guardadosCargados) {
       this.cargarGuardados();
     }
+    this.cdr.detectChanges();
   }
 
   cargarHistorial(): void {
@@ -62,10 +71,12 @@ export class MisBusquedasComponent implements OnInit {
       next: (data) => {
         this.historial = data || [];
         this.cargandoHistorial = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.errorHistorial = 'No se pudo cargar tu historial de búsquedas.';
         this.cargandoHistorial = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -79,10 +90,12 @@ export class MisBusquedasComponent implements OnInit {
         this.guardados = data || [];
         this.cargandoGuardados = false;
         this.guardadosCargados = true;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.errorGuardados = 'No se pudo cargar tus búsquedas guardadas.';
         this.cargandoGuardados = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -102,7 +115,7 @@ export class MisBusquedasComponent implements OnInit {
     }
 
     if (this.categoria) {
-      resultado = resultado.filter((b) => b.specialty === this.categoria);
+      resultado = resultado.filter((b) => this.categoriaDe(b) === this.categoria);
     }
 
     return resultado;
@@ -110,8 +123,15 @@ export class MisBusquedasComponent implements OnInit {
 
   get categoriasDisponibles(): string[] {
     const base = this.tab === 'historial' ? this.historial : this.guardados;
-    const categorias = base.map((b) => b.specialty).filter((c): c is string => !!c);
+    const categorias = base.map((b) => this.categoriaDe(b)).filter((c): c is string => !!c);
     return Array.from(new Set(categorias));
+  }
+
+  // Si la búsqueda no tiene especialidad asociada (se hizo con texto libre,
+  // sin elegir un filtro de categoría en /busqueda), usamos el keyword como
+  // categoría de respaldo para que igual aparezca en el selector y se pueda filtrar.
+  private categoriaDe(item: BusquedaHistorial): string {
+    return item.specialty?.trim() || item.keyword?.trim() || '';
   }
 
   iconoFor(index: number): string {
@@ -121,6 +141,7 @@ export class MisBusquedasComponent implements OnInit {
   limpiarFiltros(): void {
     this.busqueda = '';
     this.categoria = '';
+    this.cdr.detectChanges();
   }
 
   tiempoRelativo(fecha: string): string {
@@ -142,7 +163,7 @@ export class MisBusquedasComponent implements OnInit {
   }
 
   buscarNuevamente(item: BusquedaHistorial): void {
-    this.router.navigate(['/buscar'], {
+    this.router.navigate(['/busqueda-paciente'], {
       queryParams: {
         keyword: item.keyword,
         specialty: item.specialty,
@@ -156,28 +177,47 @@ export class MisBusquedasComponent implements OnInit {
 
   guardarBusqueda(item: BusquedaHistorial, event: Event): void {
     event.stopPropagation();
+
+    // Optimista: se marca al toque en la UI, sin esperar la respuesta del backend.
+    item.saved = true;
+    const seAgregoAGuardados =
+      this.guardadosCargados && !this.guardados.some((g) => g.id === item.id);
+    if (seAgregoAGuardados) {
+      this.guardados = [item, ...this.guardados];
+    }
+    this.cdr.detectChanges();
+
     this.historialService.marcarComoGuardada(item.id).subscribe({
-      next: () => {
-        item.saved = true;
-        if (this.guardadosCargados) {
-          this.guardados = [item, ...this.guardados];
-        }
-      },
       error: () => {
+        // Si falla, se revierte el cambio optimista.
+        item.saved = false;
+        if (seAgregoAGuardados) {
+          this.guardados = this.guardados.filter((g) => g.id !== item.id);
+        }
         this.errorHistorial = 'No se pudo guardar esta búsqueda.';
+        this.cdr.detectChanges();
       },
     });
   }
 
   quitarDeGuardados(item: BusquedaHistorial, event: Event): void {
     event.stopPropagation();
+
+    // Optimista: se quita al toque de la lista, sin esperar la respuesta del backend.
+    const indiceOriginal = this.guardados.findIndex((g) => g.id === item.id);
+    item.saved = false;
+    this.guardados = this.guardados.filter((g) => g.id !== item.id);
+    this.cdr.detectChanges();
+
     this.historialService.quitarDeGuardados(item.id).subscribe({
-      next: () => {
-        item.saved = false;
-        this.guardados = this.guardados.filter((g) => g.id !== item.id);
-      },
       error: () => {
+        // Si falla, se revierte el cambio optimista.
+        item.saved = true;
+        const guardadosRevertidos = [...this.guardados];
+        guardadosRevertidos.splice(indiceOriginal < 0 ? 0 : indiceOriginal, 0, item);
+        this.guardados = guardadosRevertidos;
         this.errorGuardados = 'No se pudo quitar esta búsqueda de guardados.';
+        this.cdr.detectChanges();
       },
     });
   }

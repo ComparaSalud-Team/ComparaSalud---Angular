@@ -34,6 +34,10 @@
         Completa tu información profesional para aparecer en el directorio médico.
       </p>
 
+      @if (errorMsg) {
+        <div class="error-banner">{{ errorMsg }}</div>
+      }
+
       <div class="form-grid">
 
         <!-- Nombre -->
@@ -102,16 +106,6 @@
             name="password">
         </div>
 
-        <!-- Clínica -->
-        <div class="form-group">
-          <label>Nombre de la clínica o consultorio</label>
-          <input
-            type="text"
-            placeholder="Nombre de clínica"
-            [(ngModel)]="clinica"
-            name="clinica">
-        </div>
-
         <!-- Teléfono -->
         <div class="form-group">
           <label>Teléfono</label>
@@ -154,7 +148,7 @@
         </div>
 
         <!-- Descripción -->
-        <div class="form-group full-width">
+        <div class="form-group full">
           <label>Descripción profesional</label>
           <textarea
             rows="4"
@@ -162,6 +156,33 @@
             [(ngModel)]="descripcion"
             name="descripcion">
           </textarea>
+        </div>
+
+        <!-- Clínicas donde atiende -->
+        <div class="form-group full">
+          <label>¿En qué clínica(s) atiendes?</label>
+          @if (cargandoClinicas) {
+            <p class="clinicas-hint">Cargando clínicas disponibles...</p>
+          } @else if (!clinicasDisponibles.length) {
+            <p class="clinicas-hint">No hay clínicas disponibles por el momento.</p>
+          } @else {
+            <div class="clinicas-grid">
+              @for (clinica of clinicasDisponibles; track clinica.id) {
+                <div
+                  class="clinica-card"
+                  [class.selected]="clinicaEstaSeleccionada(clinica.id)"
+                  (click)="toggleClinica(clinica.id)">
+                  <div class="clinica-check">
+                    <i class="fa-solid fa-check"></i>
+                  </div>
+                  <div>
+                    <strong>{{ clinica.name }}</strong>
+                    <span>{{ clinica.district }}, {{ clinica.city }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
         </div>
 
       </div>

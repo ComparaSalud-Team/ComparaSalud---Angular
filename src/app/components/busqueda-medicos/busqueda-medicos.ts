@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 import { NavbarComponent } from '../../shared/navbar/navbar';
@@ -8,6 +8,8 @@ import { FooterComponent } from '../../shared/footer/footer';
 
 import { ProviderService } from '../../services/provider.service';
 import { Provider } from '../../models/provider.model';
+import { BusquedaHistorialService } from '../../services/busqueda-historial.service';
+import { AuthService } from '../../services/auth';
 
 interface FilterOption {
   label: string;
@@ -25,6 +27,7 @@ export class BusquedaMedicosComponent implements OnInit {
   providers: Provider[] = [];
   todosLosDoctores: any[] = [];
   doctoresFiltrados: any[] = [];
+  ubicacionesDisponibles: string[] = [];
   searchQuery = '';
   ordenarPor = '';
   ordenDireccion = 'asc';
@@ -33,6 +36,10 @@ export class BusquedaMedicosComponent implements OnInit {
   constructor(
     private providerService: ProviderService,
     private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private historialService: BusquedaHistorialService,
+    private router: Router,
+    private auth: AuthService,
   ) {}
 
   sidebarFiltros = {
@@ -72,7 +79,42 @@ export class BusquedaMedicosComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    if (this.auth.isLoggedIn()) {
+      this.router.navigate(['/busqueda-paciente'], {
+        queryParams: this.route.snapshot.queryParams,
+        replaceUrl: true,
+      });
+      return;
+    }
+
+    const especialidad = this.route.snapshot.queryParamMap.get('especialidad');
+    const ubicacion = this.route.snapshot.queryParamMap.get('ubicacion');
+    const fecha = this.route.snapshot.queryParamMap.get('fecha');
+
+    if (especialidad) {
+      this.sidebarFiltros.categoria = especialidad.toLowerCase();
+    }
+    if (ubicacion) {
+      this.sidebarFiltros.ubicacion = ubicacion;
+    }
+    if (fecha) {
+      this.sidebarFiltros.disponibilidad = this.mapearFechaADisponibilidad(fecha);
+    }
+
     this.cargarProveedores();
+  }
+
+  private mapearFechaADisponibilidad(fecha: string): string {
+    const seleccionada = new Date(fecha + 'T00:00:00');
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const diffDias = Math.round((seleccionada.getTime() - hoy.getTime()) / 86400000);
+
+    if (diffDias <= 0) return 'hoy';
+    if (diffDias <= 7) return 'esta-semana';
+    if (diffDias <= 31) return 'este-mes';
+    return ''; // fuera de lo que el backend soporta; no filtramos por fecha en ese caso
   }
 
   cargarProveedores(): void {
@@ -91,6 +133,8 @@ export class BusquedaMedicosComponent implements OnInit {
           modalidad: (provider.modality || 'presencial').toLowerCase(),
           imagen: `assets/images/doctor-card-${(index % 4) + 1}.png`,
           especialidad: (provider.specialty || '').toLowerCase(),
+          distrito: provider.district || '',
+          ubicacion: (provider.district || '').toLowerCase(),
           tags: [{ label: provider.specialty || 'Especialidad', beige: true }],
           rating: Number(provider.averageRating) || 0,
           resenas: 0,
@@ -103,7 +147,21 @@ export class BusquedaMedicosComponent implements OnInit {
           socials: [],
         }));
         this.doctoresFiltrados = [...this.todosLosDoctores];
-        this.cdr.detectChanges();
+        this.ubicacionesDisponibles = Array.from(
+          new Set(data.map((p) => p.district).filter((d): d is string => !!d)),
+        );
+
+        if (
+          this.sidebarFiltros.categoria ||
+          this.sidebarFiltros.ubicacion ||
+          this.sidebarFiltros.disponibilidad
+        ) {
+          // aplicarFiltros() ya se encarga de resolver disponibilidad contra el backend,
+          // aplicar buscar() y registrar la búsqueda en el historial.
+          this.aplicarFiltros();
+        } else {
+          this.cdr.detectChanges();
+        }
       },
       error: (error) => {
         console.error('Error cargando providers', error);
@@ -145,6 +203,10 @@ export class BusquedaMedicosComponent implements OnInit {
         !this.sidebarFiltros.modalidad ||
         doctor.modalidad === this.sidebarFiltros.modalidad.toLowerCase();
 
+      const coincideUbicacion =
+        !this.sidebarFiltros.ubicacion ||
+        doctor.ubicacion.includes(this.sidebarFiltros.ubicacion.toLowerCase());
+
       const coincideDisponibilidad =
         !this.sidebarFiltros.disponibilidad ||
         !this.idsDisponibles ||
@@ -157,6 +219,7 @@ export class BusquedaMedicosComponent implements OnInit {
         coincideCalificacion &&
         coincideIdioma &&
         coincideModalidad &&
+        coincideUbicacion &&
         coincideDisponibilidad
       );
     });
@@ -181,6 +244,8 @@ export class BusquedaMedicosComponent implements OnInit {
   }
 
   aplicarFiltros(): void {
+    this.registrarBusquedaEnHistorial();
+
     if (this.sidebarFiltros.disponibilidad) {
       this.providerService.filtrarPorDisponibilidad(this.sidebarFiltros.disponibilidad).subscribe({
         next: (providers) => {
@@ -197,6 +262,31 @@ export class BusquedaMedicosComponent implements OnInit {
       this.idsDisponibles = null;
       this.buscar();
     }
+  }
+
+  private registrarBusquedaEnHistorial(): void {
+    const tieneCriterio =
+      this.searchQuery.trim() ||
+      this.sidebarFiltros.categoria ||
+      this.sidebarFiltros.ubicacion ||
+      this.sidebarFiltros.idioma ||
+      this.sidebarFiltros.modalidad ||
+      this.sidebarFiltros.disponibilidad ||
+      this.sidebarFiltros.calificacion > 0;
+
+    if (!tieneCriterio) return;
+
+    this.historialService
+      .guardarBusqueda({
+        keyword: this.searchQuery.trim() || this.sidebarFiltros.categoria || 'Búsqueda general',
+        specialty: this.sidebarFiltros.categoria || undefined,
+        district: this.sidebarFiltros.ubicacion || undefined,
+        maxPrice: this.sidebarFiltros.precio,
+        rating: this.sidebarFiltros.calificacion || undefined,
+      })
+      .subscribe({
+        error: (error) => console.error('No se pudo registrar la búsqueda en el historial', error),
+      });
   }
 
   limpiarFiltros(): void {
@@ -218,7 +308,9 @@ export class BusquedaMedicosComponent implements OnInit {
   }
 
   agendarCita(doctor: any): void {
-    console.log('Agendar cita:', doctor);
+    this.router.navigate(['/registro'], {
+      queryParams: { returnUrl: '/agendar-cita/' + doctor.id },
+    });
   }
 
   getModalidadLabel(modalidad: string): string {

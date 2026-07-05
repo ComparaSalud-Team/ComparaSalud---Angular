@@ -1,0 +1,25 @@
+.dash-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #F8FAFC;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.dash-body {
+  display: flex;
+  flex: 1;
+  margin-top: 64px;
+}
+
+.dash-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-content {
+  padding: 32px 40px 60px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}

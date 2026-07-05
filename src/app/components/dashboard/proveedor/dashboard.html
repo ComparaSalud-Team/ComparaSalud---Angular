@@ -1,0 +1,133 @@
+<div class="dash-shell">
+  <app-navbar-proveedor></app-navbar-proveedor>
+  <div class="dash-body">
+    <app-sidebar-proveedor></app-sidebar-proveedor>
+    <div class="dash-main">
+      <div class="dash-content">
+        <div class="dash-welcome">
+          <h1>Bienvenido de vuelta, Dr. {{ displayName }} 👋</h1>
+          <p>Aquí tienes un resumen de tu actividad y el estado de tu consultorio.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <strong>{{ citasProgramadas }}</strong>
+            <span>Citas programadas</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <strong>S/. {{ ingresos | number }}</strong>
+            <span>Ingresos</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <strong>{{ pacientesUnicos }}</strong>
+            <span>Pacientes únicos</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon yellow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <strong>{{ calificacionPromedio }}</strong>
+            <span>Calificación promedio</span>
+          </div>
+        </div>
+        <div class="dash-columns">
+          <div class="dash-col-left">
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Próximas citas</h3>
+                <a routerLink="/mis-citas">Ver agenda completa →</a>
+              </div>
+              <div class="cita-row" *ngFor="let cita of proximasCitas">
+                <div class="cita-avatar">{{ cita.iniciales }}</div>
+                <div class="cita-info">
+                  <strong>{{ cita.paciente }}</strong>
+                  <span>🕐 {{ cita.hora }} · {{ cita.motivo }}</span>
+                </div>
+                <span class="badge" [class.badge-green]="cita.estado === 'Confirmada'" [class.badge-yellow]="cita.estado === 'Pendiente'">
+                  {{ cita.estado }}
+                </span>
+              </div>
+              <a class="panel-footer-link" routerLink="/mis-citas">Ver todas las citas →</a>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Ingresos</h3>
+                <span class="panel-subtitle">Últimos 7 días</span>
+              </div>
+              <div class="ingresos-total">
+                <strong>S/. {{ ingresos | number }}</strong>
+                <span class="ingresos-delta">+8.2% vs semana anterior</span>
+              </div>
+              <svg class="ingresos-chart" viewBox="0 0 600 140" preserveAspectRatio="none">
+                <path [attr.d]="chartAreaPath" class="chart-area"></path>
+                <polyline [attr.points]="chartPoints" class="chart-line"></polyline>
+              </svg>
+              <div class="chart-labels">
+                <span *ngFor="let d of ingresosSemana">{{ d.dia }}</span>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header">
+                <h3>Reseñas recientes</h3>
+                <a href="#">Ver todas</a>
+              </div>
+              <div class="resena-row" *ngFor="let r of resenas">
+                <div class="cita-avatar">{{ r.iniciales }}</div>
+                <div class="resena-info">
+                  <div class="resena-top">
+                    <strong>{{ r.paciente }}</strong>
+                    <span class="resena-hace">{{ r.hace }}</span>
+                  </div>
+                  <div class="resena-stars">
+                    <span *ngFor="let i of [1,2,3,4,5]" [class.filled]="i <= r.estrellas">★</span>
+                  </div>
+                  <p>{{ r.comentario }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-col-right">
+            <div class="panel">
+              <div class="panel-header"><h3>Disponibilidad de hoy</h3></div>
+              <div class="disp-row" *ngFor="let slot of disponibilidadHoy">
+                <span>{{ slot.rango }}</span>
+                <span class="badge" [class.badge-blue]="slot.estado === 'Ocupado'" [class.badge-green]="slot.estado === 'Disponible'">
+                  {{ slot.estado }}
+                </span>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-header"><h3>Desempeño general</h3></div>
+              <div class="perf-row">
+                <div class="perf-label"><span>Tasa de asistencia</span><strong>{{ desempeno.asistencia }}%</strong></div>
+                <div class="perf-bar"><div class="perf-fill green" [style.width.%]="desempeno.asistencia"></div></div>
+              </div>
+              <div class="perf-row">
+                <div class="perf-label"><span>Citas completadas</span><strong>{{ desempeno.completadas }}%</strong></div>
+                <div class="perf-bar"><div class="perf-fill blue" [style.width.%]="desempeno.completadas"></div></div>
+              </div>
+              <div class="perf-row">
+                <div class="perf-label"><span>Tiempo promedio consulta</span><strong>{{ desempeno.tiempoPromedio }} min</strong></div>
+                <div class="perf-bar"><div class="perf-fill purple" [style.width.%]="(desempeno.tiempoPromedio / 60) * 100"></div></div>
+              </div>
+              <div class="perf-row">
+                <div class="perf-label"><span>Citas canceladas</span><strong>{{ desempeno.canceladas }}%</strong></div>
+                <div class="perf-bar"><div class="perf-fill red" [style.width.%]="desempeno.canceladas"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-public-footer></app-public-footer>
+</div>

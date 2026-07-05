@@ -48,6 +48,16 @@
       </div>
 
       <div class="filter-group">
+        <label>Ubicación</label>
+        <select [(ngModel)]="sidebarFiltros.ubicacion">
+          <option value="">Todas</option>
+          @for (distrito of ubicacionesDisponibles; track distrito) {
+            <option [value]="distrito">{{ distrito }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
         <label>Idioma</label>
         <select [(ngModel)]="sidebarFiltros.idioma">
           <option value="">Todos</option>

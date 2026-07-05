@@ -1,0 +1,141 @@
+<div class="container">
+
+  <app-public-navbar-paciente></app-public-navbar-paciente>
+
+  <div class="perfil-wrapper">
+
+    <button class="btn-volver" (click)="volver()">← Volver</button>
+
+    @if (cargando) {
+      <div class="state-msg">Cargando información del proveedor...</div>
+    } @else if (error) {
+      <div class="state-msg error">{{ error }}</div>
+    } @else if (provider) {
+
+      <div class="perfil-grid">
+
+        <div class="perfil-main">
+
+          <section class="card perfil-header">
+            <img class="perfil-photo" [src]="provider.photoUrl || 'assets/images/doctor-card-1.png'" [alt]="provider.fullName">
+            <div class="perfil-header-info">
+              <div class="perfil-name-row">
+                <h1>{{ banderaFor(provider.country) }} {{ provider.fullName }}</h1>
+                <button class="btn-heart" [class.active]="esFavorito" [disabled]="cargandoFavorito" (click)="toggleFavorito()">
+                  <i class="fa-solid fa-heart"></i>
+                </button>
+              </div>
+              <p class="perfil-specialty">{{ provider.specialty }}</p>
+              @if (provider.description) {
+                <p class="perfil-description">{{ provider.description }}</p>
+              }
+              @if (provider.averageRating) {
+                <p class="perfil-rating"><i class="fa-solid fa-star"></i> {{ provider.averageRating }}</p>
+              }
+            </div>
+          </section>
+
+          <section class="card">
+            <h3>Datos de la consulta</h3>
+            <div class="perfil-stats">
+              @if (provider.experienceYears) {
+                <div class="stat-item">
+                  <span class="stat-value">{{ provider.experienceYears }}+</span>
+                  <span class="stat-label">Años de experiencia</span>
+                </div>
+              }
+              <div class="stat-item">
+                <span class="stat-value">S/{{ provider.pricePerAppointment || 0 }}</span>
+                <span class="stat-label">Precio por consulta</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ provider.durationMinutes || 30 }} min</span>
+                <span class="stat-label">Duración</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">{{ provider.modality || 'Presencial' }}</span>
+                <span class="stat-label">Modalidad</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <h3>Ubicación de atención</h3>
+            <p class="perfil-address"><i class="fa-solid fa-location-dot"></i> {{ direccionCompleta() || 'No especificada' }}</p>
+            @if (provider.phone) {
+              <p class="perfil-phone"><i class="fa-solid fa-phone"></i> {{ provider.phone }}</p>
+            }
+            @if (direccionCompleta()) {
+              <a class="btn-maps" [href]="linkGoogleMaps()" target="_blank" rel="noopener">Ver en Google Maps</a>
+            }
+          </section>
+
+          <section class="card">
+            <h3>Disponibilidad</h3>
+            <input
+              type="date"
+              class="date-input"
+              [(ngModel)]="fechaSeleccionada"
+              [min]="fechaMinima"
+              (change)="onFechaChange()">
+
+            @if (cargandoSlots) {
+              <div class="state-msg">Cargando horarios...</div>
+            } @else if (errorSlots) {
+              <div class="state-msg error">{{ errorSlots }}</div>
+            } @else if (slots.length === 0) {
+              <div class="state-msg">No hay horarios para esta fecha.</div>
+            } @else {
+              <div class="slots-grid">
+                @for (slot of slots; track slot.startTime) {
+                  <span class="slot-chip" [class.disabled]="!slot.isAvailable">
+                  {{ formatearHora(slot.startTime) }}
+                </span>
+                }
+              </div>
+            }
+
+            <button class="btn-agendar" (click)="agendarCita()">Agendar cita</button>
+          </section>
+
+        </div>
+
+        <div class="perfil-sidebar">
+
+          @if (cargandoCita) {
+            <section class="card"><div class="state-msg">Cargando tu cita...</div></section>
+          } @else if (citaConEsteMedico) {
+            <section class="card">
+              <h3>Tu cita</h3>
+              <div class="cita-info">
+                <div><span class="meta-label">Fecha</span><span class="meta-value">{{ citaConEsteMedico.date }}</span></div>
+                <div><span class="meta-label">Hora</span><span class="meta-value">{{ formatearHora(citaConEsteMedico.time) }}</span></div>
+                <div><span class="meta-label">Duración</span><span class="meta-value">{{ citaConEsteMedico.durationMinutes }} min</span></div>
+                <div><span class="meta-label">Precio</span><span class="meta-value">S/{{ citaConEsteMedico.price }}</span></div>
+                <div><span class="meta-label">Modalidad</span><span class="meta-value">{{ citaConEsteMedico.modality }}</span></div>
+              </div>
+              <div class="cita-acciones">
+                <button class="btn-detalle" (click)="verDetalleCita()">Ver detalles</button>
+                <button class="btn-reprogramar" (click)="reagendarCita()">Reprogramar</button>
+                <button class="btn-cancelar-cita" (click)="cancelarCita()">Cancelar</button>
+              </div>
+            </section>
+          } @else {
+            <section class="card">
+              <h3>¿Quieres agendar con este médico?</h3>
+              <p class="perfil-description">Todavía no tienes una cita programada con {{ provider.fullName }}.</p>
+              <button class="btn-agendar" (click)="agendarCita()">Agendar cita</button>
+            </section>
+          }
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+  <app-public-footer></app-public-footer>
+
+</div>

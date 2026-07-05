@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ProviderService } from '../../services/provider.service';
+import { ClinicService } from '../../services/clinic.service';
+import { Clinic } from '../../models/clinic';
 
 @Component({
   selector: 'app-registro-doctor',
@@ -11,14 +13,13 @@ import { ProviderService } from '../../services/provider.service';
   templateUrl: './registro-doctor.html',
   styleUrl: './registro-doctor.css',
 })
-export class RegistroDoctorComponent {
+export class RegistroDoctorComponent implements OnInit {
   nombre = '';
   email = '';
   password = '';
 
   especialidad = '';
   modalidad = 'Presencial';
-  clinica = '';
 
   telefono = '';
   experiencia = 0;
@@ -32,30 +33,70 @@ export class RegistroDoctorComponent {
 
   showPassword = false;
 
+  // Clínicas disponibles para elegir (un doctor puede atender en varias)
+  clinicasDisponibles: Clinic[] = [];
+  clinicasSeleccionadas: number[] = [];
+  cargandoClinicas = true;
+  errorMsg = '';
+
   constructor(
     private router: Router,
     private providerService: ProviderService,
+    private clinicService: ClinicService,
   ) {}
+
+  ngOnInit(): void {
+    this.clinicService.listarActivas().subscribe({
+      next: (clinicas) => {
+        this.clinicasDisponibles = clinicas;
+        this.cargandoClinicas = false;
+      },
+      error: (err) => {
+        console.error('Error cargando clínicas', err);
+        this.cargandoClinicas = false;
+      },
+    });
+  }
+
+  toggleClinica(id: number): void {
+    const idx = this.clinicasSeleccionadas.indexOf(id);
+    if (idx === -1) {
+      this.clinicasSeleccionadas.push(id);
+    } else {
+      this.clinicasSeleccionadas.splice(idx, 1);
+    }
+  }
+
+  clinicaEstaSeleccionada(id: number): boolean {
+    return this.clinicasSeleccionadas.includes(id);
+  }
 
   togglePassword(): void {
     this.showPassword = !this.showPassword;
   }
 
   onSubmit(): void {
+    this.errorMsg = '';
+
     if (!this.nombre || !this.email || !this.password || !this.especialidad) {
-      alert('Completa todos los campos obligatorios');
+      this.errorMsg = 'Completa todos los campos obligatorios.';
       return;
     }
 
     if (!this.aceptaTerminos) {
-      alert('Debes aceptar los términos y condiciones');
+      this.errorMsg = 'Debes aceptar los términos y condiciones.';
+      return;
+    }
+
+    if (!this.clinicasSeleccionadas.length) {
+      this.errorMsg = 'Debes seleccionar al menos una clínica donde atiendes.';
       return;
     }
 
     const modalidadMap: Record<string, string> = {
-      Presencial: 'presencial',
-      Virtual: 'online',
-      Híbrida: 'ambos',
+      Presencial: 'Presencial',
+      Virtual: 'Virtual',
+      Híbrida: 'Híbrida',
     };
 
     const doctor = {
@@ -68,15 +109,14 @@ export class RegistroDoctorComponent {
 
       experienceYears: this.experiencia,
       language: this.idioma,
-      modality: modalidadMap[this.modalidad] || 'presencial',
+      modality: modalidadMap[this.modalidad] || 'Presencial',
 
       district: this.distrito,
       city: this.ciudad,
-
-      // Campos requeridos por el backend
-      street: this.clinica,
       country: 'Perú',
       pricePerAppointment: 0,
+
+      clinicIds: this.clinicasSeleccionadas,
     };
 
     console.log('Enviando al backend:', doctor);
@@ -89,7 +129,7 @@ export class RegistroDoctorComponent {
       },
       error: (error) => {
         console.error('Error:', error);
-        alert('Error al registrar doctor');
+        this.errorMsg = error?.error?.message || 'Error al registrar doctor.';
       },
     });
   }

@@ -1,0 +1,205 @@
+<div class="dash-shell">
+  <app-navbar-proveedor></app-navbar-proveedor>
+  <div class="dash-body">
+    <app-sidebar-proveedor></app-sidebar-proveedor>
+    <div class="dash-main">
+      <div class="dash-content">
+
+        <div class="perfil-hero">
+          <div class="perfil-hero__photo">
+            <img [src]="doctor.photoUrl" [alt]="doctor.nombre">
+            <button class="perfil-hero__photo-edit" title="Cambiar foto" (click)="onEditPhoto()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </button>
+          </div>
+          <div class="perfil-hero__info">
+            <div class="perfil-hero__name-row">
+              <h1>Dr. {{ doctor.nombre }}</h1>
+              <svg *ngIf="doctor.verificado" class="perfil-verified" width="20" height="20" viewBox="0 0 24 24" fill="#2563EB"><path d="M12 2l2.4 2.2 3.2-.5 1 3.1 3 1.4-1 3.1 1 3.1-3 1.4-1 3.1-3.2-.5L12 22l-2.4-2.2-3.2.5-1-3.1-3-1.4 1-3.1-1-3.1 3-1.4 1-3.1 3.2.5z"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="perfil-hero__specialty">{{ doctor.especialidades.length ? doctor.especialidades.join(' • ') : '–' }}</p>
+            <div class="perfil-hero__meta">
+              <span><i class="fa-regular fa-clock"></i> {{ doctor.aniosExperiencia || '–' }} años experiencia</span>
+              <span><i class="fa-solid fa-language"></i> Idiomas: {{ doctor.idiomas.length ? doctor.idiomas.join(' | ') : '–' }}</span>
+            </div>
+          </div>
+          <button class="btn-editar-perfil" routerLink="/editar-perfil/proveedor">
+            <i class="fa-solid fa-pen"></i>
+            Editar perfil
+          </button>
+        </div>
+
+        <div class="perfil-stats-grid">
+          <div class="perfil-stat-card">
+            <div class="stat-icon blue">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-9m0 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3M4 7h16v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg>
+            </div>
+            <strong>{{ doctor.aniosExperiencia ? doctor.aniosExperiencia + '+' : '–' }}</strong>
+            <span>Años experiencia</span>
+          </div>
+
+          <div class="perfil-stat-card">
+            <div class="stat-icon green">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <strong>{{ doctor.pacientesAtendidos !== null ? doctor.pacientesAtendidos + '+' : '–' }}</strong>
+            <span>Pacientes atendidos</span>
+          </div>
+
+          <div class="perfil-stat-card">
+            <div class="stat-icon yellow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <strong>{{ doctor.calificacion || '–' }}</strong>
+            <span>Calificación</span>
+          </div>
+
+          <div class="perfil-stat-card">
+            <div class="stat-icon purple">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <strong>{{ doctor.totalResenas !== null ? doctor.totalResenas : '–' }}</strong>
+            <span>Reseñas</span>
+          </div>
+
+          <div class="perfil-stat-card">
+            <div class="stat-icon red">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+            </div>
+            <strong>{{ doctor.tasaRecomendacion !== null ? doctor.tasaRecomendacion + '%' : '–' }}</strong>
+            <span>Recomendación</span>
+          </div>
+        </div>
+
+        <div class="perfil-columns">
+          <div class="perfil-col-left">
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-briefcase-medical panel-icon blue"></i> Información profesional</h3>
+              </div>
+              <p class="perfil-label">Descripción</p>
+              <p class="perfil-text">{{ doctor.descripcionProfesional || '–' }}</p>
+
+              <p class="perfil-label">Áreas de enfoque</p>
+              <div class="perfil-tags" *ngIf="doctor.areasEnfoque.length; else sinAreas">
+                <span class="perfil-tag" *ngFor="let area of doctor.areasEnfoque">{{ area }}</span>
+              </div>
+              <ng-template #sinAreas>
+                <p class="perfil-text">–</p>
+              </ng-template>
+
+              <div class="perfil-grid-2">
+                <div>
+                  <p class="perfil-label">Cédula profesional</p>
+                  <p class="perfil-value">{{ doctor.cedulaProfesional || '–' }}</p>
+                </div>
+                <div>
+                  <p class="perfil-label">Registro médico</p>
+                  <p class="perfil-value">{{ doctor.registroMedico || '–' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-graduation-cap panel-icon purple"></i> Educación</h3>
+              </div>
+              <ng-container *ngIf="doctor.educacion.length; else sinEducacion">
+                <div class="perfil-edu-row" *ngFor="let edu of doctor.educacion; let last = last" [class.no-border]="last">
+                  <div class="perfil-edu-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                  </div>
+                  <div class="perfil-edu-info">
+                    <strong>{{ edu.titulo }}</strong>
+                    <span class="perfil-edu-institucion">{{ edu.institucion }}</span>
+                    <span class="perfil-edu-periodo">{{ edu.periodo }}</span>
+                    <p>{{ edu.detalle }}</p>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #sinEducacion>
+                <p class="perfil-text">–</p>
+              </ng-template>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-award panel-icon green"></i> Certificaciones</h3>
+              </div>
+              <div class="perfil-cert-grid" *ngIf="doctor.certificaciones.length; else sinCertificaciones">
+                <div class="perfil-cert-item" *ngFor="let cert of doctor.certificaciones">
+                  <i class="fa-solid fa-circle-check"></i>
+                  {{ cert }}
+                </div>
+              </div>
+              <ng-template #sinCertificaciones>
+                <p class="perfil-text">–</p>
+              </ng-template>
+            </div>
+
+          </div>
+
+          <div class="perfil-col-right">
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-phone panel-icon blue"></i> Información de contacto</h3>
+              </div>
+
+              <p class="perfil-label">Consultorio</p>
+              <p class="perfil-subvalue">{{ doctor.consultorioDireccion || '–' }}</p>
+
+              <p class="perfil-label">Teléfono</p>
+              <p class="perfil-value">{{ doctor.telefono || '–' }}</p>
+
+              <p class="perfil-label">Email</p>
+              <p class="perfil-value">{{ doctor.email || '–' }}</p>
+
+              <p class="perfil-label">Horario de atención</p>
+              <ng-container *ngIf="doctor.horario.length; else sinHorario">
+                <p class="perfil-value" *ngFor="let h of doctor.horario">{{ h }}</p>
+              </ng-container>
+              <ng-template #sinHorario>
+                <p class="perfil-value">–</p>
+              </ng-template>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-regular fa-heart panel-icon green"></i> Servicios</h3>
+              </div>
+              <ng-container *ngIf="doctor.servicios.length; else sinServicios">
+                <div class="perfil-servicio-row" *ngFor="let servicio of doctor.servicios">
+                  <i class="fa-solid fa-check"></i>
+                  {{ servicio }}
+                </div>
+              </ng-container>
+              <ng-template #sinServicios>
+                <p class="perfil-text">–</p>
+              </ng-template>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <h3><i class="fa-solid fa-dollar-sign panel-icon purple"></i> Precios</h3>
+              </div>
+              <ng-container *ngIf="doctor.precios.length; else sinPrecios">
+                <div class="perfil-precio-row" *ngFor="let precio of doctor.precios">
+                  <span>{{ precio.nombre }}</span>
+                  <strong>S/. {{ precio.monto }}</strong>
+                </div>
+              </ng-container>
+              <ng-template #sinPrecios>
+                <p class="perfil-text">–</p>
+              </ng-template>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <app-public-footer></app-public-footer>
+</div>

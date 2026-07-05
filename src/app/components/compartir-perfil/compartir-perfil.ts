@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
+import { PublicNavbarComponent } from '../../shared/public-navbar-paciente/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
 interface Campo {

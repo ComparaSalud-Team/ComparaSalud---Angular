@@ -16,7 +16,7 @@ export class LoginComponent implements OnInit {
   password = '';
   showPassword = false;
 
-  private returnUrl = '/dashboard';
+  private returnUrl = '';
 
   constructor(
     private auth: AuthService,
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
   }
 
   togglePassword() {
@@ -35,7 +35,18 @@ export class LoginComponent implements OnInit {
   onSubmit() {
     this.auth.login(this.email, this.password).subscribe({
       next: () => {
-        this.router.navigateByUrl(this.returnUrl);
+        if (this.returnUrl) {
+          this.router.navigateByUrl(this.returnUrl);
+          return;
+        }
+
+        const role = (this.auth.getRole() || '').toString().toUpperCase();
+
+        if (role === 'PROVIDER') {
+          this.router.navigateByUrl('/dashboard/proveedor');
+        } else {
+          this.router.navigateByUrl('/dashboard/paciente');
+        }
       },
       error: (err) => {
         console.error('Error al iniciar sesión:', err);

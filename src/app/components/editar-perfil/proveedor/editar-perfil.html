@@ -1,0 +1,401 @@
+<div class="dash-shell">
+  <app-navbar-proveedor></app-navbar-proveedor>
+  <div class="dash-body">
+    <app-sidebar-proveedor></app-sidebar-proveedor>
+    <div class="dash-main">
+      <div class="dash-content">
+
+        <div class="editar-page">
+          <div class="editar-header">
+            <h1>Editar perfil</h1>
+            <div class="header-actions">
+              <button class="btn-regresar" (click)="regresar()">Regresar</button>
+              <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando">
+                {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+              </button>
+            </div>
+          </div>
+
+          @if (errorMsg) {
+            <div class="error-banner">{{ errorMsg }}</div>
+          }
+
+          @if (cargando) {
+            <p class="cargando-text">Cargando perfil...</p>
+          } @else {
+            <div class="editar-grid">
+              <div class="editar-tabs">
+                <button class="tab-item" [class.active]="seccionActiva === 'profesional'" (click)="irASeccion('profesional')">
+                  <i class="fa-solid fa-briefcase-medical"></i> Información profesional
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'ubicacion'" (click)="irASeccion('ubicacion')">
+                  <i class="fa-solid fa-location-dot"></i> Ubicación
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'precios'" (click)="irASeccion('precios')">
+                  <i class="fa-solid fa-dollar-sign"></i> Precios
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'educacion'" (click)="irASeccion('educacion')">
+                  <i class="fa-solid fa-graduation-cap"></i> Educación
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'certificaciones'" (click)="irASeccion('certificaciones')">
+                  <i class="fa-solid fa-award"></i> Certificaciones
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'servicios'" (click)="irASeccion('servicios')">
+                  <i class="fa-regular fa-heart"></i> Servicios
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'horario'" (click)="irASeccion('horario')">
+                  <i class="fa-regular fa-clock"></i> Horario
+                </button>
+              </div>
+
+              <div class="editar-main">
+                @if (seccionActiva === 'profesional') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-briefcase-medical"></i>
+                      <div>
+                        <strong>Información profesional</strong>
+                        <p>Actualiza tu información básica y profesional</p>
+                      </div>
+                    </div>
+                    <div class="avatar-block">
+                      <img [src]="avatar" alt="Foto de perfil" />
+                      <span class="avatar-label">Actualizar foto</span>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" [(ngModel)]="provider.fullName" name="fullName" placeholder="Ej. Juan Pérez García" />
+                      </div>
+                      <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" [(ngModel)]="provider.phone" name="phone" maxlength="9" inputmode="numeric" (input)="soloNumeros($event)" placeholder="Ej. 987654321" />
+                      </div>
+                      <div class="form-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" [value]="provider.email" disabled />
+                      </div>
+                      <div class="form-group">
+                        <label>Años de experiencia</label>
+                        <input type="number" [(ngModel)]="provider.experienceYears" name="experienceYears" min="0" max="70" placeholder="Ej. 5" />
+                      </div>
+
+                      <div class="form-group full">
+                        <label>Especialidades</label>
+                        <div style="display: flex; gap: 8px;">
+                          <select [(ngModel)]="nuevaEspecialidad" name="nuevaEspecialidad" style="flex: 1;">
+                            <option value="">Seleccionar</option>
+                            <option>Cardiología</option>
+                            <option>Pediatría</option>
+                            <option>Dermatología</option>
+                            <option>Neurología</option>
+                            <option>Ginecología</option>
+                            <option>Traumatología</option>
+                            <option>Oftalmología</option>
+                            <option>Medicina General</option>
+                          </select>
+                          <button class="btn-guardar" (click)="agregarEspecialidad()" type="button">Agregar</button>
+                        </div>
+                        <div class="perfil-tags" style="margin-top: 10px;">
+                          <span class="perfil-tag" *ngFor="let esp of especialidadesSeleccionadas; let i = index" (click)="quitarEspecialidad(i)">
+                            {{ esp }}
+                            <span class="tag-remove">✕</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="form-group full">
+                        <label>Idiomas</label>
+                        <div style="display: flex; gap: 8px;">
+                          <select [(ngModel)]="nuevoIdioma" name="nuevoIdioma" style="flex: 1;">
+                            <option value="">Seleccionar</option>
+                            <option>Español</option>
+                            <option>Inglés</option>
+                            <option>Quechua</option>
+                            <option>Portugués</option>
+                          </select>
+                          <button class="btn-guardar" (click)="agregarIdioma()" type="button">Agregar</button>
+                        </div>
+                        <div class="perfil-tags" style="margin-top: 10px;">
+                          <span class="perfil-tag" *ngFor="let idioma of idiomasSeleccionados; let i = index" (click)="quitarIdioma(i)">
+                            {{ idioma }}
+                            <span class="tag-remove">✕</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label>Modalidad</label>
+                        <select [(ngModel)]="provider.modality" name="modality">
+                          <option value="" disabled selected>Seleccionar</option>
+                          <option>Presencial</option>
+                          <option>Virtual</option>
+                          <option>Híbrida</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Cédula profesional</label>
+                        <input type="text" [(ngModel)]="provider.cedulaProfesional" name="cedulaProfesional" placeholder="Ej. CMP 12345" />
+                      </div>
+                      <div class="form-group">
+                        <label>Registro médico</label>
+                        <input type="text" [(ngModel)]="provider.registroMedico" name="registroMedico" placeholder="Ej. RNE 6789" />
+                      </div>
+                      <div class="form-group full">
+                        <label>Áreas de enfoque</label>
+                        <div style="display: flex; gap: 8px;">
+                          <input type="text" [(ngModel)]="nuevaAreaEnfoque" name="nuevaAreaEnfoque" (keyup.enter)="agregarAreaEnfoque()" style="flex: 1;" placeholder="Ej. Cirugía mínimamente invasiva" />
+                          <button class="btn-guardar" (click)="agregarAreaEnfoque()" type="button">Agregar</button>
+                        </div>
+                        <div class="perfil-tags" style="margin-top: 10px;">
+                          <span class="perfil-tag" *ngFor="let area of provider.areasEnfoque; let i = index" (click)="quitarAreaEnfoque(i)">
+                            {{ area }}
+                            <span class="tag-remove">✕</span>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="form-group full">
+                        <label>Descripción</label>
+                        <textarea [(ngModel)]="provider.description" name="description" rows="3"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'ubicacion') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-location-dot"></i>
+                      <div>
+                        <strong>Ubicación</strong>
+                        <p>Dirección de tu consultorio o lugar de atención</p>
+                      </div>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group full">
+                        <label>Calle / Dirección</label>
+                        <input type="text" [(ngModel)]="provider.street" name="street" placeholder="Ej. Av. Javier Prado 123" />
+                      </div>
+                      <div class="form-group">
+                        <label>Distrito</label>
+                        <input type="text" [(ngModel)]="provider.district" name="district" placeholder="Ej. San Isidro" />
+                      </div>
+                      <div class="form-group">
+                        <label>Ciudad</label>
+                        <input type="text" [(ngModel)]="provider.city" name="city" placeholder="Ej. Lima" />
+                      </div>
+                      <div class="form-group">
+                        <label>País</label>
+                        <input type="text" [(ngModel)]="provider.country" name="country" placeholder="Ej. Perú" />
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'precios') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-dollar-sign"></i>
+                      <div>
+                        <strong>Precios</strong>
+                        <p>Configura el precio de cada servicio o consulta que ofreces</p>
+                      </div>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="form-group">
+                        <label>Nombre del servicio</label>
+                        <input type="text" [(ngModel)]="nuevoPrecioNombre" name="nuevoPrecioNombre" placeholder="Ej. Consulta general" />
+                      </div>
+                      <div class="form-group">
+                        <label>Precio (S/.)</label>
+                        <div style="display: flex; gap: 8px;">
+                          <input type="number" [(ngModel)]="nuevoPrecioMonto" name="nuevoPrecioMonto" placeholder="Ej. 200" style="flex: 1;" />
+                          <button class="btn-guardar" (click)="agregarPrecio()" type="button">Agregar</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="margin-top: 18px;">
+                      <div *ngFor="let precio of provider.precios; let i = index" class="perfil-servicio-row" style="justify-content: space-between;">
+                        <span>{{ precio.nombre }}</span>
+                        <div style="display: flex; align-items: center; gap: 14px;">
+                          <strong>S/. {{ precio.monto }}</strong>
+                          <button class="btn-regresar" (click)="quitarPrecio(i)" type="button">Quitar</button>
+                        </div>
+                      </div>
+                      <p class="perfil-text" *ngIf="!provider.precios.length">Aún no agregaste ningún precio.</p>
+                    </div>
+                  </div>
+                }
+                @if (seccionActiva === 'educacion') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-graduation-cap"></i>
+                      <div>
+                        <strong>Educación</strong>
+                        <p>Agrega tu formación académica</p>
+                      </div>
+                    </div>
+                    <div *ngFor="let edu of provider.educacion; let i = index" class="form-grid" style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #F1F5F9;">
+                      <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" [(ngModel)]="edu.titulo" [name]="'titulo' + i" />
+                      </div>
+                      <div class="form-group">
+                        <label>Institución</label>
+                        <input type="text" [(ngModel)]="edu.institucion" [name]="'institucion' + i" />
+                      </div>
+                      <div class="form-group">
+                        <label>Período</label>
+                        <input type="text" [(ngModel)]="edu.periodo" [name]="'periodo' + i" placeholder="Ej. 2015 - 2020" />
+                      </div>
+                      <div class="form-group">
+                        <label>Detalle</label>
+                        <input type="text" [(ngModel)]="edu.detalle" [name]="'detalle' + i" />
+                      </div>
+                      <div class="form-group full">
+                        <button class="btn-regresar" (click)="quitarEducacion(i)" type="button">Quitar</button>
+                      </div>
+                    </div>
+                    <button class="btn-guardar" (click)="agregarEducacion()" type="button">+ Agregar educación</button>
+                  </div>
+                }
+
+                @if (seccionActiva === 'certificaciones') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-award"></i>
+                      <div>
+                        <strong>Certificaciones</strong>
+                        <p>Agrega tus certificaciones profesionales</p>
+                      </div>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group full">
+                        <label>Nueva certificación</label>
+                        <div style="display: flex; gap: 8px;">
+                          <input type="text" [(ngModel)]="nuevaCertificacion" name="nuevaCertificacion" (keyup.enter)="agregarCertificacion()" style="flex: 1;" placeholder="Ej. Certificación en Cirugía Laparoscópica" />
+                          <button class="btn-guardar" (click)="agregarCertificacion()" type="button">Agregar</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="perfil-tags" style="margin-top: 14px;">
+                      <span class="perfil-tag" *ngFor="let cert of provider.certificaciones; let i = index" (click)="quitarCertificacion(i)">
+                        {{ cert }}
+                        <span class="tag-remove">✕</span>
+                      </span>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'servicios') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-regular fa-heart"></i>
+                      <div>
+                        <strong>Servicios</strong>
+                        <p>Selecciona los servicios que ofreces</p>
+                      </div>
+                    </div>
+                    <p class="perfil-text" *ngIf="!catalogoServicios.length">
+                      No hay servicios disponibles en el catálogo por el momento.
+                    </p>
+                    <div class="servicios-grid" *ngIf="catalogoServicios.length">
+                      <div
+                        class="servicio-card"
+                        *ngFor="let servicio of catalogoServicios"
+                        [class.selected]="servicioEstaSeleccionado(servicio.id)"
+                        (click)="toggleServicio(servicio.id)">
+                        <div class="servicio-check">
+                          <i class="fa-solid fa-check"></i>
+                        </div>
+                        <span>{{ servicio.name }}</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'horario') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-regular fa-clock"></i>
+                      <div>
+                        <strong>Horario de atención</strong>
+                        <p>Selecciona los días y el rango de horas en que atiendes</p>
+                      </div>
+                    </div>
+
+                    <label class="perfil-label" style="display:block; margin-bottom: 8px;">Días</label>
+                    <div class="dias-selector">
+                      <button
+                        type="button"
+                        class="dia-chip"
+                        *ngFor="let dia of diasSemana"
+                        [class.active]="diasSeleccionados.includes(dia)"
+                        (click)="toggleDia(dia)">
+                        {{ dia.slice(0, 3) }}
+                      </button>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 16px;">
+                      <div class="form-group">
+                        <label>Hora de inicio</label>
+                        <input type="time" [(ngModel)]="horaInicio" name="horaInicio" />
+                      </div>
+                      <div class="form-group">
+                        <label>Hora de fin</label>
+                        <input type="time" [(ngModel)]="horaFin" name="horaFin" />
+                      </div>
+                    </div>
+
+                    <button class="btn-guardar" (click)="agregarHorario()" type="button" style="margin-top: 16px;">
+                      + Agregar bloque de horario
+                    </button>
+                    <p *ngIf="horarioError" style="color: #DC2626; font-size: .8rem; margin-top: 8px;">{{ horarioError }}</p>
+
+                    <div class="perfil-tags" style="margin-top: 18px;">
+                      <span class="perfil-tag" *ngFor="let h of provider.horario; let i = index" (click)="quitarHorario(i)">
+                        {{ h }}
+                        <span class="tag-remove">✕</span>
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="editar-sidebar">
+                <div class="sidebar-card">
+                  <h3>Resumen del perfil</h3>
+                  <div class="resumen-item">
+                    <i class="fa-solid fa-circle-check" [class.ok]="provider.isValidated || porcentajePerfil() === 100"></i>
+                    <div>
+                      <strong>{{ provider.isValidated ? 'Perfil verificado' : (porcentajePerfil() === 100 ? 'Perfil completo' : 'Verificación pendiente') }}</strong>
+                      <p>Perfil al {{ porcentajePerfil() }}%</p>
+                    </div>
+                  </div>
+                  <div class="resumen-item">
+                    <i class="fa-solid fa-circle-check ok"></i>
+                    <div>
+                      <strong>Email verificado</strong>
+                      <p>{{ provider.email }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sidebar-card">
+                  <h3>Acciones rápidas</h3>
+                  <a class="accion-link" routerLink="/perfil">Cambiar contraseña</a>
+                  <a class="accion-link" routerLink="/perfil">Configurar privacidad</a>
+                  <a class="accion-link" routerLink="/perfil">Ver perfil público</a>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <app-public-footer></app-public-footer>
+</div>

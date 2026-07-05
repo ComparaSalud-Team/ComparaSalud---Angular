@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth';
-import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
+import { PublicNavbarComponent } from '../../shared/public-navbar-paciente/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 import { Favorito } from '../../models/favorito';
 import { FavoritoService } from '../../services/favorito.service';
@@ -36,10 +36,15 @@ export class MisFavoritosComponent implements OnInit {
     'linear-gradient(135deg, #6366F1, #06B6D4)',
   ];
 
+  // Cuando un proveedor atiende en varias clínicas, guardamos aquí cuál
+  // eligió el paciente en el <select> de la tarjeta (por providerId).
+  clinicaSeleccionada: { [providerId: number]: number } = {};
+
   constructor(
     private auth: AuthService,
     private favoritoService: FavoritoService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +55,7 @@ export class MisFavoritosComponent implements OnInit {
     if (!this.patientId) {
       this.error = 'No se pudo identificar al paciente. Vuelve a iniciar sesión.';
       this.cargando = false;
+      this.cdr.detectChanges();
       return;
     }
 
@@ -63,12 +69,19 @@ export class MisFavoritosComponent implements OnInit {
     this.favoritoService.listarFavoritos(this.patientId!).subscribe({
       next: (data) => {
         this.favoritos = data || [];
+        this.favoritos.forEach((f) => {
+          if (f.clinicIds?.length) {
+            this.clinicaSeleccionada[f.providerId] = f.clinicIds[0];
+          }
+        });
         this.aplicarFiltros();
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'No se pudieron cargar tus proveedores favoritos. Intenta nuevamente.';
         this.cargando = false;
+        this.cdr.detectChanges();
       },
     });
   }
@@ -121,14 +134,23 @@ export class MisFavoritosComponent implements OnInit {
       next: () => {
         this.favoritos = this.favoritos.filter((f) => f.favoriteId !== favorito.favoriteId);
         this.aplicarFiltros();
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'No se pudo eliminar este favorito. Intenta nuevamente.';
+        this.cdr.detectChanges();
       },
     });
   }
 
   verServicios(favorito: Favorito): void {
-    this.router.navigate(['/providers', favorito.providerId]);
+    const clinicId = this.clinicaSeleccionada[favorito.providerId] ?? favorito.clinicIds?.[0];
+
+    if (!clinicId) {
+      alert('Este proveedor todavía no tiene una clínica asociada.');
+      return;
+    }
+
+    this.router.navigate(['/clinicas', clinicId]);
   }
 }

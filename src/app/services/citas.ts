@@ -12,12 +12,22 @@ export class CitasService {
   constructor(private http: HttpClient) {}
 
   // HU nueva (backend) – Historial de citas del paciente (COMPLETED y CANCELLED).
-  // El backend solo devuelve estas dos, no hay endpoint para listar
-  // citas próximas/pendientes de un paciente todavía.
   obtenerHistorial(userId: number): Observable<AppointmentHistoryDTO[]> {
     return this.http.get<AppointmentHistoryDTO[]>(`${this.apiUrl}/history`, {
       params: { userId },
     });
+  }
+
+  // Próximas citas del paciente (PENDING/SCHEDULED, fecha >= hoy).
+  obtenerProximas(userId: number): Observable<AppointmentHistoryDTO[]> {
+    return this.http.get<AppointmentHistoryDTO[]>(`${this.apiUrl}/upcoming`, {
+      params: { userId },
+    });
+  }
+
+  // Detalle de una cita puntual (página "Ver detalles" / "Reagendar cita").
+  obtenerPorId(appointmentId: number): Observable<AppointmentHistoryDTO> {
+    return this.http.get<AppointmentHistoryDTO>(`${this.apiUrl}/${appointmentId}`);
   }
 
   // HU34 – Cancelar cita
@@ -33,7 +43,6 @@ export class CitasService {
     return this.http.put(`${this.apiUrl}/${appointmentId}/reschedule`, body);
   }
 
-  // HU33 – Agendar cita
   agendarCita(body: {
     patientId: number;
     providerId: number;
@@ -42,6 +51,7 @@ export class CitasService {
     startTime: string;
     endTime: string;
     notes?: string;
+    paymentMethod?: string;
   }): Observable<any> {
     return this.http.post(this.apiUrl, body);
   }

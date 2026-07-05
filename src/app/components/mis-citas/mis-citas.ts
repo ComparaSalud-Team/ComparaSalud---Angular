@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { AuthService } from '../../services/auth';
 import { CitasService } from '../../services/citas';
 import { Cita, AppointmentHistoryDTO } from '../../models/cita';
-import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
+import { PublicNavbarComponent } from '../../shared/public-navbar-paciente/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
 @Component({
@@ -24,10 +26,10 @@ export class MisCitasComponent implements OnInit {
 
   get citasFiltradas() {
     if (this.tabActivo === 'todas') return this.citas;
-    return this.citas.filter(
-      (c) =>
-        c.estado === this.tabActivo || (this.tabActivo === 'proximas' && c.estado === 'proxima'),
-    );
+    if (this.tabActivo === 'proximas') {
+      return this.citas.filter((c) => c.estado === 'proxima' || c.estado === 'confirmada');
+    }
+    return this.citas.filter((c) => c.estado === this.tabActivo);
   }
 
   get totalCitas() {
@@ -50,6 +52,7 @@ export class MisCitasComponent implements OnInit {
     private auth: AuthService,
     private citasService: CitasService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -62,25 +65,27 @@ export class MisCitasComponent implements OnInit {
     if (!userId) {
       this.cargando = false;
       this.error = 'No se pudo identificar al usuario. Inicia sesión nuevamente.';
+      this.cdr.detectChanges();
       return;
     }
 
     this.cargando = true;
     this.error = null;
 
-    this.citasService.obtenerHistorial(userId).subscribe({
-      next: (historial: AppointmentHistoryDTO[]) => {
-        this.citas = historial.map((h) => this.mapearCita(h));
+    forkJoin({
+      // Backend responde 404 cuando el paciente aún no tiene historial
+      historial: this.citasService.obtenerHistorial(userId).pipe(catchError(() => of([]))),
+      proximas: this.citasService.obtenerProximas(userId).pipe(catchError(() => of([]))),
+    }).subscribe({
+      next: ({ historial, proximas }) => {
+        this.citas = [...proximas, ...historial].map((h) => this.mapearCita(h));
         this.cargando = false;
+        this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         this.cargando = false;
-        if (err.status === 404) {
-          // Backend responde 404 cuando el paciente aún no tiene citas registradas
-          this.citas = [];
-        } else {
-          this.error = 'No se pudieron cargar tus citas. Intenta nuevamente.';
-        }
+        this.error = 'No se pudieron cargar tus citas. Intenta nuevamente.';
+        this.cdr.detectChanges();
       },
     });
   }
@@ -89,16 +94,18 @@ export class MisCitasComponent implements OnInit {
     return {
       id: `APT-${h.appointmentId}`,
       appointmentId: h.appointmentId,
+      providerId: h.providerId,
       doctorNombre: h.doctor,
-      doctorImagen: 'assets/images/doctor-card-1.png',
-      especialidad: '',
-      calificacion: 0,
+      doctorImagen: h.photoUrl || 'assets/images/doctor-card-1.png',
+      especialidad: h.specialty || '',
+      calificacion: h.rating || 0,
       fecha: h.date,
       hora: h.time,
-      duracionMin: 0,
-      ubicacion: '',
+      duracionMin: h.durationMinutes || 30,
+      ubicacion: h.district || '',
+      modalidad: h.modality || 'Presencial',
       estado: this.mapearEstado(h.status),
-      precio: 0,
+      precio: h.price || 0,
       moneda: 'PEN',
     };
   }
@@ -120,6 +127,14 @@ export class MisCitasComponent implements OnInit {
 
   setTab(tab: string) {
     this.tabActivo = tab;
+  }
+
+  verDetalles(cita: Cita) {
+    this.router.navigate(['/mis-citas', cita.appointmentId]);
+  }
+
+  reagendarCita(cita: Cita) {
+    this.router.navigate(['/mis-citas', cita.appointmentId], { queryParams: { reagendar: true } });
   }
 
   cancelarCita(cita: Cita) {
