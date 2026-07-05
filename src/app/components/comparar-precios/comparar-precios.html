@@ -1,0 +1,99 @@
+<app-public-navbar></app-public-navbar>
+
+<div class="cpr-wrapper">
+
+  <h1>Comparador de precios</h1>
+  <p class="cpr-subtitle">Transparencia total: compara precios de consultas en diferentes clínicas y toma la mejor decisión.</p>
+
+  <div class="cpr-banner">
+    <span class="cpr-banner-icon">ℹ</span>
+    <div>
+      <strong>Precios claros, sin sorpresas</strong>
+      <p>Todos los precios mostrados incluyen la consulta y servicios básicos. Los precios pueden variar según promociones vigentes.</p>
+    </div>
+  </div>
+
+  <div class="cpr-filters">
+    <div class="cpr-search">
+      <input
+        type="text"
+        placeholder="Buscar especialidad"
+        [(ngModel)]="busqueda"
+        (ngModelChange)="aplicarFiltros()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+    </div>
+    <select [(ngModel)]="filtroClinica" (ngModelChange)="aplicarFiltros()">
+      <option value="">Filtrar por clínica</option>
+      @for (clinica of clinicasDisponibles; track clinica) {
+        <option [value]="clinica">{{ clinica }}</option>
+      }
+    </select>
+    <select [(ngModel)]="ordenPrecio" (ngModelChange)="aplicarFiltros()">
+      <option value="">Ordenar por precio</option>
+      <option value="asc">Menor a mayor</option>
+      <option value="desc">Mayor a menor</option>
+    </select>
+  </div>
+
+  @if (cargando) {
+    <div class="cpr-state">Cargando precios...</div>
+  } @else if (error) {
+    <div class="cpr-state cpr-error">{{ error }}</div>
+  } @else if (grupos.length === 0) {
+    <div class="cpr-state">No se encontraron especialidades con esos filtros.</div>
+  } @else {
+
+    @for (grupo of grupos; track grupo.especialidad) {
+      <section class="cpr-group">
+        <div class="cpr-group-header">
+          <h2>{{ grupo.especialidad }}</h2>
+          <span class="cpr-desde">↘ Desde {{ grupo.desde | number: '1.2-2' }} PEN</span>
+        </div>
+
+        <div class="cpr-table-scroll">
+          <table class="cpr-table">
+            <thead>
+              <tr>
+                <th>Clínica</th>
+                <th>Precio</th>
+                <th>Duración</th>
+                <th>Incluye</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (fila of grupo.filas; track fila.id) {
+                <tr>
+                  <td>{{ fila.clinicName }}</td>
+                  <td class="cpr-price">{{ fila.price | number: '1.2-2' }} PEN</td>
+                  <td>{{ fila.durationMinutes }} min</td>
+                  <td>
+                    <ul class="cpr-includes">
+                      @for (item of fila.includes; track item) {
+                        <li>✓ {{ item }}</li>
+                      }
+                    </ul>
+                  </td>
+                  <td>
+                    <button class="cpr-btn" (click)="agendar(fila)">Agendar</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+    <div class="cpr-note">
+      <strong>Nota:</strong> Los precios son referenciales y pueden variar según promociones vigentes. Al agendar tu cita, verás el precio final confirmado antes de realizar el pago.
+    </div>
+
+  }
+
+</div>
+
+<app-public-footer></app-public-footer>

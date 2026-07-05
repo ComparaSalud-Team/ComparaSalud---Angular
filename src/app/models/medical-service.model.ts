@@ -1,0 +1,10 @@
+// Refleja el MedicalServiceDTO del backend (GET /api/services/active).
+export interface MedicalService {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  isActive: boolean;
+  categoryId: number | null;
+  categoryName: string | null;
+}

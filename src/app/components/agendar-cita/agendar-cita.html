@@ -1,0 +1,383 @@
+<div class="container">
+
+<app-public-navbar></app-public-navbar>
+
+<div class="agendar-wrapper">
+
+  @if (cargandoProvider) {
+    <div class="state-msg">Cargando información del proveedor...</div>
+  } @else if (errorProvider) {
+    <div class="state-msg error">{{ errorProvider }}</div>
+  } @else if (provider) {
+
+    @if (citaConfirmada) {
+
+      <div class="confirmacion-wrapper">
+        <div class="confirmacion">
+          <div class="confirmacion-icon">✔</div>
+          <h2>¡Tu cita quedó confirmada!</h2>
+          <p>
+            {{ provider.fullName }} · {{ fechaLegible() }}
+            @if (slotSeleccionado) {
+              · {{ formatearHora(slotSeleccionado.startTime) }} - {{ horaFin }}
+            }
+          </p>
+          <p class="confirmacion-pago">Pago: {{ metodoPago }} · S/{{ precio }}</p>
+          <button class="btn-primario" (click)="irAMisCitas()">Ver mis citas</button>
+        </div>
+      </div>
+
+    } @else {
+
+      <h1>Agendar cita médica</h1>
+      <p class="agendar-subtitle">Selecciona fecha, hora y confirma los detalles de tu cita.</p>
+
+      <!-- Stepper -->
+      <div class="stepper">
+        <div class="step done">
+          <span class="step-circle">✔</span>
+          <div class="step-info"><strong>Seleccionar médico</strong><small>Completado</small></div>
+          <span class="step-line done"></span>
+        </div>
+        <div class="step" [class.done]="paso === 3" [class.active]="paso === 2">
+          <span class="step-circle">{{ paso === 3 ? '✔' : '2' }}</span>
+          <div class="step-info"><strong>Fecha y hora</strong><small>{{ paso === 3 ? 'Completado' : 'En progreso' }}</small></div>
+          <span class="step-line" [class.done]="paso === 3"></span>
+        </div>
+        <div class="step" [class.active]="paso === 3">
+          <span class="step-circle">3</span>
+          <div class="step-info"><strong>Pago y Confirmación</strong></div>
+        </div>
+      </div>
+
+      @if (paso === 2) {
+
+        <div class="agendar-grid">
+
+          <div class="agendar-main">
+
+            <!-- Calendario semanal -->
+            <section class="card">
+              <div class="cal-header">
+                <button class="cal-nav" [disabled]="!puedeRetrocederSemana" (click)="cambiarSemana(-1)">‹ Anterior</button>
+                <h3>{{ tituloSemana }}</h3>
+                <button class="cal-nav" (click)="cambiarSemana(1)">Siguiente ›</button>
+              </div>
+              <div class="cal-dias">
+                @for (dia of dias; track dia.fecha) {
+                  <button
+                    class="cal-dia"
+                    [class.selected]="dia.fecha === fechaSeleccionada"
+                    [class.disabled]="dia.deshabilitado"
+                    [disabled]="dia.deshabilitado"
+                    (click)="seleccionarDia(dia)">
+                    <span>{{ dia.labelDia }}</span>
+                    <strong>{{ dia.numero }}</strong>
+                    <span>{{ dia.labelMes }}</span>
+                  </button>
+                }
+              </div>
+            </section>
+
+            <!-- Horarios -->
+            <section class="card">
+              <h3>🕐 Horarios disponibles – {{ fechaLegible() }}</h3>
+
+              @if (cargandoSlots) {
+                <div class="state-msg">Cargando horarios disponibles...</div>
+              } @else if (errorSlots) {
+                <div class="state-msg error">{{ errorSlots }}</div>
+              } @else if (slots.length === 0) {
+                <div class="state-msg">No hay horarios para esta fecha.</div>
+              } @else {
+
+                <p class="slots-label">Mañana</p>
+                <div class="slots-grid">
+                  @for (slot of slotsManana; track slot.startTime) {
+                    <button
+                      class="slot-btn"
+                      [class.selected]="slotSeleccionado === slot"
+                      [class.disabled]="!slot.isAvailable"
+                      [disabled]="!slot.isAvailable"
+                      (click)="seleccionarSlot(slot)">
+                      {{ formatearHora(slot.startTime) }}
+                    </button>
+                  }
+                </div>
+
+                <p class="slots-label">Tarde</p>
+                <div class="slots-grid">
+                  @for (slot of slotsTarde; track slot.startTime) {
+                    <button
+                      class="slot-btn"
+                      [class.selected]="slotSeleccionado === slot"
+                      [class.disabled]="!slot.isAvailable"
+                      [disabled]="!slot.isAvailable"
+                      (click)="seleccionarSlot(slot)">
+                      {{ formatearHora(slot.startTime) }}
+                    </button>
+                  }
+                </div>
+
+              }
+            </section>
+
+            <!-- Información adicional -->
+            <section class="card">
+              <h3>Información adicional</h3>
+
+              <label class="form-label">Motivo de la consulta <span class="req">*</span></label>
+              <input type="text" class="form-input" [(ngModel)]="motivo">
+
+              <label class="form-label">Comentarios adicionales (opcional)</label>
+              <textarea
+                class="form-input"
+                rows="4"
+                placeholder="Describe brevemente tus síntomas o el motivo de tu visita..."
+                [(ngModel)]="notas"></textarea>
+            </section>
+
+          </div>
+
+          <div class="agendar-sidebar">
+
+            <!-- Médico seleccionado -->
+            <section class="card">
+              <h3>Médico seleccionado</h3>
+              <img class="doc-photo" [src]="provider.photoUrl || 'assets/images/doctor-card-1.png'" [alt]="provider.fullName">
+              <strong class="doc-nombre">{{ provider.fullName }}</strong>
+              <p class="doc-especialidad">{{ provider.specialty }}</p>
+              <p class="doc-ubicacion">📍 {{ provider.district || '' }}{{ provider.district && provider.city ? ', ' : '' }}{{ provider.city || '' }}</p>
+              @if (provider.averageRating) {
+                <p class="doc-rating">⭐ {{ provider.averageRating }}</p>
+              }
+              <button class="link-btn" (click)="cambiarMedico()">Cambiar médico →</button>
+            </section>
+
+            <!-- Resumen de cita -->
+            <section class="card">
+              <h3>Resumen de cita</h3>
+              <div class="resumen-item">
+                <span class="resumen-label">📅 Fecha</span>
+                <span class="resumen-value">{{ fechaLegible() }}</span>
+              </div>
+              <div class="resumen-item">
+                <span class="resumen-label">🕐 Hora</span>
+                <span class="resumen-value">
+                  @if (slotSeleccionado) {
+                    {{ formatearHora(slotSeleccionado.startTime) }} - {{ horaFin }} ({{ duracionMin }} min)
+                  } @else {
+                    Elige un horario
+                  }
+                </span>
+              </div>
+              <div class="resumen-item">
+                <span class="resumen-label">👤 Paciente</span>
+                <span class="resumen-value">{{ nombrePaciente }}</span>
+              </div>
+              <div class="resumen-total">
+                <span>Costo de consulta</span>
+                <strong>{{ precio }}.00 PEN</strong>
+              </div>
+              <button class="btn-primario" [disabled]="!puedeContinuarAlPago" (click)="continuarAlPago()">Continuar al pago</button>
+              <button class="btn-secundario" (click)="cancelar()">Cancelar</button>
+            </section>
+
+          </div>
+
+        </div>
+
+        <div class="agendar-nota">
+          <strong>Importante:</strong> Puedes cancelar o reprogramar tu cita hasta 24 horas antes del horario agendado sin costo adicional. Recibirás un correo de confirmación con todos los detalles de tu cita.
+        </div>
+
+      } @else {
+
+        <div class="agendar-grid">
+
+          <div class="agendar-main">
+
+            <!-- Método de pago -->
+            <section class="card">
+              <h3>1. Selecciona tu método de pago</h3>
+              <div class="pago-metodos">
+                <button class="pago-metodo" [class.selected]="metodoPago === 'Tarjeta'" (click)="metodoPago = 'Tarjeta'">
+                  💳 Tarjeta de crédito/débito
+                  @if (metodoPago === 'Tarjeta') { <span class="pago-check">✔</span> }
+                </button>
+                <button class="pago-metodo" [class.selected]="metodoPago === 'PayPal'" (click)="metodoPago = 'PayPal'">
+                  🅿️ PayPal
+                  @if (metodoPago === 'PayPal') { <span class="pago-check">✔</span> }
+                </button>
+                <button class="pago-metodo" [class.selected]="metodoPago === 'Transferencia'" (click)="metodoPago = 'Transferencia'">
+                  🏦 Transferencia
+                  @if (metodoPago === 'Transferencia') { <span class="pago-check">✔</span> }
+                </button>
+              </div>
+            </section>
+
+            <!-- Detalles de tarjeta (simulación: no se envía ni guarda) -->
+            @if (metodoPago === 'Tarjeta') {
+              <section class="card">
+                <h3>2. Detalles de tarjeta</h3>
+
+                <label class="form-label">Número de tarjeta</label>
+                <input type="text" class="form-input" placeholder="1234 5678 9012 3456" [(ngModel)]="tarjeta.numero">
+
+                <div class="form-row">
+                  <div>
+                    <label class="form-label">Fecha de expiración</label>
+                    <input type="text" class="form-input" placeholder="MM / AA" [(ngModel)]="tarjeta.expiracion">
+                  </div>
+                  <div>
+                    <label class="form-label">CVV</label>
+                    <input type="password" class="form-input" placeholder="123" [(ngModel)]="tarjeta.cvv">
+                  </div>
+                </div>
+
+                <label class="form-label">Nombre del titular</label>
+                <input type="text" class="form-input" placeholder="Como aparece en la tarjeta" [(ngModel)]="tarjeta.titular">
+              </section>
+            } @else {
+              <section class="card">
+                <h3>2. Instrucciones</h3>
+                <p class="pago-instruccion">
+                  @if (metodoPago === 'PayPal') {
+                    Al confirmar, completa el pago desde tu cuenta PayPal.
+                  } @else {
+                    Al confirmar, recibirás los datos de la cuenta para realizar la transferencia.
+                  }
+                </p>
+              </section>
+            }
+
+            <!-- Facturación -->
+            <section class="card">
+              <h3>3. Información de facturación</h3>
+
+              <div class="form-row">
+                <div>
+                  <label class="form-label">Nombre</label>
+                  <input type="text" class="form-input" placeholder="Tu nombre" [(ngModel)]="facturacion.nombre">
+                </div>
+                <div>
+                  <label class="form-label">Apellido</label>
+                  <input type="text" class="form-input" placeholder="Tu apellido" [(ngModel)]="facturacion.apellido">
+                </div>
+              </div>
+
+              <label class="form-label">Dirección</label>
+              <input type="text" class="form-input" placeholder="Calle y número" [(ngModel)]="facturacion.direccion">
+
+              <div class="form-row tres">
+                <div>
+                  <label class="form-label">Ciudad</label>
+                  <input type="text" class="form-input" placeholder="Ciudad" [(ngModel)]="facturacion.ciudad">
+                </div>
+                <div>
+                  <label class="form-label">Estado</label>
+                  <input type="text" class="form-input" [(ngModel)]="facturacion.estado">
+                </div>
+                <div>
+                  <label class="form-label">Código postal</label>
+                  <input type="text" class="form-input" placeholder="12345" [(ngModel)]="facturacion.codigoPostal">
+                </div>
+              </div>
+            </section>
+
+            <label class="terminos">
+              <input type="checkbox" [(ngModel)]="aceptaTerminos">
+              <span>Acepto los <a href="#" (click)="$event.preventDefault()">términos y condiciones</a> y la <a href="#" (click)="$event.preventDefault()">política de privacidad</a>. Entiendo que el pago es no reembolsable excepto en caso de cancelación por parte del médico.</span>
+            </label>
+
+            <div class="pago-seguro">
+              🛡️ <strong>Pago 100% seguro</strong>
+              <p>Tu información está protegida. No almacenamos tu información de tarjeta de crédito.</p>
+            </div>
+
+            <button class="link-btn" (click)="volverAFechaHora()">← Volver a fecha y hora</button>
+
+          </div>
+
+          <div class="agendar-sidebar">
+
+            <section class="card">
+              <h3>Resumen de la cita</h3>
+
+              <div class="resumen-doc">
+                <img [src]="provider.photoUrl || 'assets/images/doctor-card-1.png'" [alt]="provider.fullName">
+                <div>
+                  <strong>{{ provider.fullName }}</strong>
+                  <p>{{ provider.specialty }}</p>
+                  @if (provider.averageRating) {
+                    <small>⭐ {{ provider.averageRating }}</small>
+                  }
+                </div>
+              </div>
+
+              <div class="resumen-item">
+                <span class="resumen-label">📅 Fecha</span>
+                <span class="resumen-value">{{ fechaLegible() }}</span>
+              </div>
+              <div class="resumen-item">
+                <span class="resumen-label">🕐 Hora</span>
+                <span class="resumen-value">
+                  @if (slotSeleccionado) {
+                    {{ formatearHora(slotSeleccionado.startTime) }} - {{ horaFin }}
+                  }
+                </span>
+              </div>
+              <div class="resumen-item">
+                <span class="resumen-label">⏳ Duración</span>
+                <span class="resumen-value">{{ duracionMin }} minutos</span>
+              </div>
+              <div class="resumen-item">
+                <span class="resumen-label">📍 Modalidad</span>
+                <span class="resumen-value">{{ provider.modality || 'Presencial' }}</span>
+              </div>
+
+              <div class="costo-detalle">
+                <h4>Detalles del costo</h4>
+                <div><span>Consulta médica</span><span>S/.{{ precio }}.00</span></div>
+                <div><span>Cargo por servicio</span><span>S/.0.00</span></div>
+              </div>
+
+              <div class="resumen-total grande">
+                <span>Total a pagar</span>
+                <strong>S/.{{ precio }}.00</strong>
+              </div>
+              <small class="moneda-nota">PEN (sol peruano)</small>
+
+              @if (errorAgendar) {
+                <div class="state-msg error">{{ errorAgendar }}</div>
+              } @else if (!datosTarjetaCompletos) {
+                <div class="hint-msg">Completa los datos de tu tarjeta para continuar.</div>
+              } @else if (!aceptaTerminos) {
+                <div class="hint-msg">Acepta los términos y condiciones para continuar.</div>
+              }
+
+              <button class="btn-primario" [disabled]="!puedeConfirmar" (click)="confirmarYPagar()">
+                {{ agendando ? 'Procesando...' : 'Confirmar y pagar S/.' + precio + '.00' }}
+              </button>
+
+              <div class="politica">
+                <strong>Política de cancelación</strong>
+                <p>Puedes cancelar sin costo hasta 24 horas antes de la cita. Cancelaciones posteriores tendrán un cargo del 50%.</p>
+              </div>
+            </section>
+
+          </div>
+
+        </div>
+
+      }
+
+    }
+
+  }
+
+</div>
+
+<app-public-footer></app-public-footer>
+
+</div>

@@ -45,17 +45,17 @@
     <section class="section actions-section">
       <div class="section-header"><h2>¿Qué quieres hacer hoy?</h2></div>
       <div class="actions-grid">
-        <div class="action-card blue-action">
+        <div class="action-card blue-action" routerLink="/busqueda-paciente">
           <div class="action-icon"><img src="assets/icons/action-search-doctor.png" alt=""></div>
           <div class="action-content"><h3>Buscar especialista</h3><p>Encuentra médicos por especialidad, ubicación y disponibilidad.</p></div>
           <div class="action-arrow">→</div>
         </div>
-        <div class="action-card green-action">
+        <div class="action-card green-action" routerLink="/comparar-precios">
           <div class="action-icon"><img src="assets/icons/action-compare.png" alt=""></div>
           <div class="action-content"><h3>Comparar consultas</h3><p>Compara precios, duración y lo que incluye cada consulta.</p></div>
           <div class="action-arrow">→</div>
         </div>
-        <div class="action-card purple-action">
+        <div class="action-card purple-action" routerLink="/comparar-proveedores">
           <div class="action-icon"><img src="assets/icons/action-provider.png" alt=""></div>
           <div class="action-content"><h3>Comparar proveedores</h3><p>Compara clínicas y hospitales por servicios y ubicación.</p></div>
           <div class="action-arrow">→</div>
@@ -88,22 +88,37 @@
       </section>
 
       <section class="section">
-        <div class="section-header"><h2>Próxima cita confirmada</h2><a routerLink="/dashboard/citas">Ver todas mis citas</a></div>
-        <div class="appointment-card">
-          <div class="appointment-left">
-            <div class="date-box"><span>MIE</span><strong>21</strong><span>MAY</span></div>
-            <div class="doctor-info">
-              <img src="assets/images/doctor-card-3.png" alt="">
-              <div><strong>Dr. Carlos Méndez</strong><p>Cardiología</p><small>Clínica Ricardo Palma - Sede San Borja</small></div>
+        <div class="section-header"><h2>Próxima cita confirmada</h2><a routerLink="/mis-citas">Ver todas mis citas</a></div>
+
+        @if (cargandoProximaCita) {
+          <div class="suggest-note">Cargando tu próxima cita...</div>
+        } @else if (!proximaCita) {
+          <div class="suggest-note">No tienes citas próximas. <a routerLink="/busqueda-paciente">Buscar especialista</a></div>
+        } @else {
+          <div class="appointment-card">
+            <div class="appointment-left">
+              <div class="date-box">
+                <span>{{ fechaCorta(proximaCita.date).dow }}</span>
+                <strong>{{ fechaCorta(proximaCita.date).day }}</strong>
+                <span>{{ fechaCorta(proximaCita.date).month }}</span>
+              </div>
+              <div class="doctor-info">
+                <img [src]="proximaCita.photoUrl || 'assets/images/doctor-card-3.png'" alt="">
+                <div>
+                  <strong>{{ proximaCita.doctor }}</strong>
+                  <p>{{ proximaCita.specialty }}</p>
+                  <small>{{ proximaCita.district }}</small>
+                </div>
+              </div>
+            </div>
+            <div><strong>Fecha</strong><p>{{ fechaLarga(proximaCita.date) }}</p><br><strong>Hora</strong><p>{{ formatearHora(proximaCita.time) }}</p></div>
+            <div><strong>Estado</strong><p>{{ proximaCita.status === 'SCHEDULED' ? 'Confirmado ✅' : 'Pendiente' }}</p></div>
+            <div class="appointment-buttons">
+              <button class="primary-btn" (click)="verDetallesCita()">Ver detalles</button>
+              <button class="secondary-btn" (click)="reagendarCitaDashboard()">Reagendar cita</button>
             </div>
           </div>
-          <div><strong>Fecha</strong><p>21 de mayo del 2026 Miércoles</p><br><strong>Hora</strong><p>10:30 AM</p></div>
-          <div><strong>Estado</strong><p>Confirmado ✅</p></div>
-          <div class="appointment-buttons">
-            <button class="primary-btn">Ver detalles</button>
-            <button class="secondary-btn">Reagendar cita</button>
-          </div>
-        </div>
+        }
       </section>
 
       <section class="section">
@@ -136,30 +151,90 @@
   <section class="services-bg">
     <div class="page-body">
       <div class="section-header"><h2>Servicios más solicitados</h2></div>
-      <div class="services-grid">
-        <div class="service-card"><img src="assets/icons/icon-vacuna.png" alt=""><h4>Vacunación</h4><span>Desde $12</span></div>
-        <div class="service-card"><img src="assets/icons/icon-diente.png" alt=""><h4>Limpieza dental</h4><span>Desde $22</span></div>
-        <div class="service-card"><img src="assets/icons/icon-ojo.png" alt=""><h4>Examen visual</h4><span>Desde $23</span></div>
-        <div class="service-card"><img src="assets/icons/icon-corazon.png" alt=""><h4>Check up cardio</h4><span>Desde $13</span></div>
-        <div class="service-card"><img src="assets/icons/icon-rayos.png" alt=""><h4>Radiografía</h4><span>Desde $21</span></div>
-        <div class="service-card"><img src="assets/icons/icon-test.png" alt=""><h4>Análisis de sangre</h4><span>Desde $26</span></div>
-      </div>
+
+      @if (cargandoServicios) {
+        <div class="suggest-note">Cargando servicios...</div>
+      } @else if (errorServicios) {
+        <div class="suggest-note">{{ errorServicios }}</div>
+      } @else if (servicios.length === 0) {
+        <div class="suggest-note">No hay servicios disponibles por ahora.</div>
+      } @else {
+        <div class="services-grid">
+          @for (servicio of servicios; track servicio.id) {
+            <div class="service-card" (click)="abrirServicio(servicio)">
+              <img [src]="iconoServicio(servicio)" alt="">
+              <h4>{{ servicio.name }}</h4>
+              <span>Desde S/{{ servicio.price }}</span>
+            </div>
+          }
+        </div>
+      }
     </div>
   </section>
+
+  @if (servicioSeleccionado) {
+    <div class="modal-overlay" (click)="cerrarServicio()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="cerrarServicio()">✕</button>
+        <img class="modal-icon" [src]="iconoServicio(servicioSeleccionado)" alt="">
+        <h3>{{ servicioSeleccionado.name }}</h3>
+        @if (servicioSeleccionado.categoryName) {
+          <p class="modal-category">{{ servicioSeleccionado.categoryName }}</p>
+        }
+        @if (servicioSeleccionado.description) {
+          <p class="modal-description">{{ servicioSeleccionado.description }}</p>
+        }
+        <p class="modal-price">Desde S/{{ servicioSeleccionado.price }}</p>
+        <button class="modal-btn" routerLink="/busqueda-paciente">Buscar especialista</button>
+      </div>
+    </div>
+  }
 
   <div class="page-body">
     <section class="section" style="margin-top:52px;">
       <div class="section-header"><div><h2>Ofertas exclusivas para ti</h2><p style="color:#64748B;font-size:.9rem;margin-top:6px;">Aprovecha estos descuentos especiales disponibles solo para ti.</p></div></div>
-      <div class="offers-grid">
-        <div class="offer-card"><img class="offer-image" src="assets/images/oferta1.png" alt=""><h4>Chequeo Preventivo</h4><br><span>$56</span><button>Ver oferta</button></div>
-        <div class="offer-card"><img class="offer-image" src="assets/images/oferta2.png" alt=""><h4>Limpieza Dental Completa</h4><br><span>$90</span><button>Ver oferta</button></div>
-        <div class="offer-card"><img class="offer-image" src="assets/images/oferta3.png" alt=""><h4>Paquete de Análisis</h4><br><span>$90</span><button>Ver oferta</button></div>
-        <div class="offer-card"><img class="offer-image" src="assets/images/oferta4.png" alt=""><h4>Consulta Oftalmológica</h4><br><span>$56</span><button>Ver oferta</button></div>
-        <div class="offer-card"><img class="offer-image" src="assets/images/oferta5.png" alt=""><h4>Terapia Física</h4><br><span>$39</span><button>Ver oferta</button></div>
-        <div class="offer-card"><img class="offer-image" src="assets/images/oferta6.png" alt=""><h4>Paquete Nutricional</h4><br><span>$100</span><button>Ver oferta</button></div>
-      </div>
+      @if (cargandoOfertas) {
+        <div class="suggest-note">Cargando ofertas...</div>
+      } @else if (errorOfertas) {
+        <div class="suggest-note">{{ errorOfertas }}</div>
+      } @else if (ofertas.length === 0) {
+        <div class="suggest-note">No hay ofertas disponibles por ahora.</div>
+      } @else {
+        <div class="offers-grid">
+          @for (oferta of ofertas; track oferta.id; let i = $index) {
+            <div class="offer-card">
+              <img class="offer-image" [src]="imagenOferta(i)" alt="">
+              <h4>{{ oferta.serviceName }}</h4>
+              <br>
+              <span class="offer-original-price">S/{{ oferta.originalPrice }}</span>
+              <span>S/{{ oferta.discountedPrice }}</span>
+              <button (click)="abrirOferta(oferta)">Ver oferta</button>
+            </div>
+          }
+        </div>
+      }
     </section>
   </div>
+
+  @if (ofertaSeleccionada) {
+    <div class="modal-overlay" (click)="cerrarOferta()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
+        <button class="modal-close" (click)="cerrarOferta()">✕</button>
+        <h3>{{ ofertaSeleccionada.serviceName }}</h3>
+        @if (ofertaSeleccionada.description) {
+          <p class="modal-description">{{ ofertaSeleccionada.description }}</p>
+        }
+        <p class="modal-category">-{{ ofertaSeleccionada.discountPercent }}% de descuento</p>
+        <p class="modal-price">
+          <span class="offer-original-price">S/{{ ofertaSeleccionada.originalPrice }}</span>
+          S/{{ ofertaSeleccionada.discountedPrice }}
+        </p>
+        <button class="modal-btn" routerLink="/busqueda-paciente" [queryParams]="{ especialidad: ofertaSeleccionada.serviceName }">
+          Buscar especialista
+        </button>
+      </div>
+    </div>
+  }
 
   <app-public-footer></app-public-footer>
 

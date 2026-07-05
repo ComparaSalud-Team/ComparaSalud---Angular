@@ -51,6 +51,12 @@
                 <h3>{{ cita.doctorNombre }}</h3>
                 <span class="badge" [ngClass]="getBadgeClass(cita.estado)">{{ getBadgeLabel(cita.estado) }}</span>
               </div>
+              @if (cita.especialidad) {
+                <div class="cita-especialidad">{{ cita.especialidad }}</div>
+              }
+              @if (cita.calificacion) {
+                <div class="cita-rating"><i class="fa-solid fa-star"></i> {{ cita.calificacion }}</div>
+              }
               <div class="cita-list-meta">
                 <div class="cita-meta-item">
                   <span class="meta-label">Fecha</span>
@@ -60,15 +66,32 @@
                   <span class="meta-label">Hora</span>
                   <span class="meta-value"><i class="fa-regular fa-clock"></i> {{ cita.hora }}</span>
                 </div>
+                <div class="cita-meta-item">
+                  <span class="meta-label">Duración</span>
+                  <span class="meta-value"><i class="fa-regular fa-hourglass"></i> {{ cita.duracionMin }} min</span>
+                </div>
+                <div class="cita-meta-item">
+                  <span class="meta-label">Modalidad</span>
+                  <span class="meta-value"><i class="fa-solid fa-video"></i> {{ cita.modalidad }}</span>
+                </div>
               </div>
               <div class="cita-list-actions">
+                <button class="btn-ver-detalles" (click)="verDetalles(cita)">
+                  <i class="fa-regular fa-eye"></i> Ver detalles
+                </button>
                 @if (cita.estado !== 'completada' && cita.estado !== 'cancelada') {
+                  <button class="btn-reagendar" (click)="reagendarCita(cita)">
+                    <i class="fa-regular fa-calendar-days"></i> Reagendar cita
+                  </button>
                   <button class="btn-cancelar" (click)="cancelarCita(cita)">Cancelar</button>
                 }
               </div>
             </div>
             <div class="cita-list-right">
               <span class="cita-id">ID: {{ cita.id }}</span>
+              @if (cita.precio) {
+                <span class="cita-price">S/{{ cita.precio }}</span>
+              }
             </div>
           </div>
         }

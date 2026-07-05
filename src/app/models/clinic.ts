@@ -12,4 +12,16 @@ export interface Clinic {
   isActive: boolean;
   providerCount: number;
   specialties: string[];
+
+  rating: number;
+  reviewCount: number;
+
+  emergencia24h: boolean;
+  estacionamiento: boolean;
+  farmacia: boolean;
+  laboratorio: boolean;
+  imagenologia: boolean;
+  servicioAmbulancia: boolean;
+  unidadCuidadosIntensivos: boolean;
+  hospitalizacion: boolean;
 }

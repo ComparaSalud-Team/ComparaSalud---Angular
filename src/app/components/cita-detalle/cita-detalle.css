@@ -1,0 +1,241 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+app-public-footer {
+  flex-shrink: 0;
+  margin-top: auto;
+  width: 100%;
+}
+
+.detalle-wrapper {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1 0 auto;
+}
+
+.btn-volver {
+  background: none;
+  border: none;
+  color: #2563EB;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .86rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0 20px;
+}
+
+.state-msg {
+  padding: 24px;
+  text-align: center;
+  color: #64748B;
+  font-size: 15px;
+}
+
+.state-msg.error {
+  color: #DC2626;
+}
+
+.detalle-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.detalle-doctor-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: cover;
+  object-position: top center;
+  flex-shrink: 0;
+}
+
+.detalle-header-info { flex: 1; min-width: 0; }
+
+.detalle-header-info h1 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1E1B4B;
+  margin: 0 0 4px;
+}
+
+.detalle-specialty { font-size: .86rem; color: #64748B; margin: 0 0 4px; }
+
+.detalle-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #1E1B4B;
+  margin: 0;
+}
+
+.detalle-rating i { color: #F59E0B; font-size: .8rem; }
+
+.badge { padding: 3px 12px; border-radius: 20px; font-size: .74rem; font-weight: 700; text-transform: capitalize; }
+.badge-proxima    { background: #DBEAFE; color: #2563EB; }
+.badge-confirmada { background: #D1FAE5; color: #059669; }
+.badge-completada { background: #F1F5F9; color: #475569; }
+.badge-cancelada  { background: #FEE2E2; color: #EF4444; }
+
+.card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0F172A;
+}
+
+.detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 24px;
+}
+
+.detalle-item { display: flex; flex-direction: column; gap: 4px; }
+.meta-label { font-size: .72rem; color: #94A3B8; font-weight: 500; }
+.meta-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .9rem;
+  color: #334155;
+  font-weight: 500;
+}
+.meta-value i { color: #94A3B8; font-size: .8rem; }
+.detalle-price { color: #2563EB; font-weight: 800; font-size: 1.1rem; }
+
+.detalle-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-reagendar-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #2563EB;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #fff;
+  color: #EF4444;
+  border: 1.5px solid #EF4444;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: .86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-cancelar:disabled { opacity: .6; cursor: not-allowed; }
+
+.date-input {
+  width: 100%;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #0F172A;
+  box-sizing: border-box;
+}
+
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+}
+
+.slot-btn {
+  border: 1px solid #CBD5E1;
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0F172A;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.slot-btn:hover:not(.disabled) {
+  border-color: #2563EB;
+  color: #2563EB;
+}
+
+.slot-btn.selected {
+  background: #2563EB;
+  border-color: #2563EB;
+  color: #fff;
+}
+
+.slot-btn.disabled {
+  background: #F1F5F9;
+  color: #94A3B8;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.confirm-btn {
+  background: #2563EB;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.confirm-btn:disabled {
+  background: #CBD5E1;
+  cursor: not-allowed;
+}
+
+.confirmacion {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.confirmacion-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #DCFCE7;
+  color: #16A34A;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.confirmacion h2 { font-size: 20px; color: #0F172A; margin: 0 0 6px; }
+.confirmacion p { color: #475569; margin: 0; }

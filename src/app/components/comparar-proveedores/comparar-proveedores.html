@@ -1,0 +1,160 @@
+<app-public-navbar></app-public-navbar>
+
+<div class="cp-wrapper">
+
+  <h1>Comparador de Proveedores</h1>
+  <p class="cp-subtitle">Compara clínicas y hospitales lado a lado: precios, servicios, especialidades y más.</p>
+
+  <div class="cp-filters">
+    <div class="cp-search">
+      <input
+        type="text"
+        placeholder="Buscar clínica o hospital"
+        [(ngModel)]="busqueda"
+        (ngModelChange)="aplicarFiltros()">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+    </div>
+    <select [(ngModel)]="filtroZona" (ngModelChange)="aplicarFiltros()">
+      <option value="">Filtrar por zona</option>
+      @for (distrito of distritosDisponibles; track distrito) {
+        <option [value]="distrito">{{ distrito }}</option>
+      }
+    </select>
+    <select [(ngModel)]="filtroCalificacion" (ngModelChange)="aplicarFiltros()">
+      <option value="">Por calificación</option>
+      <option value="4.5">4.5+ ★</option>
+      <option value="4">4+ ★</option>
+      <option value="3">3+ ★</option>
+    </select>
+  </div>
+
+  @if (cargando) {
+    <div class="cp-state">Cargando clínicas...</div>
+  } @else if (error) {
+    <div class="cp-state cp-error">{{ error }}</div>
+  } @else if (clinicasFiltradas.length === 0) {
+    <div class="cp-state">No se encontraron clínicas con esos filtros.</div>
+  } @else {
+
+    <div class="cp-table-scroll">
+      <table class="cp-table">
+        <thead>
+          <tr>
+            <th class="cp-col-label">Características</th>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <th>
+                <div class="cp-clinic-header">
+                  <strong>{{ clinica.name }}</strong>
+                  <span class="cp-district">📍 {{ clinica.district }}</span>
+                  <span class="cp-rating">★ {{ clinica.rating || 0 }} ({{ clinica.reviewCount || 0 }})</span>
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cp-col-label">👥 Especialistas</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-value">{{ clinica.providerCount }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">📞 Teléfono</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td>{{ clinica.phone || '—' }}</td>
+            }
+          </tr>
+
+          <tr class="cp-section-row">
+            <td [attr.colspan]="clinicasFiltradas.length + 1">Servicios y Facilidades</td>
+          </tr>
+          <tr>
+            <td class="cp-col-label">Emergencias 24h</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.emergencia24h ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Estacionamiento</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.estacionamiento ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Farmacia</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.farmacia ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Laboratorio</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.laboratorio ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Imágenes (Rayos X, Tomografía)</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.imagenologia ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Servicio de Ambulancia</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.servicioAmbulancia ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Unidad de Cuidados Intensivos</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.unidadCuidadosIntensivos ? '✔' : '✕' }}</td>
+            }
+          </tr>
+          <tr>
+            <td class="cp-col-label">Hospitalización</td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td class="cp-check">{{ clinica.hospitalizacion ? '✔' : '✕' }}</td>
+            }
+          </tr>
+
+          @if (filasPrecio.length > 0) {
+            <tr class="cp-section-row">
+              <td [attr.colspan]="clinicasFiltradas.length + 1">Precios por Especialidad (PEN)</td>
+            </tr>
+            @for (fila of filasPrecio; track fila.especialidad) {
+              <tr>
+                <td class="cp-col-label">{{ fila.especialidad }}</td>
+                @for (clinica of clinicasFiltradas; track clinica.id) {
+                  <td class="cp-price">
+                    {{ fila.porClinica[clinica.id] !== null ? (fila.porClinica[clinica.id] | number: '1.2-2') : '—' }}
+                  </td>
+                }
+              </tr>
+            }
+          }
+
+          <tr>
+            <td class="cp-col-label"></td>
+            @for (clinica of clinicasFiltradas; track clinica.id) {
+              <td>
+                <button class="cp-btn" (click)="verDisponibilidad(clinica)">Ver disponibilidad</button>
+              </td>
+            }
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cp-note">
+      <strong>Nota:</strong> Los precios y servicios mostrados son referenciales y pueden variar. Te recomendamos confirmar directamente con el proveedor antes de agendar tu cita.
+    </div>
+
+  }
+
+</div>
+
+<app-public-footer></app-public-footer>

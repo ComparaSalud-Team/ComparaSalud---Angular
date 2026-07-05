@@ -37,6 +37,18 @@ export const routes: Routes = [
       ),
   },
 
+  // Versión de /busqueda para el paciente ya logeado: misma lógica de
+  // búsqueda/filtros, pero con el navbar/footer de paciente en vez del
+  // navbar de marketing que usa la versión pública de arriba.
+  {
+    path: 'busqueda-paciente',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/busqueda-paciente/busqueda-paciente').then(
+        (m) => m.BusquedaPacienteComponent,
+      ),
+  },
+
   {
     path: 'dashboard',
     canActivate: [authGuard],
@@ -48,6 +60,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./components/mis-citas/mis-citas').then((m) => m.MisCitasComponent),
+  },
+  {
+    path: 'mis-citas/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/cita-detalle/cita-detalle').then((m) => m.CitaDetalleComponent),
   },
   {
     path: 'perfil',
@@ -83,13 +101,52 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/mis-busquedas/mis-busquedas').then((m) => m.MisBusquedasComponent),
   },
+  // "¿Qué quieres hacer hoy?" en el dashboard – Comparar proveedores / consultas
+  {
+    path: 'comparar-proveedores',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/comparar-proveedores/comparar-proveedores').then(
+        (m) => m.CompararProveedoresComponent,
+      ),
+  },
+  {
+    path: 'comparar-precios',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/comparar-precios/comparar-precios').then(
+        (m) => m.CompararPreciosComponent,
+      ),
+  },
+
   {
     path: 'clinicas/:id',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./components/clinica-detalle/clinica-detalle').then((m) => m.ClinicaDetalleComponent),
   },
-  { path: 'buscar', redirectTo: 'dashboard', pathMatch: 'full' },
+
+  // Perfil público de un proveedor puntual. Antes esta ruta no existía y los
+  // botones "Ver perfil" (dashboard, mis-favoritos) quedaban rotos.
+  {
+    path: 'providers/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/provider-perfil/provider-perfil').then(
+        (m) => m.ProviderPerfilComponent,
+      ),
+  },
+
+  // HU33 – Agendar cita con un proveedor puntual. El invitado que intenta
+  // agendar desde /busqueda pasa por registro -> login antes de llegar aquí
+  // (ver returnUrl en busqueda-medicos.ts / registro-paso2.ts / login.ts).
+  {
+    path: 'agendar-cita/:providerId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/agendar-cita/agendar-cita').then((m) => m.AgendarCitaComponent),
+  },
+  { path: 'buscar', redirectTo: 'busqueda-paciente', pathMatch: 'full' },
   { path: 'documentos', redirectTo: 'mis-busquedas', pathMatch: 'full' },
   { path: 'configuracion', redirectTo: 'perfil', pathMatch: 'full' },
 

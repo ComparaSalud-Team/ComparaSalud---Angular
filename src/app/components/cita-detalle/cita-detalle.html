@@ -1,0 +1,140 @@
+<div class="container">
+
+<app-public-navbar></app-public-navbar>
+
+<div class="detalle-wrapper">
+
+  <button class="btn-volver" (click)="volver()">← Volver a mis citas</button>
+
+  @if (cargando) {
+    <div class="state-msg">Cargando información de la cita...</div>
+  } @else if (error) {
+    <div class="state-msg error">{{ error }}</div>
+  } @else if (cita) {
+
+    <div class="detalle-header">
+      <img class="detalle-doctor-img" [src]="cita.photoUrl || 'assets/images/doctor-card-1.png'" [alt]="cita.doctor">
+      <div class="detalle-header-info">
+        <h1>{{ cita.doctor }}</h1>
+        <p class="detalle-specialty">{{ cita.specialty }}</p>
+        @if (cita.rating) {
+          <p class="detalle-rating"><i class="fa-solid fa-star"></i> {{ cita.rating }}</p>
+        }
+      </div>
+      <span class="badge" [ngClass]="{
+        'badge-proxima': estado === 'proxima',
+        'badge-confirmada': estado === 'confirmada',
+        'badge-completada': estado === 'completada',
+        'badge-cancelada': estado === 'cancelada'
+      }">{{ estado }}</span>
+    </div>
+
+    <section class="card">
+      <h3>Detalles de la cita</h3>
+      <div class="detalle-grid">
+        <div class="detalle-item">
+          <span class="meta-label">Fecha</span>
+          <span class="meta-value"><i class="fa-regular fa-calendar"></i> {{ cita.date }}</span>
+        </div>
+        <div class="detalle-item">
+          <span class="meta-label">Hora</span>
+          <span class="meta-value"><i class="fa-regular fa-clock"></i> {{ cita.time }}</span>
+        </div>
+        <div class="detalle-item">
+          <span class="meta-label">Duración</span>
+          <span class="meta-value"><i class="fa-regular fa-hourglass"></i> {{ cita.durationMinutes }} min</span>
+        </div>
+        <div class="detalle-item">
+          <span class="meta-label">Modalidad</span>
+          <span class="meta-value"><i class="fa-solid fa-video"></i> {{ cita.modality }}</span>
+        </div>
+        <div class="detalle-item">
+          <span class="meta-label">Ubicación</span>
+          <span class="meta-value"><i class="fa-solid fa-location-dot"></i> {{ cita.district || '—' }}</span>
+        </div>
+        <div class="detalle-item">
+          <span class="meta-label">Precio</span>
+          <span class="meta-value detalle-price">S/{{ cita.price }}</span>
+        </div>
+      </div>
+    </section>
+
+    @if (puedeReagendar) {
+      <div class="detalle-actions">
+        <button class="btn-reagendar-toggle" (click)="toggleReagendar()">
+          <i class="fa-regular fa-calendar-days"></i>
+          {{ mostrarReagendar ? 'Ocultar reagendar' : 'Reagendar cita' }}
+        </button>
+        <button class="btn-cancelar" [disabled]="cancelando" (click)="cancelarCita()">
+          {{ cancelando ? 'Cancelando...' : 'Cancelar cita' }}
+        </button>
+      </div>
+    }
+
+    @if (mostrarReagendar && puedeReagendar) {
+
+      @if (reagendadoOk) {
+        <div class="confirmacion">
+          <div class="confirmacion-icon">✔</div>
+          <h2>¡Tu cita fue reagendada!</h2>
+          <p>Nueva fecha: {{ cita.date }} · {{ formatearHora(cita.time) }}</p>
+        </div>
+      } @else {
+
+        <section class="card">
+          <h3>1. Elige una nueva fecha</h3>
+          <input
+            type="date"
+            class="date-input"
+            [(ngModel)]="fechaSeleccionada"
+            [min]="fechaMinima"
+            (change)="onFechaChange()">
+        </section>
+
+        <section class="card">
+          <h3>2. Elige un nuevo horario</h3>
+
+          @if (cargandoSlots) {
+            <div class="state-msg">Cargando horarios disponibles...</div>
+          } @else if (errorSlots) {
+            <div class="state-msg error">{{ errorSlots }}</div>
+          } @else if (slots.length === 0) {
+            <div class="state-msg">No hay horarios para esta fecha.</div>
+          } @else {
+            <div class="slots-grid">
+              @for (slot of slots; track slot.startTime) {
+                <button
+                  class="slot-btn"
+                  [class.selected]="slotSeleccionado === slot"
+                  [class.disabled]="!slot.isAvailable"
+                  [disabled]="!slot.isAvailable"
+                  (click)="seleccionarSlot(slot)">
+                  {{ formatearHora(slot.startTime) }}
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+        @if (errorReagendar) {
+          <div class="state-msg error">{{ errorReagendar }}</div>
+        }
+
+        <button
+          class="confirm-btn"
+          [disabled]="!slotSeleccionado || reagendando"
+          (click)="confirmarReagendar()">
+          {{ reagendando ? 'Reagendando...' : 'Confirmar nuevo horario' }}
+        </button>
+
+      }
+
+    }
+
+  }
+
+</div>
+
+<app-public-footer></app-public-footer>
+
+</div>

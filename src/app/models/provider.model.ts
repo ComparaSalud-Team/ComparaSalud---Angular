@@ -22,5 +22,8 @@ export interface Provider {
   city: string;
   country: string;
 
+  durationMinutes: number;
+  photoUrl: string | null;
+
   isValidated: boolean;
 }

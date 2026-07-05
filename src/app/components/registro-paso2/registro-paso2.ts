@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -11,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './registro-paso2.html',
   styleUrl: './registro-paso2.css',
 })
-export class RegistroPaso2Component {
+export class RegistroPaso2Component implements OnInit {
   nombre = '';
   telefono = '';
   email = '';
@@ -21,10 +21,19 @@ export class RegistroPaso2Component {
   showConfirm = false;
   aceptaTerminos = false;
 
+  // Si el paciente venía de intentar agendar una cita como invitado, esto
+  // trae la ruta a la que debe volver una vez que inicie sesión.
+  private returnUrl: string | null = null;
+
   constructor(
     private http: HttpClient,
     private router: Router,
+    private route: ActivatedRoute,
   ) {}
+
+  ngOnInit(): void {
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || null;
+  }
 
   togglePassword() {
     this.showPassword = !this.showPassword;
@@ -59,7 +68,9 @@ export class RegistroPaso2Component {
     this.http.post('http://localhost:8081/api/auth/register/patient', body).subscribe({
       next: () => {
         alert('Cuenta creada correctamente');
-        this.router.navigate(['/login']);
+        this.router.navigate(['/login'], {
+          queryParams: this.returnUrl ? { returnUrl: this.returnUrl } : {},
+        });
       },
       error: (err) => {
         console.error(err);

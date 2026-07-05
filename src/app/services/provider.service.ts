@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Provider } from '../models/provider.model';
+import { Availability } from '../models/availability';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +17,18 @@ export class ProviderService {
     return this.http.get<Provider[]>(this.apiUrl);
   }
 
+  // HU26 – Ver detalle de proveedor
+  getById(id: number): Observable<Provider> {
+    return this.http.get<Provider>(`${this.apiUrl}/${id}`);
+  }
+
+  // HU29 – Ver disponibilidad del proveedor (bloques de 1h, 8am-6pm)
+  getAvailability(id: number, date: string): Observable<Availability[]> {
+    return this.http.get<Availability[]>(`${this.apiUrl}/${id}/availability`, {
+      params: { date },
+    });
+  }
+
   filtrarPorDisponibilidad(period: string): Observable<Provider[]> {
     return this.http.get<Provider[]>(`${this.apiUrl}/filter/availability`, {
       params: { period },
@@ -26,3 +39,4 @@ export class ProviderService {
     return this.http.post(this.registerUrl, provider);
   }
 }
+

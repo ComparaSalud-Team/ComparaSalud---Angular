@@ -3,27 +3,31 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-import { NavbarComponent } from '../../shared/navbar/navbar';
-import { FooterComponent } from '../../shared/footer/footer';
+import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
+import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
 import { ProviderService } from '../../services/provider.service';
 import { Provider } from '../../models/provider.model';
 import { BusquedaHistorialService } from '../../services/busqueda-historial.service';
-import { AuthService } from '../../services/auth';
 
 interface FilterOption {
   label: string;
   value: string;
 }
 
+// Copia de BusquedaMedicosComponent pensada para el paciente ya logeado.
+// Misma lógica de búsqueda/filtros, pero usando el navbar/footer de paciente
+// (PublicNavbarComponent / PublicFooterComponent) en vez del navbar de
+// marketing que usa la versión pública en /busqueda. Ver /busqueda-medicos
+// para la versión de invitado.
 @Component({
-  selector: 'app-busqueda-medicos',
+  selector: 'app-busqueda-paciente',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent, FooterComponent],
-  templateUrl: './busqueda-medicos.html',
-  styleUrls: ['./busqueda-medicos.css'],
+  imports: [CommonModule, RouterModule, FormsModule, PublicNavbarComponent, PublicFooterComponent],
+  templateUrl: './busqueda-paciente.html',
+  styleUrls: ['./busqueda-paciente.css'],
 })
-export class BusquedaMedicosComponent implements OnInit {
+export class BusquedaPacienteComponent implements OnInit {
   providers: Provider[] = [];
   todosLosDoctores: any[] = [];
   doctoresFiltrados: any[] = [];
@@ -39,7 +43,6 @@ export class BusquedaMedicosComponent implements OnInit {
     private route: ActivatedRoute,
     private historialService: BusquedaHistorialService,
     private router: Router,
-    private auth: AuthService,
   ) {}
 
   sidebarFiltros = {
@@ -79,18 +82,6 @@ export class BusquedaMedicosComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    // Esta página es para invitados (sin sesión). Si un paciente ya
-    // logeado llega aquí (marcador viejo, botón "atrás", etc.), lo mandamos
-    // a la versión de paciente para que vea el navbar/experiencia correcta,
-    // conservando los mismos filtros que traiga en la URL.
-    if (this.auth.isLoggedIn()) {
-      this.router.navigate(['/busqueda-paciente'], {
-        queryParams: this.route.snapshot.queryParams,
-        replaceUrl: true,
-      });
-      return;
-    }
-
     const especialidad = this.route.snapshot.queryParamMap.get('especialidad');
     const ubicacion = this.route.snapshot.queryParamMap.get('ubicacion');
     const fecha = this.route.snapshot.queryParamMap.get('fecha');
@@ -311,12 +302,7 @@ export class BusquedaMedicosComponent implements OnInit {
   }
 
   agendarCita(doctor: any): void {
-    // Invitado sin sesión: lo mandamos a registrarse como paciente. El
-    // returnUrl viaja por registro -> registro-paso2 -> login, y termina
-    // trayéndolo de vuelta aquí para agendar la cita con este proveedor.
-    this.router.navigate(['/registro'], {
-      queryParams: { returnUrl: '/agendar-cita/' + doctor.id },
-    });
+    this.router.navigate(['/agendar-cita', doctor.id]);
   }
 
   getModalidadLabel(modalidad: string): string {

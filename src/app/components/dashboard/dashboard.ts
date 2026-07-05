@@ -5,8 +5,14 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth';
 import { ProviderService } from '../../services/provider.service';
 import { SpecialtyService } from '../../services/specialty.service';
+import { CitasService } from '../../services/citas';
+import { MedicalServiceApiService } from '../../services/medical-service.service';
+import { OfferService } from '../../services/offer.service';
 import { Provider } from '../../models/provider.model';
 import { Specialty } from '../../models/specialty';
+import { AppointmentHistoryDTO } from '../../models/cita';
+import { MedicalService } from '../../models/medical-service.model';
+import { Offer } from '../../models/offer.model';
 import { PublicNavbarComponent } from '../../shared/public-navbar/public-navbar';
 import { PublicFooterComponent } from '../../shared/public-footer/footer';
 
@@ -42,6 +48,62 @@ export class DashboardComponent implements OnInit {
   cargandoEspecialidades = true;
   errorEspecialidades: string | null = null;
 
+  // Próxima cita confirmada — /api/appointments/upcoming?userId=..., ya
+  // ordenadas por fecha/hora ascendente en el backend; se toma la primera.
+  proximaCita: AppointmentHistoryDTO | null = null;
+  cargandoProximaCita = true;
+
+  private readonly diasSemanaCortos = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
+  private readonly mesesCortos = [
+    'ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC',
+  ];
+  private readonly mesesLargos = [
+    'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+    'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+  ];
+  private readonly diasSemanaLargos = [
+    'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado',
+  ];
+
+  // Servicios más solicitados — /api/services/active. Los íconos no vienen
+  // del backend (el catálogo no los tiene), así que se asignan por palabra
+  // clave del nombre real del servicio, igual que en iconoEspecialidad().
+  servicios: MedicalService[] = [];
+  cargandoServicios = true;
+  errorServicios: string | null = null;
+  servicioSeleccionado: MedicalService | null = null;
+
+  private iconosPorPalabraClaveServicio: { keyword: string; icon: string }[] = [
+    { keyword: 'vacun', icon: 'assets/icons/icon-vacuna.png' },
+    { keyword: 'dent', icon: 'assets/icons/icon-diente.png' },
+    { keyword: 'visual', icon: 'assets/icons/icon-ojo.png' },
+    { keyword: 'ojo', icon: 'assets/icons/icon-ojo.png' },
+    { keyword: 'cardio', icon: 'assets/icons/icon-corazon.png' },
+    { keyword: 'coraz', icon: 'assets/icons/icon-corazon.png' },
+    { keyword: 'rayos', icon: 'assets/icons/icon-rayos.png' },
+    { keyword: 'radiograf', icon: 'assets/icons/icon-rayos.png' },
+    { keyword: 'sangre', icon: 'assets/icons/icon-test.png' },
+    { keyword: 'analisis', icon: 'assets/icons/icon-test.png' },
+    { keyword: 'análisis', icon: 'assets/icons/icon-test.png' },
+  ];
+
+  // Ofertas exclusivas para ti — /api/offers/active. Cada oferta es un
+  // descuento sobre un servicio real de catalog_services (ver OfferDTO en
+  // el backend), no un precio inventado.
+  ofertas: Offer[] = [];
+  cargandoOfertas = true;
+  errorOfertas: string | null = null;
+  ofertaSeleccionada: Offer | null = null;
+
+  private imagenesOfertas = [
+    'assets/images/oferta1.png',
+    'assets/images/oferta2.png',
+    'assets/images/oferta3.png',
+    'assets/images/oferta4.png',
+    'assets/images/oferta5.png',
+    'assets/images/oferta6.png',
+  ];
+
   private imagenesSugeridos = [
     'assets/images/doctor-card-1.png',
     'assets/images/doctor-card-2.png',
@@ -69,6 +131,9 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private providerService: ProviderService,
     private specialtyService: SpecialtyService,
+    private citasService: CitasService,
+    private medicalServiceApi: MedicalServiceApiService,
+    private offerService: OfferService,
     private cdr: ChangeDetectorRef,
   ) {}
 
@@ -78,6 +143,92 @@ export class DashboardComponent implements OnInit {
     this.cargarSugeridos();
     this.cargarEspecialidades();
     this.cargarUbicaciones();
+    this.cargarProximaCita(session?.userId);
+    this.cargarServicios();
+    this.cargarOfertas();
+  }
+
+  cargarOfertas(): void {
+    this.cargandoOfertas = true;
+    this.errorOfertas = null;
+
+    this.offerService.listarActivas().subscribe({
+      next: (ofertas) => {
+        this.ofertas = ofertas || [];
+        this.cargandoOfertas = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.errorOfertas = 'No se pudieron cargar las ofertas.';
+        this.cargandoOfertas = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  imagenOferta(index: number): string {
+    return this.imagenesOfertas[index % this.imagenesOfertas.length];
+  }
+
+  abrirOferta(oferta: Offer): void {
+    this.ofertaSeleccionada = oferta;
+  }
+
+  cerrarOferta(): void {
+    this.ofertaSeleccionada = null;
+  }
+
+  cargarServicios(): void {
+    this.cargandoServicios = true;
+    this.errorServicios = null;
+
+    this.medicalServiceApi.listarActivos().subscribe({
+      next: (servicios) => {
+        this.servicios = servicios || [];
+        this.cargandoServicios = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.errorServicios = 'No se pudieron cargar los servicios.';
+        this.cargandoServicios = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  iconoServicio(servicio: MedicalService): string {
+    const nombre = (servicio.name || '').toLowerCase();
+    const match = this.iconosPorPalabraClaveServicio.find((entry) => nombre.includes(entry.keyword));
+    return match ? match.icon : 'assets/icons/icon-general.png';
+  }
+
+  abrirServicio(servicio: MedicalService): void {
+    this.servicioSeleccionado = servicio;
+  }
+
+  cerrarServicio(): void {
+    this.servicioSeleccionado = null;
+  }
+
+  cargarProximaCita(userId: number | undefined): void {
+    if (!userId) {
+      this.cargandoProximaCita = false;
+      return;
+    }
+
+    this.cargandoProximaCita = true;
+    this.citasService.obtenerProximas(userId).subscribe({
+      next: (proximas) => {
+        this.proximaCita = proximas?.[0] || null;
+        this.cargandoProximaCita = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.proximaCita = null;
+        this.cargandoProximaCita = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   cargarSugeridos(): void {
@@ -146,7 +297,7 @@ export class DashboardComponent implements OnInit {
       queryParams['fecha'] = this.busquedaRapida.fecha;
     }
 
-    this.router.navigate(['/busqueda'], { queryParams });
+    this.router.navigate(['/busqueda-paciente'], { queryParams });
   }
 
   imagenFor(index: number): string {
@@ -171,6 +322,40 @@ export class DashboardComponent implements OnInit {
   }
 
   buscarPorEspecialidad(specialty: Specialty): void {
-    this.router.navigate(['/busqueda'], { queryParams: { especialidad: specialty.name } });
+    this.router.navigate(['/busqueda-paciente'], { queryParams: { especialidad: specialty.name } });
+  }
+
+  fechaCorta(fecha: string): { dow: string; day: string; month: string } {
+    const d = new Date(`${fecha}T00:00:00`);
+    return {
+      dow: this.diasSemanaCortos[d.getDay()],
+      day: String(d.getDate()),
+      month: this.mesesCortos[d.getMonth()],
+    };
+  }
+
+  fechaLarga(fecha: string): string {
+    const d = new Date(`${fecha}T00:00:00`);
+    return `${d.getDate()} de ${this.mesesLargos[d.getMonth()]} del ${d.getFullYear()} ${this.diasSemanaLargos[d.getDay()]}`;
+  }
+
+  formatearHora(hora: string): string {
+    const [h, m] = hora.split(':');
+    const hNum = Number(h);
+    const periodo = hNum >= 12 ? 'pm' : 'am';
+    const hora12 = hNum % 12 === 0 ? 12 : hNum % 12;
+    return `${hora12}:${m} ${periodo}`;
+  }
+
+  verDetallesCita(): void {
+    if (!this.proximaCita) return;
+    this.router.navigate(['/mis-citas', this.proximaCita.appointmentId]);
+  }
+
+  reagendarCitaDashboard(): void {
+    if (!this.proximaCita) return;
+    this.router.navigate(['/mis-citas', this.proximaCita.appointmentId], {
+      queryParams: { reagendar: true },
+    });
   }
 }

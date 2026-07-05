@@ -156,7 +156,7 @@ export class MisBusquedasComponent implements OnInit {
   }
 
   buscarNuevamente(item: BusquedaHistorial): void {
-    this.router.navigate(['/buscar'], {
+    this.router.navigate(['/busqueda-paciente'], {
       queryParams: {
         keyword: item.keyword,
         specialty: item.specialty,
