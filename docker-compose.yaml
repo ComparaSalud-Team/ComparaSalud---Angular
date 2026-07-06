@@ -1,0 +1,7 @@
+services:
+  frontend:
+    build: .
+    container_name: comparasalud-frontend
+    restart: always
+    ports:
+      - "80:80"
