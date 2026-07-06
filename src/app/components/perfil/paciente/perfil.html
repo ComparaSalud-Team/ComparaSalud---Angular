@@ -67,7 +67,7 @@
           </div>
           @if (card.showEmergencyBtn) {
             <button class="emergency-btn"
-                    [routerLink]="['/editar-perfil']"
+                    [routerLink]="['/editar-perfil/paciente']"
                     [queryParams]="{ seccion: 'emergencia' }">
               Añadir contacto de emergencia
             </button>
@@ -82,7 +82,7 @@
           <div class="stat-icon blue section-icon"><i class="fa-regular fa-calendar-check"></i></div>
           <h3>Próximas citas</h3>
         </div>
-        <a href="#" class="section-card-link">Ver todos</a>
+        <a routerLink="/mis-citas" class="section-card-link">Ver todos</a>
       </div>
       <div class="citas-grid">
         @if (cargandoCitas) {
@@ -108,7 +108,7 @@
             </div>
           }
         }
-        <div class="nueva-cita-card" routerLink="/dashboard">
+        <div class="nueva-cita-card" routerLink="/busqueda-paciente">
           <i class="fa-regular fa-calendar-plus"></i>
           <span>Agendar nueva cita</span>
         </div>
@@ -121,7 +121,7 @@
           <div class="stat-icon orange section-icon"><i class="fa-regular fa-file"></i></div>
           <h3>Historial médico y documentos</h3>
         </div>
-        <a href="#" class="section-card-link" style="color:#F97316;">Ver todos</a>
+        <a class="section-card-link" style="color:#F97316;">Ver todos</a>
       </div>
       <p class="historial-subtitle">Accede a tus recetas, resultados de análisis e informes médicos.</p>
       <div class="historial-grid">

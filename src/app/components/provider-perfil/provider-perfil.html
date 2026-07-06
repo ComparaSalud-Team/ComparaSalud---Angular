@@ -4,7 +4,7 @@
 
   <div class="perfil-wrapper">
 
-    <button class="btn-volver" (click)="volver()">← Volver</button>
+    <button class="btn-volver" (click)="volver()"><i class="fa-solid fa-arrow-left"></i> Volver</button>
 
     @if (cargando) {
       <div class="state-msg">Cargando información del proveedor...</div>
@@ -72,12 +72,31 @@
 
           <section class="card">
             <h3>Disponibilidad</h3>
-            <input
-              type="date"
-              class="date-input"
-              [(ngModel)]="fechaSeleccionada"
-              [min]="fechaMinima"
-              (change)="onFechaChange()">
+
+            <div class="cal-header">
+              <button class="cal-nav" [disabled]="!puedeRetrocederSemana" (click)="cambiarSemana(-1)">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+              <span class="cal-title">{{ tituloSemana }}</span>
+              <button class="cal-nav" (click)="cambiarSemana(1)">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+
+            <div class="cal-dias">
+              @for (dia of dias; track dia.fecha) {
+                <button
+                  class="cal-dia"
+                  [class.selected]="dia.fecha === fechaSeleccionada"
+                  [class.disabled]="dia.deshabilitado"
+                  [disabled]="dia.deshabilitado"
+                  (click)="seleccionarDia(dia)">
+                  <span>{{ dia.labelDia }}</span>
+                  <strong>{{ dia.numero }}</strong>
+                  <span>{{ dia.labelMes }}</span>
+                </button>
+              }
+            </div>
 
             @if (cargandoSlots) {
               <div class="state-msg">Cargando horarios...</div>

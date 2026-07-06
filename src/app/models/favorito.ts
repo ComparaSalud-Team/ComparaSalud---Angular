@@ -10,4 +10,6 @@ export interface Favorito {
   city: string;
   clinicIds: number[];
   clinicNames: string[];
+
+  photoUrl?: string;
 }

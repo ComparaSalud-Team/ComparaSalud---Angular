@@ -123,6 +123,13 @@
     <section class="doctor-list">
       @for (doctor of doctoresFiltrados; track doctor.id) {
         <div class="doctor-card">
+
+          @if (estaLogueado()) {
+            <button class="favorito-btn" (click)="guardarFavorito(doctor, $event)" title="Guardar en favoritos">
+              <i class="fa-regular fa-heart"></i>
+            </button>
+          }
+
           <img class="doctor-img" [src]="doctor.imagen" [alt]="doctor.nombre">
           <div class="doctor-content">
             <div class="doctor-header">

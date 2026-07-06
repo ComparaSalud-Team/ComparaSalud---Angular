@@ -55,4 +55,22 @@ export class CitasService {
   }): Observable<any> {
     return this.http.post(this.apiUrl, body);
   }
+  // Historial de citas del proveedor (COMPLETED y CANCELLED) con sus pacientes.
+  obtenerHistorialProveedor(providerId: number): Observable<AppointmentHistoryDTO[]> {
+    return this.http.get<AppointmentHistoryDTO[]>(`${this.apiUrl}/history`, {
+      params: { providerId },
+    });
+  }
+
+  // Próximas citas del proveedor (PENDING/SCHEDULED, fecha >= hoy).
+  obtenerProximasProveedor(providerId: number): Observable<AppointmentHistoryDTO[]> {
+    return this.http.get<AppointmentHistoryDTO[]>(`${this.apiUrl}/upcoming`, {
+      params: { providerId },
+    });
+  }
+
+  // HU – Confirmar cita (proveedor acepta una cita PENDING)
+  confirmarCita(appointmentId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${appointmentId}/confirm`, {});
+  }
 }

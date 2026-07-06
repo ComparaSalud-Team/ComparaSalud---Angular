@@ -33,7 +33,6 @@ export class RegistroDoctorComponent implements OnInit {
 
   showPassword = false;
 
-  // Clínicas disponibles para elegir (un doctor puede atender en varias)
   clinicasDisponibles: Clinic[] = [];
   clinicasSeleccionadas: number[] = [];
   cargandoClinicas = true;
@@ -75,11 +74,68 @@ export class RegistroDoctorComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  onTelefonoInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const soloNumeros = input.value.replace(/\D/g, '').slice(0, 9);
+    this.telefono = soloNumeros;
+    input.value = soloNumeros;
+  }
+
+  get tieneLongitudMinima(): boolean {
+    return this.password.length >= 8;
+  }
+
+  get tieneMayuscula(): boolean {
+    return /[A-Z]/.test(this.password);
+  }
+
+  get tieneCaracterEspecial(): boolean {
+    return /[!@#$%^&*(),.?":{}|<>_\-+=[\]/\\;'~`]/.test(this.password);
+  }
+
+  get criteriosCumplidos(): number {
+    return [this.tieneLongitudMinima, this.tieneMayuscula, this.tieneCaracterEspecial].filter(
+      Boolean,
+    ).length;
+  }
+
+  get passwordEsValida(): boolean {
+    return this.criteriosCumplidos === 3;
+  }
+
+  get strengthPercent(): number {
+    if (!this.password) return 0;
+    return (this.criteriosCumplidos / 3) * 100;
+  }
+
+  get strengthLabel(): string {
+    if (!this.password) return '';
+    if (this.passwordEsValida) return 'Fuerte';
+    if (this.criteriosCumplidos === 2) return 'Media';
+    return 'Débil';
+  }
+
+  get strengthClass(): string {
+    if (!this.password) return '';
+    return this.passwordEsValida ? 'strength-ok' : 'strength-bad';
+  }
+
   onSubmit(): void {
     this.errorMsg = '';
 
     if (!this.nombre || !this.email || !this.password || !this.especialidad) {
       this.errorMsg = 'Completa todos los campos obligatorios.';
+      return;
+    }
+
+    if (!this.passwordEsValida) {
+      this.errorMsg =
+        'La contraseña debe tener mínimo 8 caracteres, una letra mayúscula y un carácter especial.';
+      return;
+    }
+
+    if (this.telefono && this.telefono.length !== 9) {
+      this.errorMsg = 'El teléfono debe tener 9 dígitos.';
       return;
     }
 
@@ -119,11 +175,8 @@ export class RegistroDoctorComponent implements OnInit {
       clinicIds: this.clinicasSeleccionadas,
     };
 
-    console.log('Enviando al backend:', doctor);
-
     this.providerService.registerProvider(doctor).subscribe({
-      next: (response) => {
-        console.log('Respuesta:', response);
+      next: () => {
         alert('Doctor registrado correctamente');
         this.router.navigate(['/login']);
       },

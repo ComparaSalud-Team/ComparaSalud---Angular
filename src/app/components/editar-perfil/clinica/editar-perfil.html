@@ -1,0 +1,319 @@
+<div class="dash-shell">
+  <app-navbar-clinica></app-navbar-clinica>
+  <div class="dash-body">
+    <app-sidebar-clinica></app-sidebar-clinica>
+    <div class="dash-main">
+      <div class="dash-content">
+
+        <div class="editar-page">
+          <div class="editar-header">
+            <h1>Editar perfil</h1>
+            <div class="header-actions">
+              <button class="btn-regresar" (click)="regresar()">Regresar</button>
+              <button class="btn-guardar" (click)="guardarCambios()" [disabled]="guardando">
+                {{ guardando ? 'Guardando...' : 'Guardar cambios' }}
+              </button>
+            </div>
+          </div>
+
+          @if (errorMsg) {
+            <div class="error-banner">{{ errorMsg }}</div>
+          }
+
+          @if (cargando) {
+            <p class="cargando-text">Cargando perfil...</p>
+          } @else {
+            <div class="editar-grid">
+              <div class="editar-tabs">
+                <button class="tab-item" [class.active]="seccionActiva === 'general'" (click)="irASeccion('general')">
+                  <i class="fa-solid fa-hospital"></i> Información general
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'ubicacion'" (click)="irASeccion('ubicacion')">
+                  <i class="fa-solid fa-location-dot"></i> Ubicación
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'servicios'" (click)="irASeccion('servicios')">
+                  <i class="fa-regular fa-heart"></i> Servicios
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'seguros'" (click)="irASeccion('seguros')">
+                  <i class="fa-solid fa-file-shield"></i> Seguros aceptados
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'certificaciones'" (click)="irASeccion('certificaciones')">
+                  <i class="fa-solid fa-award"></i> Certificaciones
+                </button>
+                <button class="tab-item" [class.active]="seccionActiva === 'horario'" (click)="irASeccion('horario')">
+                  <i class="fa-regular fa-clock"></i> Horario
+                </button>
+              </div>
+
+              <div class="editar-main">
+                @if (seccionActiva === 'general') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-hospital"></i>
+                      <div>
+                        <strong>Información general</strong>
+                        <p>Actualiza los datos básicos de la clínica</p>
+                      </div>
+                    </div>
+                    <div class="avatar-block">
+                      <img [src]="avatar" alt="Logo de la clínica" />
+                      <span class="avatar-label">Actualizar logo</span>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group">
+                        <label>Nombre de la clínica</label>
+                        <input type="text" [(ngModel)]="clinica.name" name="name" placeholder="Ej. Clínica San Isidro" />
+                      </div>
+                      <div class="form-group">
+                        <label>RUC</label>
+                        <input type="text" [value]="clinica.ruc" disabled />
+                      </div>
+                      <div class="form-group">
+                        <label>Correo electrónico</label>
+                        <input type="email" [(ngModel)]="clinica.email" name="email" />
+                      </div>
+                      <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" [(ngModel)]="clinica.phone" name="phone" placeholder="Ej. 987654321 o (01) 456-7890" />
+                      </div>
+                      <div class="form-group">
+                        <label>Teléfono de emergencias</label>
+                        <input type="text" [(ngModel)]="clinica.emergencyPhone" name="emergencyPhone" maxlength="9" inputmode="numeric" (input)="soloNumeros('emergencyPhone', $event)" placeholder="Ej. 987654321" />
+                      </div>
+                      <div class="form-group">
+                        <label>Sitio web</label>
+                        <input type="text" [(ngModel)]="clinica.website" name="website" placeholder="https://tuclinica.com" />
+                      </div>
+                      <div class="form-group">
+                        <label>Tipo de clínica</label>
+                        <input type="text" [(ngModel)]="clinica.clinicType" name="clinicType" placeholder="Ej. Hospital general" />
+                      </div>
+                      <div class="form-group">
+                        <label>Año de fundación</label>
+                        <input type="number" [(ngModel)]="clinica.foundedYear" name="foundedYear" min="1900" [max]="2026" placeholder="Ej. 1998" />
+                      </div>
+                      <div class="form-group">
+                        <label>Número de camas</label>
+                        <input type="number" [(ngModel)]="clinica.bedsCount" name="bedsCount" min="0" placeholder="Ej. 40" />
+                      </div>
+                      <div class="form-group full">
+                        <label>Descripción</label>
+                        <textarea [(ngModel)]="clinica.description" name="description" rows="3"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'ubicacion') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-location-dot"></i>
+                      <div>
+                        <strong>Ubicación</strong>
+                        <p>Dirección de la clínica</p>
+                      </div>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group full">
+                        <label>Calle / Dirección</label>
+                        <input type="text" [(ngModel)]="clinica.street" name="street" placeholder="Ej. Av. Javier Prado 123" />
+                      </div>
+                      <div class="form-group">
+                        <label>Distrito</label>
+                        <input type="text" [(ngModel)]="clinica.district" name="district" placeholder="Ej. San Isidro" />
+                      </div>
+                      <div class="form-group">
+                        <label>Ciudad</label>
+                        <input type="text" [(ngModel)]="clinica.city" name="city" placeholder="Ej. Lima" />
+                      </div>
+                      <div class="form-group">
+                        <label>País</label>
+                        <input type="text" [(ngModel)]="clinica.country" name="country" placeholder="Ej. Perú" />
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'servicios') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-regular fa-heart"></i>
+                      <div>
+                        <strong>Servicios</strong>
+                        <p>Selecciona los servicios que ofrece la clínica</p>
+                      </div>
+                    </div>
+                    <div class="servicios-grid">
+                      <div class="servicio-card" [class.selected]="clinica.emergencia24h" (click)="clinica.emergencia24h = !clinica.emergencia24h">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Emergencia 24h</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.estacionamiento" (click)="clinica.estacionamiento = !clinica.estacionamiento">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Estacionamiento</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.farmacia" (click)="clinica.farmacia = !clinica.farmacia">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Farmacia</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.laboratorio" (click)="clinica.laboratorio = !clinica.laboratorio">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Laboratorio</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.imagenologia" (click)="clinica.imagenologia = !clinica.imagenologia">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Imagenología</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.servicioAmbulancia" (click)="clinica.servicioAmbulancia = !clinica.servicioAmbulancia">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Servicio de ambulancia</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.unidadCuidadosIntensivos" (click)="clinica.unidadCuidadosIntensivos = !clinica.unidadCuidadosIntensivos">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Unidad de cuidados intensivos</span>
+                      </div>
+                      <div class="servicio-card" [class.selected]="clinica.hospitalizacion" (click)="clinica.hospitalizacion = !clinica.hospitalizacion">
+                        <div class="servicio-check"><i class="fa-solid fa-check"></i></div>
+                        <span>Hospitalización</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'seguros') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-file-shield"></i>
+                      <div>
+                        <strong>Seguros aceptados</strong>
+                        <p>Agrega los seguros médicos que acepta la clínica</p>
+                      </div>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group full">
+                        <label>Nuevo seguro</label>
+                        <div style="display: flex; gap: 8px;">
+                          <input type="text" [(ngModel)]="nuevoSeguro" name="nuevoSeguro" (keyup.enter)="agregarSeguro()" style="flex: 1;" placeholder="Ej. Rímac Seguros" />
+                          <button class="btn-guardar" (click)="agregarSeguro()" type="button">Agregar</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="perfil-tags" style="margin-top: 14px;">
+                      <span class="perfil-tag" *ngFor="let s of clinica.insuranceAccepted; let i = index" (click)="quitarSeguro(i)">
+                        {{ s }}
+                        <span class="tag-remove">✕</span>
+                      </span>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'certificaciones') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-solid fa-award"></i>
+                      <div>
+                        <strong>Certificaciones</strong>
+                        <p>Agrega las certificaciones de la clínica</p>
+                      </div>
+                    </div>
+                    <div class="form-grid">
+                      <div class="form-group full">
+                        <label>Nueva certificación</label>
+                        <div style="display: flex; gap: 8px;">
+                          <input type="text" [(ngModel)]="nuevaCertificacion" name="nuevaCertificacion" (keyup.enter)="agregarCertificacion()" style="flex: 1;" placeholder="Ej. ISO 9001" />
+                          <button class="btn-guardar" (click)="agregarCertificacion()" type="button">Agregar</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="perfil-tags" style="margin-top: 14px;">
+                      <span class="perfil-tag" *ngFor="let cert of clinica.certifications; let i = index" (click)="quitarCertificacion(i)">
+                        {{ cert }}
+                        <span class="tag-remove">✕</span>
+                      </span>
+                    </div>
+                  </div>
+                }
+
+                @if (seccionActiva === 'horario') {
+                  <div class="seccion-card">
+                    <div class="seccion-titulo">
+                      <i class="fa-regular fa-clock"></i>
+                      <div>
+                        <strong>Horario de atención</strong>
+                        <p>Selecciona los días y el rango de horas de atención</p>
+                      </div>
+                    </div>
+
+                    <label class="perfil-label" style="display:block; margin-bottom: 8px;">Días</label>
+                    <div class="dias-selector">
+                      <button
+                        type="button"
+                        class="dia-chip"
+                        *ngFor="let dia of diasSemana"
+                        [class.active]="diasSeleccionados.includes(dia)"
+                        (click)="toggleDia(dia)">
+                        {{ dia.slice(0, 3) }}
+                      </button>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 16px;">
+                      <div class="form-group">
+                        <label>Hora de inicio</label>
+                        <input type="time" [(ngModel)]="horaInicio" name="horaInicio" />
+                      </div>
+                      <div class="form-group">
+                        <label>Hora de fin</label>
+                        <input type="time" [(ngModel)]="horaFin" name="horaFin" />
+                      </div>
+                    </div>
+
+                    <button class="btn-guardar" (click)="agregarHorario()" type="button" style="margin-top: 16px;">
+                      + Agregar bloque de horario
+                    </button>
+                    <p *ngIf="horarioError" style="color: #DC2626; font-size: .8rem; margin-top: 8px;">{{ horarioError }}</p>
+
+                    <div class="perfil-tags" style="margin-top: 18px;">
+                      <span class="perfil-tag" *ngFor="let h of clinica.schedule; let i = index" (click)="quitarHorario(i)">
+                        {{ h.replace('|', ': ') }}
+                        <span class="tag-remove">✕</span>
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="editar-sidebar">
+                <div class="sidebar-card">
+                  <h3>Resumen del perfil</h3>
+                  <div class="resumen-item">
+                    <i class="fa-solid fa-circle-check" [class.ok]="porcentajePerfil() === 100"></i>
+                    <div>
+                      <strong>{{ porcentajePerfil() === 100 ? 'Perfil completo' : 'Perfil incompleto' }}</strong>
+                      <p>Perfil al {{ porcentajePerfil() }}%</p>
+                    </div>
+                  </div>
+                  <div class="resumen-item">
+                    <i class="fa-solid fa-circle-check ok"></i>
+                    <div>
+                      <strong>Email registrado</strong>
+                      <p>{{ clinica.email }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sidebar-card">
+                  <h3>Acciones rápidas</h3>
+                  <a class="accion-link" routerLink="/perfil/clinica">Cambiar contraseña</a>
+                  <a class="accion-link" routerLink="/perfil/clinica">Configurar privacidad</a>
+                  <a class="accion-link" routerLink="/perfil/clinica">Ver perfil público</a>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <app-public-footer></app-public-footer>
+</div>

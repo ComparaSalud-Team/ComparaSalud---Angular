@@ -14,10 +14,14 @@ import { Provider } from '../../models/provider.model';
 import { Availability } from '../../models/availability';
 import { AppointmentHistoryDTO } from '../../models/cita';
 
-// Perfil público de un proveedor (/providers/:id). Solo muestra datos que el
-// backend realmente entrega: no hay reseñas individuales, redes sociales,
-// "tasa de éxito" ni servicios propios del proveedor todavía — si se agregan
-// esos datos al backend a futuro, esta página se puede ampliar.
+interface DiaCalendario {
+  fecha: string;
+  labelDia: string;
+  numero: number;
+  labelMes: string;
+  deshabilitado: boolean;
+}
+
 @Component({
   selector: 'app-provider-perfil',
   standalone: true,
@@ -39,8 +43,10 @@ export class ProviderPerfilComponent implements OnInit {
   favoritoId: number | null = null;
   cargandoFavorito = false;
 
+  private inicioSemana!: Date;
+  dias: DiaCalendario[] = [];
   fechaSeleccionada = '';
-  fechaMinima = '';
+
   slots: Availability[] = [];
   cargandoSlots = false;
   errorSlots: string | null = null;
@@ -59,6 +65,36 @@ export class ProviderPerfilComponent implements OnInit {
     españa: '🇪🇸',
   };
 
+  private readonly nombresDias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  private readonly nombresMeses = [
+    'ENE',
+    'FEB',
+    'MAR',
+    'ABR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AGO',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DIC',
+  ];
+  private readonly nombresMesesLargos = [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -72,8 +108,11 @@ export class ProviderPerfilComponent implements OnInit {
 
   ngOnInit(): void {
     this.providerId = Number(this.route.snapshot.paramMap.get('id'));
-    this.fechaMinima = this.formatearFecha(new Date());
-    this.fechaSeleccionada = this.fechaMinima;
+
+    const hoy = new Date();
+    this.inicioSemana = this.lunesDe(hoy);
+    this.fechaSeleccionada = this.formatearFecha(hoy);
+    this.construirSemana();
 
     const session = this.auth.getUser();
     this.userId = session?.userId ?? null;
@@ -126,7 +165,65 @@ export class ProviderPerfilComponent implements OnInit {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
   }
 
-  // ── Disponibilidad ────────────────────────────────────────────────────
+  private lunesDe(d: Date): Date {
+    const copia = new Date(d);
+    const dia = copia.getDay();
+    const diff = dia === 0 ? -6 : 1 - dia;
+    copia.setDate(copia.getDate() + diff);
+    copia.setHours(0, 0, 0, 0);
+    return copia;
+  }
+
+  private construirSemana(): void {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    this.dias = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(this.inicioSemana);
+      d.setDate(d.getDate() + i);
+      this.dias.push({
+        fecha: this.formatearFecha(d),
+        labelDia: this.nombresDias[d.getDay()],
+        numero: d.getDate(),
+        labelMes: this.nombresMeses[d.getMonth()],
+        deshabilitado: d < hoy,
+      });
+    }
+  }
+
+  get tituloSemana(): string {
+    const fin = new Date(this.inicioSemana);
+    fin.setDate(fin.getDate() + 6);
+    const mesInicio = this.nombresMesesLargos[this.inicioSemana.getMonth()];
+    const mesFin = this.nombresMesesLargos[fin.getMonth()];
+    const año = fin.getFullYear();
+    return mesInicio === mesFin ? `${mesInicio} ${año}` : `${mesInicio} / ${mesFin} ${año}`;
+  }
+
+  get puedeRetrocederSemana(): boolean {
+    return this.lunesDe(new Date()) < this.inicioSemana;
+  }
+
+  cambiarSemana(delta: number): void {
+    if (delta < 0 && !this.puedeRetrocederSemana) return;
+    const nuevo = new Date(this.inicioSemana);
+    nuevo.setDate(nuevo.getDate() + delta * 7);
+    this.inicioSemana = nuevo;
+    this.construirSemana();
+
+    if (!this.dias.some((d) => d.fecha === this.fechaSeleccionada && !d.deshabilitado)) {
+      const primero = this.dias.find((d) => !d.deshabilitado);
+      if (primero) this.seleccionarDia(primero);
+    }
+  }
+
+  seleccionarDia(dia: DiaCalendario): void {
+    if (dia.deshabilitado) return;
+    this.fechaSeleccionada = dia.fecha;
+    this.cargarDisponibilidad();
+  }
+
   cargarDisponibilidad(): void {
     this.cargandoSlots = true;
     this.errorSlots = null;
@@ -144,10 +241,6 @@ export class ProviderPerfilComponent implements OnInit {
         this.cdr.detectChanges();
       },
     });
-  }
-
-  onFechaChange(): void {
-    this.cargarDisponibilidad();
   }
 
   formatearHora(hora: string): string {
@@ -169,7 +262,6 @@ export class ProviderPerfilComponent implements OnInit {
     this.router.navigate(['/agendar-cita', this.providerId]);
   }
 
-  // ── Favoritos ─────────────────────────────────────────────────────────
   cargarFavorito(): void {
     if (!this.patientId) return;
 
@@ -180,9 +272,7 @@ export class ProviderPerfilComponent implements OnInit {
         this.favoritoId = match?.favoriteId ?? null;
         this.cdr.detectChanges();
       },
-      error: () => {
-        // Si falla, simplemente se asume que no es favorito todavía.
-      },
+      error: () => {},
     });
   }
 
@@ -206,7 +296,6 @@ export class ProviderPerfilComponent implements OnInit {
     });
   }
 
-  // ── Tu cita con este médico ───────────────────────────────────────────
   cargarCitaConEsteMedico(): void {
     if (!this.userId) {
       this.cargandoCita = false;

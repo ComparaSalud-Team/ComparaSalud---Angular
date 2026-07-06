@@ -23,4 +23,12 @@ export interface Clinic {
   servicioAmbulancia: boolean;
   unidadCuidadosIntensivos: boolean;
   hospitalizacion: boolean;
+  clinicType?: string;
+  foundedYear?: number;
+  bedsCount?: number;
+  emergencyPhone?: string;
+  website?: string;
+  insuranceAccepted?: string[];
+  certifications?: string[];
+  schedule?: string[];
 }

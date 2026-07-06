@@ -28,6 +28,9 @@ app-public-footer {
   font-weight: 600;
   cursor: pointer;
   padding: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .state-msg { padding: 24px; text-align: center; color: #64748B; font-size: 15px; }
@@ -131,16 +134,68 @@ app-public-footer {
 
 .btn-maps:hover { text-decoration: underline; }
 
-.date-input {
-  width: 100%;
-  border: 1px solid #CBD5E1;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  font-family: inherit;
-  color: #0F172A;
-  box-sizing: border-box;
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 14px;
+}
+
+.cal-title {
+  font-size: .9rem;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+.cal-nav {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2563EB;
+  cursor: pointer;
+}
+
+.cal-nav:hover:not(:disabled) { background: #EFF6FF; border-color: #93C5FD; }
+.cal-nav:disabled { color: #CBD5E1; cursor: not-allowed; }
+
+.cal-dias {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.cal-dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 10px 4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cal-dia span { font-size: .68rem; color: #64748B; }
+.cal-dia strong { font-size: 1.05rem; color: #0F172A; }
+
+.cal-dia.selected {
+  border-color: #2563EB;
+  background: #EFF6FF;
+}
+
+.cal-dia.selected strong { color: #2563EB; }
+
+.cal-dia.disabled {
+  opacity: .45;
+  cursor: not-allowed;
 }
 
 .slots-grid {

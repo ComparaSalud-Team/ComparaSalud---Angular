@@ -109,6 +109,17 @@
   white-space: nowrap;
 }
 
+.icon-inline {
+  display: inline-block;
+  vertical-align: -2px;
+  flex-shrink: 0;
+}
+
+.cp-col-label .icon-inline {
+  margin-right: 6px;
+  color: #64748B;
+}
+
 .cp-clinic-header {
   display: flex;
   flex-direction: column;
@@ -121,6 +132,9 @@
 }
 
 .cp-district {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   color: #64748B;
   font-size: 12px;
 }
@@ -138,7 +152,15 @@
 
 .cp-check {
   font-size: 16px;
+  text-align: left;
 }
+
+.icon-check {
+  display: inline-block;
+  vertical-align: -3px;
+}
+.icon-check.ok { color: #059669; }
+.icon-check.no { color: #CBD5E1; }
 
 .cp-price {
   color: #2563EB;

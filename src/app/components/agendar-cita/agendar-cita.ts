@@ -46,6 +46,7 @@ export class AgendarCitaComponent implements OnInit {
 
   motivo = '';
   notas = '';
+  errorMotivo: string | null = null;
 
   metodoPago: 'Tarjeta' | 'PayPal' | 'Transferencia' = 'Tarjeta';
 
@@ -284,7 +285,19 @@ export class AgendarCitaComponent implements OnInit {
   }
 
   continuarAlPago(): void {
-    if (!this.puedeContinuarAlPago) return;
+    const motivo = this.motivo.trim();
+    if (!this.slotSeleccionado) {
+      return;
+    }
+    if (!motivo) {
+      this.errorMotivo = 'Indica el motivo de la consulta.';
+      return;
+    }
+    if (motivo.length < 5) {
+      this.errorMotivo = 'Describe el motivo con al menos 5 caracteres.';
+      return;
+    }
+    this.errorMotivo = null;
     this.paso = 3;
     window.scrollTo({ top: 0 });
   }
@@ -302,6 +315,47 @@ export class AgendarCitaComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
+  // ── Filtrado de inputs de tarjeta ──
+  soloNumerosTarjeta(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digitos = input.value.replace(/\D/g, '').slice(0, 16);
+    const agrupado = digitos.replace(/(.{4})/g, '$1 ').trim();
+    input.value = agrupado;
+    this.tarjeta.numero = agrupado;
+  }
+
+  formatoExpiracion(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let digitos = input.value.replace(/\D/g, '').slice(0, 4);
+    if (digitos.length >= 3) {
+      digitos = `${digitos.slice(0, 2)}/${digitos.slice(2)}`;
+    }
+    input.value = digitos;
+    this.tarjeta.expiracion = digitos;
+  }
+
+  soloNumerosCvv(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digitos = input.value.replace(/\D/g, '').slice(0, 4);
+    input.value = digitos;
+    this.tarjeta.cvv = digitos;
+  }
+
+  soloNumerosCodigoPostal(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const digitos = input.value.replace(/\D/g, '').slice(0, 10);
+    input.value = digitos;
+    this.facturacion.codigoPostal = digitos;
+  }
+
+  // ── Filtrado de solo letras (para Ciudad) ──
+  soloLetrasCiudad(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const filtrado = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
+    input.value = filtrado;
+    this.facturacion.ciudad = filtrado;
+  }
+
   get datosTarjetaCompletos(): boolean {
     if (this.metodoPago !== 'Tarjeta') return true;
     return (
@@ -316,8 +370,97 @@ export class AgendarCitaComponent implements OnInit {
     return this.aceptaTerminos && this.datosTarjetaCompletos && !this.agendando;
   }
 
+  // ── Validación completa antes de confirmar y pagar ──
+  private validarPago(): boolean {
+    if (this.metodoPago === 'Tarjeta') {
+      const numeroDigitos = this.tarjeta.numero.replace(/\s/g, '');
+      if (!numeroDigitos) {
+        this.errorAgendar = 'Ingresa el número de tarjeta.';
+        return false;
+      }
+      if (numeroDigitos.length < 13 || numeroDigitos.length > 16) {
+        this.errorAgendar = 'El número de tarjeta debe tener entre 13 y 16 dígitos.';
+        return false;
+      }
+
+      if (!/^\d{2}\/\d{2}$/.test(this.tarjeta.expiracion)) {
+        this.errorAgendar = 'La fecha de expiración debe tener el formato MM/AA.';
+        return false;
+      }
+      const [mesStr, añoStr] = this.tarjeta.expiracion.split('/');
+      const mes = Number(mesStr);
+      const año = Number(añoStr);
+      if (mes < 1 || mes > 12) {
+        this.errorAgendar = 'El mes de expiración no es válido.';
+        return false;
+      }
+      const ahora = new Date();
+      const añoActual = ahora.getFullYear() % 100;
+      const mesActual = ahora.getMonth() + 1;
+      if (año < añoActual || (año === añoActual && mes < mesActual)) {
+        this.errorAgendar = 'La tarjeta ingresada ya está vencida.';
+        return false;
+      }
+
+      if (this.tarjeta.cvv.length < 3 || this.tarjeta.cvv.length > 4) {
+        this.errorAgendar = 'El CVV debe tener 3 o 4 dígitos.';
+        return false;
+      }
+
+      const titular = this.tarjeta.titular.trim();
+      if (!titular) {
+        this.errorAgendar = 'Ingresa el nombre del titular de la tarjeta.';
+        return false;
+      }
+      if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(titular)) {
+        this.errorAgendar = 'El nombre del titular solo puede contener letras y espacios.';
+        return false;
+      }
+    }
+
+    const nombre = this.facturacion.nombre.trim();
+    const apellido = this.facturacion.apellido.trim();
+    if (!nombre || !apellido) {
+      this.errorAgendar = 'Completa tu nombre y apellido en la información de facturación.';
+      return false;
+    }
+    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(nombre) || !/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(apellido)) {
+      this.errorAgendar = 'El nombre y apellido solo pueden contener letras y espacios.';
+      return false;
+    }
+
+    if (!this.facturacion.direccion.trim()) {
+      this.errorAgendar = 'Ingresa tu dirección de facturación.';
+      return false;
+    }
+
+    const ciudad = this.facturacion.ciudad.trim();
+    if (!ciudad) {
+      this.errorAgendar = 'Ingresa tu ciudad.';
+      return false;
+    }
+    if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/.test(ciudad)) {
+      this.errorAgendar = 'La ciudad solo puede contener letras.';
+      return false;
+    }
+
+    if (this.facturacion.codigoPostal && !/^\d{4,10}$/.test(this.facturacion.codigoPostal.trim())) {
+      this.errorAgendar = 'El código postal debe contener solo números (4 a 10 dígitos).';
+      return false;
+    }
+
+    if (!this.aceptaTerminos) {
+      this.errorAgendar = 'Debes aceptar los términos y condiciones para continuar.';
+      return false;
+    }
+
+    this.errorAgendar = null;
+    return true;
+  }
+
   confirmarYPagar(): void {
-    if (!this.puedeConfirmar || !this.slotSeleccionado || !this.provider) return;
+    if (!this.slotSeleccionado || !this.provider) return;
+    if (!this.validarPago()) return;
 
     const user = this.auth.getUser();
     const patientId = user?.profile?.id;

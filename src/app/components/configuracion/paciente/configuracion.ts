@@ -2,11 +2,11 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PublicNavbarComponent } from '../../shared/public-navbar-paciente/public-navbar';
-import { PublicFooterComponent } from '../../shared/public-footer/footer';
-import { AuthService } from '../../services/auth';
-import { PreferencesService } from '../../services/Preferences.service';
-import { UserPreferences } from '../../models/UserPreferences';
+import { PublicNavbarComponent } from '../../../shared/public-navbar-paciente/public-navbar';
+import { PublicFooterComponent } from '../../../shared/public-footer/footer';
+import { AuthService } from '../../../services/auth';
+import { PreferencesService } from '../../../services/Preferences.service';
+import { UserPreferences } from '../../../models/UserPreferences';
 
 type Seccion = 'preferencias' | 'privacidad' | 'facturacion' | 'ayuda';
 
@@ -118,7 +118,6 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
-  // Seguridad
   emailActual = '';
   nuevoEmail = '';
   passwordActual = '';
@@ -294,6 +293,19 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
+  exportarConfiguracion(): void {
+    const dataStr = JSON.stringify(this.prefs, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'configuracion-comparasalud.json';
+    link.click();
+
+    URL.revokeObjectURL(url);
+  }
+
   restablecerDefecto(): void {
     this.preferencesService.restablecer(this.authUserId).subscribe({
       next: (data) => {
@@ -318,6 +330,17 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/perfil']);
+    this.errorMsg = '';
+    if (!this.authUserId) return;
+
+    this.preferencesService.obtener(this.authUserId).subscribe({
+      next: (data) => {
+        this.prefs = { ...this.prefs, ...data };
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cdr.detectChanges();
+      },
+    });
   }
 }

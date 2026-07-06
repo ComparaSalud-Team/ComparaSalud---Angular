@@ -21,7 +21,10 @@ export class AuthService {
         localStorage.setItem(this.SESSION_KEY, JSON.stringify(response));
       }),
       switchMap((response: any) => {
-        return this.http.get(`${this.apiUrl}/users/profile`).pipe(
+        const profileUrl =
+          response.role === 'CLINIC' ? `${this.apiUrl}/clinics/me` : `${this.apiUrl}/users/profile`;
+
+        return this.http.get(profileUrl).pipe(
           tap((profile: any) => {
             localStorage.setItem(this.SESSION_KEY, JSON.stringify({ ...response, profile }));
           }),

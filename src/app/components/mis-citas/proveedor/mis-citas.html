@@ -1,0 +1,117 @@
+<div class="dash-shell">
+  <app-navbar-proveedor></app-navbar-proveedor>
+  <div class="dash-body">
+    <app-sidebar-proveedor></app-sidebar-proveedor>
+    <div class="dash-main">
+      <div class="dash-content">
+
+        <div class="citas-page">
+          <div class="citas-page-header">
+            <div><h1>Mis citas</h1><p>Visualiza y gestiona las citas de tus pacientes.</p></div>
+          </div>
+
+          <div class="citas-stats">
+            <div class="citas-stat-card">
+              <div class="citas-stat-icon blue"><i class="fa-regular fa-calendar-check"></i></div>
+              <div><div class="citas-stat-number">{{ totalCitas }}</div><div class="citas-stat-label">Total de citas</div></div>
+            </div>
+            <div class="citas-stat-card">
+              <div class="citas-stat-icon teal"><i class="fa-regular fa-clock"></i></div>
+              <div><div class="citas-stat-number">{{ totalProximas }}</div><div class="citas-stat-label">Pendientes</div></div>
+            </div>
+            <div class="citas-stat-card">
+              <div class="citas-stat-icon green"><i class="fa-regular fa-calendar-check"></i></div>
+              <div><div class="citas-stat-number">{{ totalCompletadas }}</div><div class="citas-stat-label">Completadas</div></div>
+            </div>
+            <div class="citas-stat-card">
+              <div class="citas-stat-icon red"><i class="fa-solid fa-xmark"></i></div>
+              <div><div class="citas-stat-number">{{ totalCanceladas }}</div><div class="citas-stat-label">Canceladas</div></div>
+            </div>
+          </div>
+
+          <div class="citas-filter-row">
+            <div class="citas-tabs">
+              <button class="tab-btn" [class.active]="tabActivo === 'todas'"      (click)="setTab('todas')">Todas <span class="tab-count">{{ totalCitas }}</span></button>
+              <button class="tab-btn" [class.active]="tabActivo === 'proximas'"   (click)="setTab('proximas')">Pendientes <span class="tab-count">{{ totalProximas }}</span></button>
+              <button class="tab-btn" [class.active]="tabActivo === 'completada'" (click)="setTab('completada')">Completadas <span class="tab-count">{{ totalCompletadas }}</span></button>
+              <button class="tab-btn" [class.active]="tabActivo === 'cancelada'"  (click)="setTab('cancelada')">Canceladas <span class="tab-count">{{ totalCanceladas }}</span></button>
+            </div>
+          </div>
+
+          @if (cargando) {
+            <div class="citas-note">Cargando tus citas...</div>
+          } @else if (error) {
+            <div class="citas-note">{{ error }}</div>
+          } @else if (citasFiltradas.length === 0) {
+            <div class="citas-note">No tienes citas en esta categoría.</div>
+          } @else {
+            <div class="citas-list">
+              @for (cita of citasFiltradas; track cita.appointmentId) {
+                <div class="cita-list-card">
+                  <img class="cita-doctor-img" [src]="cita.doctorImagen" [alt]="cita.doctorNombre">
+                  <div class="cita-list-content">
+                    <div class="cita-list-top">
+                      <h3>{{ cita.doctorNombre }}</h3>
+                      <span class="badge" [ngClass]="getBadgeClass(cita.estado)">{{ getBadgeLabel(cita.estado) }}</span>
+                    </div>
+                    @if (cita.especialidad) {
+                      <div class="cita-especialidad">Motivo: {{ cita.especialidad }}</div>
+                    }
+                    <div class="cita-list-meta">
+                      <div class="cita-meta-item">
+                        <span class="meta-label">Fecha</span>
+                        <span class="meta-value"><i class="fa-regular fa-calendar"></i> {{ cita.fecha }}</span>
+                      </div>
+                      <div class="cita-meta-item">
+                        <span class="meta-label">Hora</span>
+                        <span class="meta-value"><i class="fa-regular fa-clock"></i> {{ cita.hora }}</span>
+                      </div>
+                      <div class="cita-meta-item">
+                        <span class="meta-label">Duración</span>
+                        <span class="meta-value"><i class="fa-regular fa-hourglass"></i> {{ cita.duracionMin }} min</span>
+                      </div>
+                      <div class="cita-meta-item">
+                        <span class="meta-label">Modalidad</span>
+                        <span class="meta-value"><i class="fa-solid fa-video"></i> {{ cita.modalidad }}</span>
+                      </div>
+                    </div>
+                    <div class="cita-list-actions">
+                      <button class="btn-ver-detalles" (click)="verDetalles(cita)">
+                        <i class="fa-regular fa-eye"></i> Ver detalles
+                      </button>
+                      @if (cita.estado === 'proxima') {
+                        <button class="btn-ver-resumen" (click)="confirmarCita(cita)">
+                          <i class="fa-solid fa-check"></i> Confirmar
+                        </button>
+                      }
+                      @if (cita.estado === 'confirmada') {
+                        <button class="btn-ver-resumen" (click)="iniciarConsulta(cita)">
+                          <i class="fa-solid fa-video"></i> Iniciar consulta
+                        </button>
+                      }
+                      @if (cita.estado !== 'completada' && cita.estado !== 'cancelada') {
+                        <button class="btn-cancelar" (click)="cancelarCita(cita)">Cancelar</button>
+                      }
+                    </div>
+                  </div>
+                  <div class="cita-list-right">
+                    <span class="cita-id">ID: {{ cita.id }}</span>
+                    @if (cita.precio) {
+                      <span class="cita-price">S/{{ cita.precio }}</span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="citas-note">
+            <strong>Recuerda:</strong> Puedes cancelar una cita con al menos 24 horas de anticipación sin afectar tu calificación.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <app-public-footer></app-public-footer>
+</div>

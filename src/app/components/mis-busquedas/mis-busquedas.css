@@ -3,14 +3,12 @@
   display: flex;
   flex-direction: column;
 }
-
 .page-body {
   flex: 1;
   max-width: 980px;
   margin: 0 auto;
   padding: 32px 32px 64px;
 }
-
 /* Header */
 .busquedas-header h1 {
   font-size: 1.6rem;
@@ -18,20 +16,17 @@
   color: #1E1B4B;
   margin: 0 0 6px;
 }
-
 .busquedas-header p {
   color: #64748B;
   font-size: .9rem;
   margin: 0 0 22px;
 }
-
 /* Tabs */
 .tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 20px;
 }
-
 .tab-btn {
   display: flex;
   align-items: center;
@@ -45,12 +40,10 @@
   border-radius: 10px;
   cursor: pointer;
 }
-
 .tab-btn.active {
   background: #EFF6FF;
   color: #2563EB;
 }
-
 /* Toolbar */
 .busquedas-toolbar {
   display: flex;
@@ -58,7 +51,6 @@
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
-
 .search-box {
   flex: 1;
   min-width: 240px;
@@ -70,9 +62,7 @@
   border-radius: 12px;
   padding: 0 16px;
 }
-
 .search-box i { color: #94A3B8; font-size: .85rem; }
-
 .search-box input {
   border: none;
   outline: none;
@@ -81,7 +71,6 @@
   width: 100%;
   color: #1E1B4B;
 }
-
 .busquedas-toolbar select {
   border: 1px solid #E2E8F0;
   border-radius: 12px;
@@ -91,7 +80,6 @@
   background: #fff;
   min-width: 150px;
 }
-
 .btn-limpiar {
   border: 1px solid #E2E8F0;
   background: #fff;
@@ -101,31 +89,25 @@
   color: #334155;
   cursor: pointer;
 }
-
 .btn-limpiar:hover { background: #F8FAFC; }
-
 /* Estados */
 .estado-mensaje {
   text-align: center;
   padding: 50px 20px;
   color: #64748B;
 }
-
 .estado-mensaje.error { color: #DC2626; }
-
 .estado-mensaje.vacio i {
   font-size: 2rem;
   color: #CBD5E1;
   margin-bottom: 10px;
   display: block;
 }
-
 .estado-mensaje.vacio h3 {
   color: #1E1B4B;
   margin: 0 0 6px;
   font-size: 1.05rem;
 }
-
 .btn-explorar {
   display: inline-block;
   margin-top: 14px;
@@ -137,14 +119,12 @@
   font-size: .88rem;
   font-weight: 600;
 }
-
 /* Lista de tarjetas */
 .busquedas-lista {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-
 .busqueda-card {
   background: #fff;
   border: 1px solid #E2E8F0;
@@ -154,21 +134,19 @@
   align-items: center;
   gap: 16px;
 }
-
 .card-icon {
   width: 42px;
   height: 42px;
   min-width: 42px;
   border-radius: 50%;
-  background: #F1F5F9;
+  background: #EFF6FF;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
 }
-
+.card-icon i { color: #2563EB; font-size: 1rem; }
 .card-info { flex: 1; min-width: 0; }
-
 .card-info h3 {
   margin: 0 0 6px;
   font-size: .98rem;
@@ -178,9 +156,7 @@
   align-items: center;
   gap: 8px;
 }
-
 .saved-badge { font-size: .75rem; color: #2563EB; }
-
 .card-meta {
   display: flex;
   gap: 16px;
@@ -189,11 +165,9 @@
   color: #64748B;
   margin-bottom: 4px;
 }
-
 .card-meta i { margin-right: 4px; color: #94A3B8; }
 .saved-text { color: #2563EB; }
 .saved-text i { color: #2563EB; }
-
 .card-stats {
   display: flex;
   gap: 16px;
@@ -201,16 +175,13 @@
   font-size: .8rem;
   color: #64748B;
 }
-
 .card-stats i { margin-right: 4px; color: #94A3B8; }
-
 .card-tags {
   display: flex;
   gap: 8px;
   margin-top: 8px;
   flex-wrap: wrap;
 }
-
 .tag {
   background: #EFF6FF;
   color: #2563EB;
@@ -219,13 +190,11 @@
   padding: 4px 10px;
   border-radius: 20px;
 }
-
 .card-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
 .btn-save,
 .btn-delete {
   width: 36px;
@@ -239,13 +208,10 @@
   cursor: pointer;
   color: #64748B;
 }
-
 .btn-save:hover { background: #F8FAFC; }
 .btn-save.saved { color: #2563EB; border-color: #BFDBFE; background: #EFF6FF; }
-
 .btn-delete { color: #EF4444; border-color: #FEE2E2; background: #FEF2F2; }
 .btn-delete:hover { background: #FEE2E2; }
-
 .btn-buscar {
   background: #2563EB;
   color: #fff;
@@ -257,9 +223,7 @@
   cursor: pointer;
   white-space: nowrap;
 }
-
 .btn-buscar:hover { background: #1D4ED8; }
-
 @media (max-width: 640px) {
   .busqueda-card { flex-wrap: wrap; }
   .card-actions { width: 100%; justify-content: flex-end; }

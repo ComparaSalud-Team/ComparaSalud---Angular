@@ -29,7 +29,7 @@ export class MisFavoritosComponent implements OnInit {
   filtroZona = '';
   ordenarPor = '';
 
-  // Los colores de las cabeceras de tarjeta se asignan en rotación, igual que en el mockup
+  // Los colores de fondo del header se asignan en rotación, igual que en el mockup
   private gradientes = [
     'linear-gradient(135deg, #2563EB, #14B8A6)',
     'linear-gradient(135deg, #0EA5E9, #22C55E)',
@@ -120,6 +120,12 @@ export class MisFavoritosComponent implements OnInit {
   get zonasDisponibles(): string[] {
     const zonas = this.favoritos.map((f) => f.district).filter((d): d is string => !!d);
     return Array.from(new Set(zonas));
+  }
+
+  // Misma lógica de fotos rotativas que usa busqueda-paciente.ts, para que
+  // un proveedor se vea con la misma imagen en ambas pantallas.
+  imagenFor(index: number): string {
+    return `assets/images/doctor-card-${(index % 4) + 1}.png`;
   }
 
   gradienteFor(index: number): string {

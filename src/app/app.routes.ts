@@ -28,6 +28,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/registro-doctor/registro-doctor').then((m) => m.RegistroDoctorComponent),
   },
+  {
+    path: 'registro-clinica',
+    loadComponent: () =>
+      import('./components/registro-clinica/registro-clinica').then(
+        (m) => m.RegistroClinicaComponent,
+      ),
+  },
 
   {
     path: 'busqueda',
@@ -37,9 +44,6 @@ export const routes: Routes = [
       ),
   },
 
-  // Versión de /busqueda para el paciente ya logeado: misma lógica de
-  // búsqueda/filtros, pero con el navbar/footer de paciente en vez del
-  // navbar de marketing que usa la versión pública de arriba.
   {
     path: 'busqueda-paciente',
     canActivate: [authGuard],
@@ -67,10 +71,28 @@ export const routes: Routes = [
       import('./components/dashboard/proveedor/dashboard').then((m) => m.DashboardComponent),
   },
   {
+    path: 'dashboard/clinica',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/dashboard/clinica/dashboard').then((m) => m.DashboardComponent),
+  },
+  {
     path: 'mis-citas',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./components/mis-citas/mis-citas').then((m) => m.MisCitasComponent),
+      import('./components/mis-citas/paciente/mis-citas').then((m) => m.MisCitasComponent),
+  },
+  {
+    path: 'mis-citas/paciente',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-citas/paciente/mis-citas').then((m) => m.MisCitasComponent),
+  },
+  {
+    path: 'mis-citas/proveedor',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/mis-citas/proveedor/mis-citas').then((m) => m.MisCitasComponent),
   },
   {
     path: 'mis-citas/:id',
@@ -90,6 +112,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/perfil/proveedor/perfil').then((m) => m.PerfilComponent),
   },
+  {
+    path: 'perfil/clinica',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/perfil/clinica/perfil').then((m) => m.PerfilComponent),
+  },
 
   {
     path: 'editar-perfil/paciente',
@@ -104,6 +132,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./components/editar-perfil/proveedor/editar-perfil').then(
+        (m) => m.EditarPerfilComponent,
+      ),
+  },
+  {
+    path: 'editar-perfil/clinica',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/editar-perfil/clinica/editar-perfil').then(
         (m) => m.EditarPerfilComponent,
       ),
   },
@@ -177,9 +213,32 @@ export const routes: Routes = [
   { path: 'documentos', redirectTo: 'mis-busquedas', pathMatch: 'full' },
   {
     path: 'configuracion',
+    redirectTo: 'configuracion/paciente',
+    pathMatch: 'full',
+  },
+  {
+    path: 'configuracion/paciente',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./components/configuracion/configuracion').then((m) => m.ConfiguracionComponent),
+      import('./components/configuracion/paciente/configuracion').then(
+        (m) => m.ConfiguracionComponent,
+      ),
+  },
+  {
+    path: 'configuracion/proveedor',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/configuracion/proveedor/configuracion').then(
+        (m) => m.ConfiguracionComponent,
+      ),
+  },
+  {
+    path: 'configuracion/clinica',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./components/configuracion/clinica/configuracion').then(
+        (m) => m.ConfiguracionComponent,
+      ),
   },
 
   { path: '**', redirectTo: 'home' },

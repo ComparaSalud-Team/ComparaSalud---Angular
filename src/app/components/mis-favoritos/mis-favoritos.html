@@ -62,7 +62,7 @@
         *ngFor="let favorito of favoritosFiltrados; let i = index"
       >
         <div class="card-header" [style.background]="gradienteFor(i)">
-          <i class="fa-solid fa-hospital card-icon"></i>
+          <img class="card-avatar" [src]="imagenFor(i)" [alt]="favorito.fullName">
           <button
             class="btn-heart"
             title="Quitar de favoritos"
@@ -116,7 +116,6 @@
       </article>
     </section>
 
-    <!-- Estado: filtro sin resultados -->
     <div
       class="estado-mensaje vacio"
       *ngIf="!cargando && !error && favoritos.length > 0 && favoritosFiltrados.length === 0"

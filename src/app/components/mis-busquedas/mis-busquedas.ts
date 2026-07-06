@@ -12,14 +12,7 @@ type Tab = 'historial' | 'guardados';
 @Component({
   selector: 'app-mis-busquedas',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    PublicNavbarComponent,
-    PublicFooterComponent,
-    PublicNavbarComponent,
-  ],
+  imports: [CommonModule, RouterModule, FormsModule, PublicNavbarComponent, PublicFooterComponent],
   templateUrl: './mis-busquedas.html',
   styleUrl: './mis-busquedas.css',
 })
@@ -38,9 +31,6 @@ export class MisBusquedasComponent implements OnInit {
 
   busqueda = '';
   categoria = '';
-
-  // Iconos en rotación para los avatares circulares de cada tarjeta (igual que el mockup)
-  private iconos = ['❤️', '👶', '🦷', '👁️', '🩺', '🏥'];
 
   constructor(
     private historialService: BusquedaHistorialService,
@@ -127,15 +117,8 @@ export class MisBusquedasComponent implements OnInit {
     return Array.from(new Set(categorias));
   }
 
-  // Si la búsqueda no tiene especialidad asociada (se hizo con texto libre,
-  // sin elegir un filtro de categoría en /busqueda), usamos el keyword como
-  // categoría de respaldo para que igual aparezca en el selector y se pueda filtrar.
   private categoriaDe(item: BusquedaHistorial): string {
-    return item.specialty?.trim() || item.keyword?.trim() || '';
-  }
-
-  iconoFor(index: number): string {
-    return this.iconos[index % this.iconos.length];
+    return item.specialty || item.keyword || '';
   }
 
   limpiarFiltros(): void {
@@ -149,12 +132,10 @@ export class MisBusquedasComponent implements OnInit {
     const ahora = new Date().getTime();
     const entonces = new Date(fecha).getTime();
     const diffMs = ahora - entonces;
-
     const minutos = Math.floor(diffMs / 60000);
     const horas = Math.floor(diffMs / 3600000);
     const dias = Math.floor(diffMs / 86400000);
     const semanas = Math.floor(dias / 7);
-
     if (minutos < 1) return 'Hace un momento';
     if (minutos < 60) return `Hace ${minutos} min`;
     if (horas < 24) return `Hace ${horas} hora${horas === 1 ? '' : 's'}`;
@@ -175,10 +156,16 @@ export class MisBusquedasComponent implements OnInit {
     });
   }
 
+  toggleGuardado(item: BusquedaHistorial, event: Event): void {
+    if (item.saved) {
+      this.quitarDeGuardados(item, event);
+    } else {
+      this.guardarBusqueda(item, event);
+    }
+  }
+
   guardarBusqueda(item: BusquedaHistorial, event: Event): void {
     event.stopPropagation();
-
-    // Optimista: se marca al toque en la UI, sin esperar la respuesta del backend.
     item.saved = true;
     const seAgregoAGuardados =
       this.guardadosCargados && !this.guardados.some((g) => g.id === item.id);
@@ -186,10 +173,8 @@ export class MisBusquedasComponent implements OnInit {
       this.guardados = [item, ...this.guardados];
     }
     this.cdr.detectChanges();
-
     this.historialService.marcarComoGuardada(item.id).subscribe({
       error: () => {
-        // Si falla, se revierte el cambio optimista.
         item.saved = false;
         if (seAgregoAGuardados) {
           this.guardados = this.guardados.filter((g) => g.id !== item.id);
@@ -202,16 +187,12 @@ export class MisBusquedasComponent implements OnInit {
 
   quitarDeGuardados(item: BusquedaHistorial, event: Event): void {
     event.stopPropagation();
-
-    // Optimista: se quita al toque de la lista, sin esperar la respuesta del backend.
     const indiceOriginal = this.guardados.findIndex((g) => g.id === item.id);
     item.saved = false;
     this.guardados = this.guardados.filter((g) => g.id !== item.id);
     this.cdr.detectChanges();
-
     this.historialService.quitarDeGuardados(item.id).subscribe({
       error: () => {
-        // Si falla, se revierte el cambio optimista.
         item.saved = true;
         const guardadosRevertidos = [...this.guardados];
         guardadosRevertidos.splice(indiceOriginal < 0 ? 0 : indiceOriginal, 0, item);

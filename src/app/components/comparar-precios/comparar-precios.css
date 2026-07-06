@@ -37,7 +37,8 @@
 
 .cpr-banner-icon {
   color: #4338CA;
-  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .cpr-banner strong {
@@ -124,9 +125,18 @@
 }
 
 .cpr-desde {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   color: #16A34A;
   font-size: 13px;
   font-weight: 600;
+}
+
+.icon-inline {
+  display: inline-block;
+  vertical-align: -2px;
+  flex-shrink: 0;
 }
 
 .cpr-table-scroll {
@@ -171,7 +181,10 @@
 }
 
 .cpr-includes li {
-  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
 }
 
 .cpr-btn {

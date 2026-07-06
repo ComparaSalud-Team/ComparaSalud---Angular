@@ -51,7 +51,7 @@
             <circle cx="12" cy="12" r="3"/>
           </svg>
         </span>
-        <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+        <a class="forgot-link" (click)="$event.preventDefault()" href="javascript:void(0)">¿Olvidaste tu contraseña?</a>
       </div>
 
       <button class="btn-auth" (click)="onSubmit()">Iniciar Sesión</button>

@@ -9,6 +9,8 @@ import { PublicFooterComponent } from '../../shared/public-footer/footer';
 import { ProviderService } from '../../services/provider.service';
 import { Provider } from '../../models/provider.model';
 import { BusquedaHistorialService } from '../../services/busqueda-historial.service';
+import { AuthService } from '../../services/auth';
+import { FavoritoService } from '../../services/favorito.service';
 
 interface FilterOption {
   label: string;
@@ -37,6 +39,8 @@ export class BusquedaPacienteComponent implements OnInit {
     private route: ActivatedRoute,
     private historialService: BusquedaHistorialService,
     private router: Router,
+    private auth: AuthService,
+    private favoriteService: FavoritoService,
   ) {}
 
   sidebarFiltros = {
@@ -87,8 +91,6 @@ export class BusquedaPacienteComponent implements OnInit {
       this.sidebarFiltros.ubicacion = ubicacion;
     }
     if (fecha) {
-      // El backend solo filtra disponibilidad por 'hoy' / 'esta-semana' / 'este-mes',
-      // no por fecha exacta, así que la fecha elegida se traduce al balde más cercano.
       this.sidebarFiltros.disponibilidad = this.mapearFechaADisponibilidad(fecha);
     }
 
@@ -105,7 +107,7 @@ export class BusquedaPacienteComponent implements OnInit {
     if (diffDias <= 0) return 'hoy';
     if (diffDias <= 7) return 'esta-semana';
     if (diffDias <= 31) return 'este-mes';
-    return ''; // fuera de lo que el backend soporta; no filtramos por fecha en ese caso
+    return '';
   }
 
   cargarProveedores(): void {
@@ -147,8 +149,6 @@ export class BusquedaPacienteComponent implements OnInit {
           this.sidebarFiltros.ubicacion ||
           this.sidebarFiltros.disponibilidad
         ) {
-          // aplicarFiltros() ya se encarga de resolver disponibilidad contra el backend,
-          // aplicar buscar() y registrar la búsqueda en el historial.
           this.aplicarFiltros();
         } else {
           this.cdr.detectChanges();
@@ -256,21 +256,13 @@ export class BusquedaPacienteComponent implements OnInit {
   }
 
   private registrarBusquedaEnHistorial(): void {
-    // No guardamos búsquedas "vacías" (página recién cargada sin ningún criterio).
-    const tieneCriterio =
-      this.searchQuery.trim() ||
-      this.sidebarFiltros.categoria ||
-      this.sidebarFiltros.ubicacion ||
-      this.sidebarFiltros.idioma ||
-      this.sidebarFiltros.modalidad ||
-      this.sidebarFiltros.disponibilidad ||
-      this.sidebarFiltros.calificacion > 0;
+    const keyword = this.searchQuery.trim();
 
-    if (!tieneCriterio) return;
+    if (!keyword) return;
 
     this.historialService
       .guardarBusqueda({
-        keyword: this.searchQuery.trim() || this.sidebarFiltros.categoria || 'Búsqueda general',
+        keyword,
         specialty: this.sidebarFiltros.categoria || undefined,
         district: this.sidebarFiltros.ubicacion || undefined,
         maxPrice: this.sidebarFiltros.precio,
@@ -320,5 +312,29 @@ export class BusquedaPacienteComponent implements OnInit {
   getTooltipLeft(value: number, min: number, max: number): string {
     const pct = ((value - min) / (max - min)) * 100;
     return `calc(${pct}% + ${8 - pct * 0.16}px)`;
+  }
+
+  estaLogueado(): boolean {
+    return this.auth.isLoggedIn();
+  }
+
+  guardarFavorito(doctor: any, event: Event): void {
+    event.stopPropagation();
+
+    const session = this.auth.getUser();
+    const patientId = session?.profile?.id;
+
+    if (!patientId) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.favoriteService.agregarFavorito(patientId, doctor.id).subscribe({
+      next: () => this.router.navigate(['/favoritos']),
+      error: (err) => {
+        console.error('No se pudo agregar a favoritos', err);
+        this.router.navigate(['/favoritos']);
+      },
+    });
   }
 }

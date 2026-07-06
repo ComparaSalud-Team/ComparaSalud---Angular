@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Provider } from '../models/provider.model';
 import { Availability } from '../models/availability';
+import { ProviderDashboardDTO } from '../models/provider-dashboard.model';
 
 @Injectable({
   providedIn: 'root',
@@ -35,5 +36,8 @@ export class ProviderService {
 
   registerProvider(provider: any): Observable<any> {
     return this.http.post(this.registerUrl, provider);
+  }
+  getMyDashboard(): Observable<ProviderDashboardDTO> {
+    return this.http.get<ProviderDashboardDTO>(`${this.apiUrl}/me/dashboard`);
   }
 }

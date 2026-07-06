@@ -7,14 +7,17 @@
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
+  align-items: flex-start;
   font-family: 'Be Vietnam Pro', sans-serif;
   background: #f8fafc;
 }
 
-/* PANEL IZQUIERDO */
 
 .auth-left {
-  width: 42%;
+  width: 40%;
+  height: 100vh;
+  position: sticky;
+  top: 0;
   background: linear-gradient(
     180deg,
     #38bdf8 0%,
@@ -24,40 +27,41 @@
   );
   display: flex;
   flex-direction: column;
-  padding: 36px;
+  padding: 28px;
   overflow: hidden;
 }
 
 .auth-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   text-decoration: none;
-  margin-bottom: 30px;
+  margin-bottom: 22px;
 }
 
 .auth-logo img {
-  height: 48px;
+  height: 40px;
 }
 
 .auth-logo span {
   color: white;
-  font-size: 1.3rem;
+  font-size: 1.15rem;
   font-weight: 800;
 }
 
 .auth-left-title {
   color: white;
-  font-size: 2.3rem;
+  font-size: 1.9rem;
   font-weight: 800;
   line-height: 1.2;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .auth-left-desc {
   color: rgba(255, 255, 255, 0.9);
-  line-height: 1.7;
-  margin-bottom: 30px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 22px;
 }
 
 .auth-left-bottom {
@@ -68,8 +72,8 @@
 }
 
 .auth-left-img {
-  width: 85%;
-  max-width: 520px;
+  width: 80%;
+  max-width: 420px;
   object-fit: contain;
 }
 
@@ -80,38 +84,38 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;
+  padding: 28px;
   background: #fff;
 }
 
 .auth-form-box {
   width: 100%;
-  max-width: 900px;
+  max-width: 760px;
 }
 
 .auth-form-box h1 {
   text-align: center;
   color: #0f172a;
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .auth-form-subtitle {
   text-align: center;
   color: #64748b;
-  margin-bottom: 35px;
+  font-size: 0.85rem;
+  margin-bottom: 24px;
 }
 
-/* Banner de error */
 .error-banner {
   background: #FEF2F2;
   border: 1px solid #FECACA;
   color: #B91C1C;
   border-radius: 10px;
-  padding: 12px 16px;
-  font-size: .85rem;
-  margin-bottom: 20px;
+  padding: 10px 14px;
+  font-size: .82rem;
+  margin-bottom: 16px;
 }
 
 /* GRID */
@@ -119,7 +123,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px 24px;
+  gap: 14px 18px;
 }
 
 .form-group {
@@ -132,10 +136,10 @@
 }
 
 .form-group label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #334155;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .form-group input,
@@ -143,9 +147,9 @@
 .form-group textarea {
   width: 100%;
   border: 1.5px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-size: 0.92rem;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
   font-family: inherit;
   outline: none;
   transition: all 0.2s ease;
@@ -153,7 +157,7 @@
 
 .form-group textarea {
   resize: none;
-  min-height: 100px;
+  min-height: 76px;
 }
 
 .form-group input:focus,
@@ -163,27 +167,76 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
+/* Fuerza de contraseña */
+.password-strength { margin-top: 7px; }
+
+.strength-bar {
+  height: 3px;
+  background: #E2E8F0;
+  border-radius: 2px;
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .2s ease, background .2s ease;
+}
+
+.strength-fill.strength-ok {
+  background: linear-gradient(90deg, #3B82F6, #10B981);
+}
+
+.strength-fill.strength-bad {
+  background: #EF4444;
+}
+
+.strength-label {
+  font-size: .68rem;
+  font-weight: 600;
+  text-align: right;
+  margin-bottom: 3px;
+}
+
+.strength-label.strength-ok { color: #10B981; }
+.strength-label.strength-bad { color: #EF4444; }
+
+.strength-checks { display: flex; flex-direction: column; gap: 2px; }
+
+.strength-check {
+  font-size: .68rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color .2s ease;
+}
+.strength-check::before { content: '•'; font-size: .9rem; line-height: 1; }
+
+.strength-check.strength-ok { color: #10B981; }
+.strength-check.strength-bad { color: #EF4444; }
+
 /* Selección de clínicas */
 .clinicas-hint {
-  font-size: .85rem;
+  font-size: .8rem;
   color: #94A3B8;
-  margin: 4px 0 0;
+  margin: 3px 0 0;
 }
 
 .clinicas-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-top: 4px;
+  gap: 8px;
+  margin-top: 3px;
 }
 
 .clinica-card {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
   border: 1.5px solid #E2E8F0;
-  border-radius: 10px;
-  padding: 12px 14px;
+  border-radius: 9px;
+  padding: 10px 12px;
   cursor: pointer;
   transition: background .15s, border-color .15s, color .15s;
 }
@@ -198,11 +251,11 @@
 }
 .clinica-card strong {
   display: block;
-  font-size: .85rem;
+  font-size: .8rem;
   color: inherit;
 }
 .clinica-card span {
-  font-size: .76rem;
+  font-size: .72rem;
   color: #94A3B8;
 }
 
@@ -210,16 +263,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
   border: 1.5px solid #CBD5E1;
   background: white;
   flex-shrink: 0;
   transition: background .15s, border-color .15s;
 }
 .clinica-check i {
-  font-size: .65rem;
+  font-size: .6rem;
   color: white;
   opacity: 0;
   transition: opacity .15s;
@@ -235,35 +288,36 @@
 /* CHECKBOX */
 
 .terms-label {
-  margin-top: 22px;
+  margin-top: 18px;
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 9px;
   color: #64748b;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .terms-label a {
   color: #3b82f6;
   text-decoration: none;
   font-weight: 600;
+  cursor: pointer;
 }
 
 /* BOTON */
 
 .btn-auth {
   width: 100%;
-  margin-top: 22px;
+  margin-top: 18px;
   border: none;
-  border-radius: 10px;
-  padding: 14px;
+  border-radius: 9px;
+  padding: 12px;
   background: linear-gradient(
     90deg,
     #3b82f6 0%,
     #10b981 100%
   );
   color: white;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
@@ -276,10 +330,10 @@
 /* LOGIN */
 
 .auth-bottom-link {
-  margin-top: 20px;
+  margin-top: 16px;
   text-align: center;
   color: #64748b;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .auth-bottom-link a {
@@ -301,7 +355,7 @@
   }
 
   .auth-right {
-    padding: 24px;
+    padding: 20px;
   }
 
   .form-grid {

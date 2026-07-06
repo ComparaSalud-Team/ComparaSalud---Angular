@@ -1,6 +1,5 @@
 <div class="auth-wrapper">
 
-  <!-- Panel izquierdo -->
   <div class="auth-left">
     <a routerLink="/home" class="auth-logo">
       <img src="assets/icons/logo.png" alt="ComparaSalud" />
@@ -24,7 +23,6 @@
     </div>
   </div>
 
-  <!-- Panel derecho -->
   <div class="auth-right">
     <div class="auth-form-box">
 
@@ -40,7 +38,6 @@
 
       <div class="form-grid">
 
-        <!-- Nombre -->
         <div class="form-group">
           <label>Nombre completo</label>
           <input
@@ -50,7 +47,6 @@
             name="nombre">
         </div>
 
-        <!-- Especialidad -->
         <div class="form-group">
           <label>Especialidad</label>
           <select [(ngModel)]="especialidad" name="especialidad">
@@ -66,7 +62,6 @@
           </select>
         </div>
 
-        <!-- Correo -->
         <div class="form-group">
           <label>Correo electrónico</label>
           <input
@@ -76,7 +71,6 @@
             name="email">
         </div>
 
-        <!-- Modalidad -->
         <div class="form-group">
           <label>Modalidad de atención</label>
           <select [(ngModel)]="modalidad" name="modalidad">
@@ -96,7 +90,6 @@
           </select>
         </div>
 
-        <!-- Contraseña -->
         <div class="form-group">
           <label>Contraseña</label>
           <input
@@ -104,19 +97,31 @@
             placeholder="••••••••"
             [(ngModel)]="password"
             name="password">
+          <div class="password-strength" *ngIf="password">
+            <div class="strength-bar">
+              <div class="strength-fill" [ngClass]="strengthClass" [style.width.%]="strengthPercent"></div>
+            </div>
+            <div class="strength-label" [ngClass]="strengthClass">{{ strengthLabel }}</div>
+            <div class="strength-checks">
+              <span class="strength-check" [ngClass]="tieneLongitudMinima ? 'strength-ok' : 'strength-bad'">Mínimo 8 caracteres</span>
+              <span class="strength-check" [ngClass]="tieneMayuscula ? 'strength-ok' : 'strength-bad'">Una letra mayúscula</span>
+              <span class="strength-check" [ngClass]="tieneCaracterEspecial ? 'strength-ok' : 'strength-bad'">Un carácter especial</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Teléfono -->
         <div class="form-group">
           <label>Teléfono</label>
           <input
             type="text"
             placeholder="999999999"
             [(ngModel)]="telefono"
-            name="telefono">
+            name="telefono"
+            maxlength="9"
+            inputmode="numeric"
+            (input)="onTelefonoInput($event)">
         </div>
 
-        <!-- Experiencia -->
         <div class="form-group">
           <label>Años de experiencia</label>
           <input
@@ -127,7 +132,6 @@
             name="experiencia">
         </div>
 
-        <!-- Distrito -->
         <div class="form-group">
           <label>Distrito</label>
           <input
@@ -137,7 +141,6 @@
             name="distrito">
         </div>
 
-        <!-- Ciudad -->
         <div class="form-group">
           <label>Ciudad</label>
           <input
@@ -147,18 +150,16 @@
             name="ciudad">
         </div>
 
-        <!-- Descripción -->
         <div class="form-group full">
           <label>Descripción profesional</label>
           <textarea
-            rows="4"
+            rows="3"
             placeholder="Describe tu experiencia profesional, especialidades y trayectoria médica."
             [(ngModel)]="descripcion"
             name="descripcion">
           </textarea>
         </div>
 
-        <!-- Clínicas donde atiende -->
         <div class="form-group full">
           <label>¿En qué clínica(s) atiendes?</label>
           @if (cargandoClinicas) {
@@ -194,9 +195,9 @@
           name="terminos">
 
         Acepto los
-        <a href="#">Términos de Servicio</a>
+        <a (click)="$event.preventDefault()" href="javascript:void(0)">Términos de Servicio</a>
         y
-        <a href="#">Política de Privacidad</a>
+        <a (click)="$event.preventDefault()" href="javascript:void(0)">Política de Privacidad</a>
       </label>
 
       <button class="btn-auth" (click)="onSubmit()">

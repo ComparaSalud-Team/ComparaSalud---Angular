@@ -6,7 +6,7 @@
   <p class="cpr-subtitle">Transparencia total: compara precios de consultas en diferentes clínicas y toma la mejor decisión.</p>
 
   <div class="cpr-banner">
-    <span class="cpr-banner-icon">ℹ</span>
+    <svg class="cpr-banner-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
     <div>
       <strong>Precios claros, sin sorpresas</strong>
       <p>Todos los precios mostrados incluyen la consulta y servicios básicos. Los precios pueden variar según promociones vigentes.</p>
@@ -50,7 +50,10 @@
       <section class="cpr-group">
         <div class="cpr-group-header">
           <h2>{{ grupo.especialidad }}</h2>
-          <span class="cpr-desde">↘ Desde {{ grupo.desde | number: '1.2-2' }} PEN</span>
+          <span class="cpr-desde">
+            <svg class="icon-inline" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+            Desde {{ grupo.desde | number: '1.2-2' }} PEN
+          </span>
         </div>
 
         <div class="cpr-table-scroll">
@@ -73,7 +76,10 @@
                   <td>
                     <ul class="cpr-includes">
                       @for (item of fila.includes; track item) {
-                        <li>✓ {{ item }}</li>
+                        <li>
+                          <svg class="icon-inline" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                          {{ item }}
+                        </li>
                       }
                     </ul>
                   </td>

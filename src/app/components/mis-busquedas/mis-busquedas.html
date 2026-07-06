@@ -1,14 +1,10 @@
 <div class="container">
-
   <app-public-navbar-paciente></app-public-navbar-paciente>
-
   <div class="page-body">
-
     <section class="busquedas-header">
       <h1>Mis búsquedas</h1>
       <p>Aquí puedes ver tu historial de búsquedas recientes y acceder rápido a tus guardados.</p>
     </section>
-
     <div class="tabs">
       <button class="tab-btn" [class.active]="tab === 'historial'" (click)="cambiarTab('historial')">
         <i class="fa-regular fa-clock"></i> Historial
@@ -17,7 +13,6 @@
         <i class="fa-regular fa-bookmark"></i> Guardados
       </button>
     </div>
-
     <section class="busquedas-toolbar">
       <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -27,44 +22,35 @@
           [(ngModel)]="busqueda"
         />
       </div>
-
       <select [(ngModel)]="categoria">
         <option value="">Categoría...</option>
         <option *ngFor="let cat of categoriasDisponibles" [value]="cat">{{ cat }}</option>
       </select>
-
       <button class="btn-limpiar" (click)="limpiarFiltros()">Limpiar</button>
     </section>
-
     <!-- HISTORIAL -->
     <ng-container *ngIf="tab === 'historial'">
-
       <div class="estado-mensaje" *ngIf="cargandoHistorial">
         <p>Cargando tu historial de búsquedas...</p>
       </div>
-
       <div class="estado-mensaje error" *ngIf="!cargandoHistorial && errorHistorial">
         <p>{{ errorHistorial }}</p>
       </div>
-
       <div class="estado-mensaje vacio" *ngIf="!cargandoHistorial && !errorHistorial && historial.length === 0">
         <i class="fa-regular fa-clock"></i>
         <h3>Todavía no tienes búsquedas</h3>
         <p>Cuando busques especialistas o clínicas, aparecerán aquí.</p>
         <a routerLink="/busqueda-paciente" class="btn-explorar">Buscar ahora</a>
       </div>
-
       <div
         class="estado-mensaje vacio"
         *ngIf="!cargandoHistorial && !errorHistorial && historial.length > 0 && listaActual.length === 0"
       >
         <p>No encontramos búsquedas que coincidan con tu filtro.</p>
       </div>
-
       <section class="busquedas-lista" *ngIf="!cargandoHistorial && !errorHistorial">
-        <article class="busqueda-card" *ngFor="let item of listaActual; let i = index">
-          <div class="card-icon">{{ iconoFor(i) }}</div>
-
+        <article class="busqueda-card" *ngFor="let item of listaActual">
+          <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
           <div class="card-info">
             <h3>{{ item.keyword }}</h3>
             <div class="card-meta">
@@ -76,9 +62,8 @@
               <span *ngIf="item.specialty"><i class="fa-solid fa-stethoscope"></i> {{ item.specialty }}</span>
             </div>
           </div>
-
           <div class="card-actions">
-            <button class="btn-save" title="Guardar búsqueda" [class.saved]="item.saved" (click)="guardarBusqueda(item, $event)">
+            <button class="btn-save" title="Guardar búsqueda" [class.saved]="item.saved" (click)="toggleGuardado(item, $event)">
               <i class="fa-solid fa-bookmark" *ngIf="item.saved"></i>
               <i class="fa-regular fa-bookmark" *ngIf="!item.saved"></i>
             </button>
@@ -86,37 +71,29 @@
           </div>
         </article>
       </section>
-
     </ng-container>
-
     <!-- GUARDADOS -->
     <ng-container *ngIf="tab === 'guardados'">
-
       <div class="estado-mensaje" *ngIf="cargandoGuardados">
         <p>Cargando tus búsquedas guardadas...</p>
       </div>
-
       <div class="estado-mensaje error" *ngIf="!cargandoGuardados && errorGuardados">
         <p>{{ errorGuardados }}</p>
       </div>
-
       <div class="estado-mensaje vacio" *ngIf="!cargandoGuardados && !errorGuardados && guardados.length === 0">
         <i class="fa-regular fa-bookmark"></i>
         <h3>No tienes búsquedas guardadas</h3>
         <p>Guarda tus búsquedas favoritas desde el historial para encontrarlas aquí rápidamente.</p>
       </div>
-
       <div
         class="estado-mensaje vacio"
         *ngIf="!cargandoGuardados && !errorGuardados && guardados.length > 0 && listaActual.length === 0"
       >
         <p>No encontramos guardados que coincidan con tu filtro.</p>
       </div>
-
       <section class="busquedas-lista" *ngIf="!cargandoGuardados && !errorGuardados">
-        <article class="busqueda-card" *ngFor="let item of listaActual; let i = index">
-          <div class="card-icon">{{ iconoFor(i) }}</div>
-
+        <article class="busqueda-card" *ngFor="let item of listaActual">
+          <div class="card-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
           <div class="card-info">
             <h3>
               {{ item.keyword }}
@@ -134,7 +111,6 @@
               <span class="tag" *ngFor="let tag of item.tags">{{ tag }}</span>
             </div>
           </div>
-
           <div class="card-actions">
             <button class="btn-delete" title="Quitar de guardados" (click)="quitarDeGuardados(item, $event)">
               <i class="fa-regular fa-trash-can"></i>
@@ -143,11 +119,7 @@
           </div>
         </article>
       </section>
-
     </ng-container>
-
   </div>
-
   <app-public-footer></app-public-footer>
-
 </div>

@@ -48,7 +48,10 @@
             <th>
               <div class="cp-clinic-header">
                 <strong>{{ clinica.name }}</strong>
-                <span class="cp-district">📍 {{ clinica.district }}</span>
+                <span class="cp-district">
+                  <svg class="icon-inline" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {{ clinica.district }}
+                </span>
                 <span class="cp-rating">★ {{ clinica.rating || 0 }} ({{ clinica.reviewCount || 0 }})</span>
               </div>
             </th>
@@ -57,13 +60,19 @@
         </thead>
         <tbody>
         <tr>
-          <td class="cp-col-label">👥 Especialistas</td>
+          <td class="cp-col-label">
+            <svg class="icon-inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Especialistas
+          </td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
             <td class="cp-value">{{ clinica.providerCount }}</td>
           }
         </tr>
         <tr>
-          <td class="cp-col-label">📞 Teléfono</td>
+          <td class="cp-col-label">
+            <svg class="icon-inline" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            Teléfono
+          </td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
             <td>{{ clinica.phone || '—' }}</td>
           }
@@ -75,49 +84,73 @@
         <tr>
           <td class="cp-col-label">Emergencias 24h</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.emergencia24h ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.emergencia24h" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.emergencia24h" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Estacionamiento</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.estacionamiento ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.estacionamiento" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.estacionamiento" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Farmacia</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.farmacia ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.farmacia" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.farmacia" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Laboratorio</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.laboratorio ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.laboratorio" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.laboratorio" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Imágenes (Rayos X, Tomografía)</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.imagenologia ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.imagenologia" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.imagenologia" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Servicio de Ambulancia</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.servicioAmbulancia ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.servicioAmbulancia" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.servicioAmbulancia" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Unidad de Cuidados Intensivos</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.unidadCuidadosIntensivos ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.unidadCuidadosIntensivos" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.unidadCuidadosIntensivos" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
         <tr>
           <td class="cp-col-label">Hospitalización</td>
           @for (clinica of clinicasFiltradas; track clinica.id) {
-            <td class="cp-check">{{ clinica.hospitalizacion ? '✔' : '✕' }}</td>
+            <td class="cp-check">
+              <svg *ngIf="clinica.hospitalizacion" class="icon-check ok" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg *ngIf="!clinica.hospitalizacion" class="icon-check no" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </td>
           }
         </tr>
 

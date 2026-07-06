@@ -1,18 +1,25 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { forkJoin, of } from 'rxjs';
+import { forkJoin, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AuthService } from '../../services/auth';
-import { CitasService } from '../../services/citas';
-import { Cita, AppointmentHistoryDTO } from '../../models/cita';
-import { PublicNavbarComponent } from '../../shared/public-navbar-paciente/public-navbar';
-import { PublicFooterComponent } from '../../shared/public-footer/footer';
+import { AuthService } from '../../../services/auth';
+import { CitasService } from '../../../services/citas';
+import { Cita, AppointmentHistoryDTO } from '../../../models/cita';
+import { NavbarProveedorComponent } from '../../../shared/public-navbar-proveedor/public-navbar';
+import { SidebarProveedorComponent } from '../../../shared/sidebar-proveedor/sidebar-proveedor';
+import { PublicFooterComponent } from '../../../shared/public-footer/footer';
 
 @Component({
-  selector: 'app-mis-citas',
+  selector: 'app-mis-citas-proveedor',
   standalone: true,
-  imports: [CommonModule, RouterModule, PublicNavbarComponent, PublicFooterComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NavbarProveedorComponent,
+    SidebarProveedorComponent,
+    PublicFooterComponent,
+  ],
   templateUrl: './mis-citas.html',
   styleUrl: './mis-citas.css',
 })
@@ -61,10 +68,10 @@ export class MisCitasComponent implements OnInit {
   }
 
   cargarCitas() {
-    const userId = this.user?.userId;
-    if (!userId) {
+    const providerId = this.user?.profile?.id ?? this.user?.providerId;
+    if (!providerId) {
       this.cargando = false;
-      this.error = 'No se pudo identificar al usuario. Inicia sesión nuevamente.';
+      this.error = 'No se pudo identificar al proveedor. Inicia sesión nuevamente.';
       this.cdr.detectChanges();
       return;
     }
@@ -73,9 +80,12 @@ export class MisCitasComponent implements OnInit {
     this.error = null;
 
     forkJoin({
-      // Backend responde 404 cuando el paciente aún no tiene historial
-      historial: this.citasService.obtenerHistorial(userId).pipe(catchError(() => of([]))),
-      proximas: this.citasService.obtenerProximas(userId).pipe(catchError(() => of([]))),
+      historial: this.citasService
+        .obtenerHistorialProveedor(providerId)
+        .pipe(catchError((err) => (err?.status === 404 ? of([]) : throwError(() => err)))),
+      proximas: this.citasService
+        .obtenerProximasProveedor(providerId)
+        .pipe(catchError((err) => (err?.status === 404 ? of([]) : throwError(() => err)))),
     }).subscribe({
       next: ({ historial, proximas }) => {
         this.citas = [...proximas, ...historial].map((h) => this.mapearCita(h));
@@ -91,13 +101,17 @@ export class MisCitasComponent implements OnInit {
   }
 
   private mapearCita(h: AppointmentHistoryDTO): Cita {
+    const nombrePaciente = (h as any).patient || h.doctor || 'Paciente';
     return {
       id: `APT-${h.appointmentId}`,
       appointmentId: h.appointmentId,
       providerId: h.providerId,
-      doctorNombre: h.doctor,
-      doctorImagen: h.photoUrl || 'assets/images/doctor-card-1.png',
-      especialidad: h.specialty || '',
+      doctorNombre: nombrePaciente,
+      doctorImagen:
+        (h as any).patientPhotoUrl ||
+        h.photoUrl ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(nombrePaciente)}&background=0EA5E9&color=fff&size=128`,
+      especialidad: (h as any).reason || h.specialty || '',
       calificacion: h.rating || 0,
       fecha: h.date,
       hora: h.time,
@@ -130,11 +144,18 @@ export class MisCitasComponent implements OnInit {
   }
 
   verDetalles(cita: Cita) {
-    this.router.navigate(['/mis-citas', cita.appointmentId]);
+    this.router.navigate(['/proveedor/mis-citas', cita.appointmentId]);
   }
 
-  reagendarCita(cita: Cita) {
-    this.router.navigate(['/mis-citas', cita.appointmentId], { queryParams: { reagendar: true } });
+  iniciarConsulta(cita: Cita) {
+    this.router.navigate(['/proveedor/consulta', cita.appointmentId]);
+  }
+
+  confirmarCita(cita: Cita) {
+    this.citasService.confirmarCita(cita.appointmentId).subscribe({
+      next: () => this.cargarCitas(),
+      error: () => alert('No se pudo confirmar la cita. Intenta nuevamente.'),
+    });
   }
 
   cancelarCita(cita: Cita) {
@@ -157,7 +178,7 @@ export class MisCitasComponent implements OnInit {
 
   getBadgeLabel(estado: string) {
     const labels: any = {
-      proxima: 'Próxima',
+      proxima: 'Pendiente',
       confirmada: 'Confirmada',
       completada: 'Completada',
       cancelada: 'Cancelada',

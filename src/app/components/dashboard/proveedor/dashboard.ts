@@ -1,31 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AuthService } from '../../../services/auth';
+import { MedicoService } from '../../../services/medico';
+import { ProviderService } from '../../../services/provider.service';
+import { ProviderDashboardDTO, RevenuePoint } from '../../../models/provider-dashboard.model';
+import { Availability } from '../../../models/availability';
 import { NavbarProveedorComponent } from '../../../shared/public-navbar-proveedor/public-navbar';
 import { SidebarProveedorComponent } from '../../../shared/sidebar-proveedor/sidebar-proveedor';
 import { PublicFooterComponent } from '../../../shared/public-footer/footer';
-
-interface CitaResumen {
-  paciente: string;
-  iniciales: string;
-  hora: string;
-  motivo: string;
-  estado: 'Confirmada' | 'Pendiente';
-}
-
-interface DisponibilidadSlot {
-  rango: string;
-  estado: 'Ocupado' | 'Disponible';
-}
-
-interface Resena {
-  paciente: string;
-  iniciales: string;
-  hace: string;
-  estrellas: number;
-  comentario: string;
-}
 
 @Component({
   selector: 'app-dashboard-proveedor',
@@ -42,115 +27,164 @@ interface Resena {
 })
 export class DashboardComponent implements OnInit {
   user: any = null;
+  loading = true;
+  error = false;
 
-  citasProgramadas = 12;
-  ingresos = 6450;
-  pacientesUnicos = 28;
-  calificacionPromedio = 4.8;
+  dashboard: ProviderDashboardDTO | null = null;
+  disponibilidadHoy: Availability[] = [];
 
-  proximasCitas: CitaResumen[] = [
-    {
-      paciente: 'María González',
-      iniciales: 'MG',
-      hora: '09:00 AM',
-      motivo: 'Consulta',
-      estado: 'Confirmada',
-    },
-    {
-      paciente: 'José Ramírez',
-      iniciales: 'JR',
-      hora: '10:30 AM',
-      motivo: 'Control',
-      estado: 'Pendiente',
-    },
-    {
-      paciente: 'Ana Castro',
-      iniciales: 'AC',
-      hora: '02:00 PM',
-      motivo: 'Videoconsulta',
-      estado: 'Confirmada',
-    },
-    {
-      paciente: 'Carlos Mendoza',
-      iniciales: 'CM',
-      hora: '04:30 PM',
-      motivo: 'Consulta',
-      estado: 'Confirmada',
-    },
-  ];
+  chartLinePath = '';
+  chartAreaPath = '';
+  chartLabels: string[] = [];
 
-  disponibilidadHoy: DisponibilidadSlot[] = [
-    { rango: '09:00 - 09:30', estado: 'Ocupado' },
-    { rango: '09:30 - 10:00', estado: 'Disponible' },
-    { rango: '10:00 - 10:30', estado: 'Ocupado' },
-    { rango: '10:30 - 11:00', estado: 'Disponible' },
-    { rango: '14:00 - 14:30', estado: 'Ocupado' },
-    { rango: '14:30 - 15:00', estado: 'Disponible' },
-  ];
+  private readonly CHART_WIDTH = 700;
+  private readonly CHART_HEIGHT = 140;
 
-  desempeno = {
-    asistencia: 92,
-    completadas: 87,
-    tiempoPromedio: 32,
-    canceladas: 8,
-  };
-
-  ingresosSemana = [
-    { dia: 'Lun', valor: 30 },
-    { dia: 'Mar', valor: 55 },
-    { dia: 'Mié', valor: 40 },
-    { dia: 'Jue', valor: 65 },
-    { dia: 'Vie', valor: 50 },
-    { dia: 'Sáb', valor: 75 },
-    { dia: 'Dom', valor: 90 },
-  ];
-
-  resenas: Resena[] = [
-    {
-      paciente: 'Patricia López',
-      iniciales: 'PL',
-      hace: 'Hace 2 horas',
-      estrellas: 5,
-      comentario: 'Excelente atención y muy profesional. Recomendado al 100%.',
-    },
-    {
-      paciente: 'Roberto Silva',
-      iniciales: 'RS',
-      hace: 'Hace 1 día',
-      estrellas: 5,
-      comentario: 'Muy buen doctor, explica todo con mucha paciencia.',
-    },
-  ];
-
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private medicoService: MedicoService,
+    private providerService: ProviderService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit() {
     const session = this.auth.getUser();
     this.user = session?.profile || session;
+
+    this.medicoService
+      .getMyProfile()
+      .pipe(
+        switchMap((profile) => {
+          const today = this.todayStr();
+          return forkJoin({
+            dashboard: this.providerService.getMyDashboard(),
+            availability: this.providerService.getAvailability(profile.id, today),
+          });
+        }),
+        catchError((err) => {
+          console.error('Error cargando dashboard:', err);
+          this.error = true;
+          this.loading = false;
+          this.cdr.markForCheck();
+          this.cdr.detectChanges();
+          return of(null);
+        }),
+      )
+      .subscribe((result) => {
+        if (result) {
+          this.dashboard = result.dashboard;
+          this.disponibilidadHoy = result.availability;
+          this.buildRevenueChart(result.dashboard.revenueChart?.points || []);
+        }
+        this.loading = false;
+        this.cdr.markForCheck();
+        this.cdr.detectChanges();
+      });
   }
 
   get displayName(): string {
     return this.user?.name || this.user?.fullName || this.user?.email || 'Usuario';
   }
 
-  get chartPoints(): string {
-    const width = 600;
-    const height = 140;
-    const max = Math.max(...this.ingresosSemana.map((d) => d.valor));
-    const step = width / (this.ingresosSemana.length - 1);
-
-    return this.ingresosSemana
-      .map((d, i) => {
-        const x = i * step;
-        const y = height - (d.valor / max) * height;
-        return `${x},${y}`;
-      })
-      .join(' ');
+  private todayStr(): string {
+    return new Date().toISOString().split('T')[0];
   }
 
-  get chartAreaPath(): string {
-    const width = 600;
-    const height = 140;
-    return `M0,${height} L${this.chartPoints} L${width},${height} Z`;
+  iniciales(name: string): string {
+    if (!name) return '';
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((p) => p[0].toUpperCase())
+      .join('');
+  }
+
+  badgeClass(status: string): string {
+    const s = (status || '').toUpperCase();
+    if (s === 'CONFIRMED' || s === 'SCHEDULED') return 'badge-green';
+    if (s === 'PENDING') return 'badge-yellow';
+    return 'badge-blue';
+  }
+
+  estadoLabel(status: string): string {
+    const s = (status || '').toUpperCase();
+    const labels: Record<string, string> = {
+      SCHEDULED: 'Programada',
+      CONFIRMED: 'Confirmada',
+      PENDING: 'Pendiente',
+      COMPLETED: 'Completada',
+      CANCELLED: 'Cancelada',
+    };
+    return labels[s] || status;
+  }
+
+  get cancellationPct(): number {
+    const rate = this.dashboard?.metrics?.cancellationRate ?? 0;
+    return rate <= 1 ? rate * 100 : rate;
+  }
+
+  get attendancePct(): number {
+    return this.dashboard?.metrics?.attendanceRate ?? 0;
+  }
+
+  get ratingPct(): number {
+    const rating = this.dashboard?.metrics?.averageRating ?? 0;
+    return (Number(rating) / 5) * 100;
+  }
+
+  get consultationMinutesPct(): number {
+    const minutos = this.dashboard?.metrics?.averageConsultationMinutes;
+    if (minutos === null || minutos === undefined) return 0;
+    return Math.min((minutos / 90) * 100, 100);
+  }
+
+  deltaClass(delta: number | null | undefined): string {
+    if (delta === null || delta === undefined) return '';
+    return delta >= 0 ? 'up' : 'down';
+  }
+
+  formatDelta(delta: number | null | undefined): string {
+    if (delta === null || delta === undefined) return '';
+    const signo = delta > 0 ? '+' : '';
+    return `${signo}${delta}%`;
+  }
+
+  estrellas(rating: number): boolean[] {
+    const llenas = Math.round(rating || 0);
+    return Array.from({ length: 5 }, (_, i) => i < llenas);
+  }
+
+  private buildRevenueChart(points: RevenuePoint[]): void {
+    this.chartLabels = points.map((p) => p.label);
+
+    if (!points.length) {
+      this.chartLinePath = '';
+      this.chartAreaPath = '';
+      return;
+    }
+
+    const amounts = points.map((p) => Number(p.amount) || 0);
+    const max = Math.max(...amounts, 1);
+    const stepX = points.length > 1 ? this.CHART_WIDTH / (points.length - 1) : 0;
+    const topMargin = 10;
+    const usableHeight = this.CHART_HEIGHT - topMargin;
+
+    const coords = amounts.map((amount, i) => {
+      const x = stepX * i;
+      const y = topMargin + (usableHeight - (amount / max) * usableHeight);
+      return { x, y };
+    });
+
+    this.chartLinePath = coords
+      .map((c, i) => `${i === 0 ? 'M' : 'L'} ${c.x.toFixed(1)} ${c.y.toFixed(1)}`)
+      .join(' ');
+
+    const first = coords[0];
+    const last = coords[coords.length - 1];
+    this.chartAreaPath =
+      `M ${first.x.toFixed(1)} ${this.CHART_HEIGHT} ` +
+      coords.map((c) => `L ${c.x.toFixed(1)} ${c.y.toFixed(1)}`).join(' ') +
+      ` L ${last.x.toFixed(1)} ${this.CHART_HEIGHT} Z`;
   }
 }

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth';
+import { CitasService } from '../../../services/citas';
+import { ProviderService } from '../../../services/provider.service';
 import { NavbarProveedorComponent } from '../../../shared/public-navbar-proveedor/public-navbar';
 import { SidebarProveedorComponent } from '../../../shared/sidebar-proveedor/sidebar-proveedor';
 import { PublicFooterComponent } from '../../../shared/public-footer/footer';
@@ -85,12 +87,53 @@ export class PerfilComponent implements OnInit {
     servicios: [],
   };
 
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private citasService: CitasService,
+    private providerService: ProviderService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
     const session = this.auth.getUser();
     this.user = session?.profile || session;
     this.mapProviderProfile(this.user);
+    this.cargarPacientesAtendidos();
+    this.cargarDashboard();
+  }
+
+  private cargarPacientesAtendidos(): void {
+    const providerId = this.user?.id;
+    if (!providerId) return;
+
+    this.citasService.obtenerHistorialProveedor(providerId).subscribe({
+      next: (historial: any[]) => {
+        const pacientesUnicos = new Set(
+          historial.filter((h) => h.status === 'COMPLETED').map((h) => h.patientId),
+        );
+        this.doctor.pacientesAtendidos = pacientesUnicos.size;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.doctor.pacientesAtendidos = 0;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private cargarDashboard(): void {
+    this.providerService.getMyDashboard().subscribe({
+      next: (dashboard: any) => {
+        if (dashboard?.metrics) {
+          this.doctor.calificacion = Number(dashboard.metrics.averageRating) || 0;
+          this.doctor.totalResenas = dashboard.metrics.reviewsCount ?? 0;
+        }
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   private mapProviderProfile(profile: any): void {
@@ -118,10 +161,6 @@ export class PerfilComponent implements OnInit {
             .map((l: string) => l.trim())
             .filter(Boolean)
         : [],
-      calificacion:
-        Number(profile.averageRating) > 0
-          ? Number(profile.averageRating)
-          : Number(profile.rating ?? 0),
       descripcionProfesional: profile.description || '',
       consultorioDireccion: [profile.street, profile.district, profile.city, profile.country]
         .filter(Boolean)

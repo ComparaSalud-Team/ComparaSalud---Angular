@@ -1,0 +1,198 @@
+<div class="dash-shell">
+  <app-navbar-clinica></app-navbar-clinica>
+  <div class="dash-body">
+    <app-sidebar-clinica></app-sidebar-clinica>
+    <div class="dash-main">
+      <div class="dash-content">
+        <div class="dash-welcome">
+          <h1>Bienvenido, {{ displayName }} 👋</h1>
+          <p>Aquí tienes un resumen de tu actividad y el estado de tu clínica.</p>
+        </div>
+
+        <div *ngIf="loading">Cargando dashboard...</div>
+        <div *ngIf="error">No se pudo cargar la información. Intenta recargar la página.</div>
+
+        <ng-container *ngIf="!loading && !error && dashboard">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon blue">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <span class="stat-delta" [class.up]="deltaClass(dashboard.metrics.dailyAppointmentsDeltaPct) === 'up'" [class.down]="deltaClass(dashboard.metrics.dailyAppointmentsDeltaPct) === 'down'" *ngIf="dashboard.metrics.dailyAppointmentsDeltaPct !== null">
+                  {{ formatDelta(dashboard.metrics.dailyAppointmentsDeltaPct) }}
+                </span>
+              </div>
+              <strong>{{ dashboard.metrics.dailyAppointments }}</strong>
+              <span>Citas del día</span>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon green">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <span class="stat-delta" [class.up]="deltaClass(dashboard.metrics.earningsDeltaPct) === 'up'" [class.down]="deltaClass(dashboard.metrics.earningsDeltaPct) === 'down'" *ngIf="dashboard.metrics.earningsDeltaPct !== null">
+                  {{ formatDelta(dashboard.metrics.earningsDeltaPct) }}
+                </span>
+              </div>
+              <strong>S/. {{ dashboard.metrics.monthlyEarnings | number }}</strong>
+              <span>Ingresos del mes</span>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon purple">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <span class="stat-delta" [class.up]="deltaClass(dashboard.metrics.newPatientsDeltaPct) === 'up'" [class.down]="deltaClass(dashboard.metrics.newPatientsDeltaPct) === 'down'" *ngIf="dashboard.metrics.newPatientsDeltaPct !== null">
+                  {{ formatDelta(dashboard.metrics.newPatientsDeltaPct) }}
+                </span>
+              </div>
+              <strong>{{ dashboard.metrics.newPatientsThisMonth }}</strong>
+              <span>Nuevos pacientes</span>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-card-top">
+                <div class="stat-icon yellow">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+              </div>
+              <strong>{{ dashboard.metrics.averageRating }}</strong>
+              <span>Calificación · {{ dashboard.metrics.reviewsCount }} reseñas</span>
+            </div>
+          </div>
+
+          <div class="dash-columns">
+            <div class="dash-col-left">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Próximas citas</h3>
+                  <span class="panel-link-disabled">Ver todas →</span>
+                </div>
+                <div class="cita-row" *ngFor="let cita of dashboard.upcomingAppointments">
+                  <div class="cita-avatar">{{ iniciales(cita.patientName) }}</div>
+                  <div class="cita-info">
+                    <strong>{{ cita.patientName }}</strong>
+                    <span class="cita-meta">
+                      <svg class="icon-inline" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      {{ cita.time }} · {{ cita.doctorName }}
+                    </span>
+                  </div>
+                  <span class="badge badge-blue">{{ cita.specialty }}</span>
+                  <span class="badge" [ngClass]="badgeClass(cita.status)">{{ estadoLabel(cita.status) }}</span>
+                </div>
+                <p *ngIf="!dashboard.upcomingAppointments?.length">No hay citas próximas.</p>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Departamentos</h3>
+                  <span class="panel-link-disabled">Ver todos →</span>
+                </div>
+                <div class="dept-grid">
+                  <div class="dept-card" *ngFor="let dept of dashboard.departments; let i = index">
+                    <div class="dept-header">
+                      <span>{{ dept.name }}</span>
+                      <strong>{{ deptPct(dept) | number:'1.0-0' }}%</strong>
+                    </div>
+                    <span class="dept-sub">{{ dept.currentPatients }}/{{ dept.capacity }} pacientes</span>
+                    <div class="perf-bar">
+                      <div class="perf-fill" [ngClass]="deptColor(i)" [style.width.%]="deptPct(dept)"></div>
+                    </div>
+                  </div>
+                </div>
+                <p *ngIf="!dashboard.departments?.length">Sin departamentos registrados.</p>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Ingresos</h3>
+                  <span class="panel-subtitle">{{ dashboard.revenueChart.monthLabel }}</span>
+                </div>
+                <div class="ingresos-total">
+                  <strong>S/. {{ dashboard.revenueChart.total | number }}</strong>
+                  <span class="ingresos-delta" *ngIf="dashboard.revenueChart.deltaVsPreviousMonthPct !== null"
+                        [class.negativo]="deltaClass(dashboard.revenueChart.deltaVsPreviousMonthPct) === 'down'">
+                    {{ formatDelta(dashboard.revenueChart.deltaVsPreviousMonthPct) }} vs. mes anterior
+                  </span>
+                </div>
+                <svg class="ingresos-chart" viewBox="0 0 700 140" preserveAspectRatio="none" *ngIf="chartLinePath">
+                  <path class="chart-area" [attr.d]="chartAreaPath"></path>
+                  <path class="chart-line" [attr.d]="chartLinePath"></path>
+                </svg>
+                <div class="chart-labels" *ngIf="chartLabels.length">
+                  <span *ngFor="let label of chartLabels">{{ label }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-col-right">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Equipo médico</h3>
+                  <span class="panel-link-disabled">Ver todos →</span>
+                </div>
+                <div class="team-row" *ngFor="let doc of dashboard.medicalTeam">
+                  <div class="team-avatar">
+                    <img *ngIf="doc.photoUrl" [src]="doc.photoUrl" [alt]="doc.name" />
+                    <span *ngIf="!doc.photoUrl">{{ iniciales(doc.name) }}</span>
+                    <i class="team-dot" [class.online]="doc.online"></i>
+                  </div>
+                  <div class="team-info">
+                    <strong>{{ doc.name }}</strong>
+                    <span>{{ doc.specialty }}</span>
+                  </div>
+                </div>
+                <p *ngIf="!dashboard.medicalTeam?.length">Sin médicos registrados.</p>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header"><h3>Estadísticas</h3></div>
+                <div class="perf-row">
+                  <div class="perf-label"><span>Ocupación de camas</span><strong>{{ dashboard.stats.bedOccupancyPct | number:'1.0-0' }}%</strong></div>
+                  <div class="perf-bar"><div class="perf-fill blue" [style.width.%]="dashboard.stats.bedOccupancyPct"></div></div>
+                </div>
+                <div class="perf-row">
+                  <div class="perf-label"><span>Cirugías completadas</span><strong>{{ dashboard.stats.surgeriesCompletedPct | number:'1.0-0' }}%</strong></div>
+                  <div class="perf-bar"><div class="perf-fill green" [style.width.%]="dashboard.stats.surgeriesCompletedPct"></div></div>
+                </div>
+                <div class="perf-row">
+                  <div class="perf-label"><span>Personal disponible</span><strong>{{ dashboard.stats.staffAvailablePct | number:'1.0-0' }}%</strong></div>
+                  <div class="perf-bar"><div class="perf-fill purple" [style.width.%]="dashboard.stats.staffAvailablePct"></div></div>
+                </div>
+                <div class="perf-row">
+                  <div class="perf-label"><span>Satisfacción</span><strong>{{ dashboard.stats.satisfactionPct | number:'1.0-0' }}%</strong></div>
+                  <div class="perf-bar"><div class="perf-fill yellow" [style.width.%]="dashboard.stats.satisfactionPct"></div></div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-header">
+                  <h3>Reseñas</h3>
+                  <span class="panel-link-disabled">Ver todas →</span>
+                </div>
+                <div class="resena-row" *ngFor="let resena of dashboard.recentReviews">
+                  <div class="cita-avatar">{{ iniciales(resena.patientName) }}</div>
+                  <div class="resena-info">
+                    <div class="resena-top">
+                      <strong>{{ resena.patientName }}</strong>
+                      <span class="resena-hace">{{ resena.relativeDate }}</span>
+                    </div>
+                    <div class="resena-stars">
+                      <span *ngFor="let llena of estrellas(resena.rating)" [class.filled]="llena">★</span>
+                    </div>
+                    <p>{{ resena.comment }}</p>
+                  </div>
+                </div>
+                <p *ngIf="!dashboard.recentReviews?.length">Aún no hay reseñas.</p>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <app-public-footer></app-public-footer>
+</div>

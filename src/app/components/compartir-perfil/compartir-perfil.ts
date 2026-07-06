@@ -167,10 +167,21 @@ export class CompartirPerfilComponent {
     alert(
       `Se compartieron ${this.camposSeleccionados} campos con ${this.proveedoresSeleccionados} proveedor(es) por ${this.duracionLabel}.`,
     );
-    this.router.navigate(['/perfil']);
+    this.router.navigate(['/perfil/paciente']);
   }
 
   cancelar(): void {
-    this.router.navigate(['/perfil']);
+    this.busquedaProveedor = '';
+    this.duracionSeleccionada = '30-dias';
+
+    this.categorias.forEach((categoria) => {
+      categoria.campos.forEach((campo) => {
+        campo.seleccionado = campo.requerido;
+      });
+    });
+
+    this.proveedores.forEach((proveedor) => {
+      proveedor.seleccionado = false;
+    });
   }
 }

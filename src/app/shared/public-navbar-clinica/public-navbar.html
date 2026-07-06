@@ -1,0 +1,49 @@
+<nav class="public-navbar">
+
+  <a routerLink="/dashboard/clinica" class="public-navbar__logo">
+    <img src="assets/icons/logo.png" alt="ComparaSalud">
+    <span>ComparaSalud</span>
+  </a>
+
+  <div class="public-navbar__right">
+
+    <button class="nav-icon-btn" title="Ayuda">
+      <i class="fa-regular fa-circle-question"></i>
+    </button>
+
+    <button class="nav-icon-btn" title="Notificaciones">
+      <i class="fa-regular fa-bell"></i>
+    </button>
+
+    <div class="profile-wrapper" [class.open]="dropdownOpen" (click)="$event.stopPropagation()">
+
+      <button class="profile-trigger" (click)="toggleDropdown($event)">
+        <img [src]="avatarUrl" [alt]="displayName">
+        <div class="profile-trigger__info">
+          <strong>{{ displayName }}</strong>
+          <span>Administrador</span>
+        </div>
+        <i class="fa-solid fa-chevron-down" [class.rotated]="dropdownOpen"></i>
+      </button>
+
+      <div class="profile-dropdown" *ngIf="dropdownOpen">
+        <a routerLink="/perfil/clinica" (click)="closeDropdown()">
+          <i class="fa-regular fa-user"></i>
+          Mi perfil
+        </a>
+        <a routerLink="/configuracion/clinica" (click)="closeDropdown()">
+          <i class="fa-solid fa-gear"></i>
+          Configuración
+        </a>
+        <hr>
+        <button (click)="logout()">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          Cerrar sesión
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</nav>

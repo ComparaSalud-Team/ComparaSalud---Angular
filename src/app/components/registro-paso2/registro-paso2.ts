@@ -21,8 +21,6 @@ export class RegistroPaso2Component implements OnInit {
   showConfirm = false;
   aceptaTerminos = false;
 
-  // Si el paciente venía de intentar agendar una cita como invitado, esto
-  // trae la ruta a la que debe volver una vez que inicie sesión.
   private returnUrl: string | null = null;
 
   constructor(
@@ -42,9 +40,67 @@ export class RegistroPaso2Component implements OnInit {
     this.showConfirm = !this.showConfirm;
   }
 
+  get tieneLongitudMinima(): boolean {
+    return this.password.length >= 8;
+  }
+
+  get tieneMayuscula(): boolean {
+    return /[A-Z]/.test(this.password);
+  }
+
+  get tieneCaracterEspecial(): boolean {
+    return /[!@#$%^&*(),.?":{}|<>_\-+=[\]/\\;'~`]/.test(this.password);
+  }
+
+  get criteriosCumplidos(): number {
+    return [this.tieneLongitudMinima, this.tieneMayuscula, this.tieneCaracterEspecial].filter(
+      Boolean,
+    ).length;
+  }
+
+  get passwordEsValida(): boolean {
+    return this.criteriosCumplidos === 3;
+  }
+
+  get strengthPercent(): number {
+    if (!this.password) return 0;
+    return (this.criteriosCumplidos / 3) * 100;
+  }
+
+  get strengthLabel(): string {
+    if (!this.password) return '';
+    if (this.passwordEsValida) return 'Fuerte';
+    if (this.criteriosCumplidos === 2) return 'Media';
+    return 'Débil';
+  }
+
+  get strengthClass(): string {
+    if (!this.password) return '';
+    return this.passwordEsValida ? 'strength-ok' : 'strength-bad';
+  }
+
+  get confirmCoincide(): boolean {
+    return this.confirmPassword.length > 0 && this.confirmPassword === this.password;
+  }
+  onTelefonoInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const soloNumeros = input.value.replace(/\D/g, '').slice(0, 9);
+    this.telefono = soloNumeros;
+    input.value = soloNumeros;
+  }
   onSubmit() {
     if (!this.nombre || !this.email || !this.password) {
       alert('Completa todos los campos');
+      return;
+    }
+    if (this.telefono && this.telefono.length !== 9) {
+      alert('El teléfono debe tener 9 dígitos');
+      return;
+    }
+    if (!this.passwordEsValida) {
+      alert(
+        'La contraseña debe tener mínimo 8 caracteres, una letra mayúscula y un carácter especial',
+      );
       return;
     }
     if (this.password !== this.confirmPassword) {

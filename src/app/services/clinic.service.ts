@@ -4,12 +4,14 @@ import { Observable } from 'rxjs';
 import { Clinic } from '../models/clinic';
 import { Provider } from '../models/provider.model';
 import { ClinicSpecialtyPrice } from '../models/clinic-specialty-price';
+import { ClinicDashboardDTO } from '../models/clinic-dashboard.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClinicService {
   private apiUrl = 'http://localhost:8081/api/clinics';
+  private registerUrl = 'http://localhost:8081/api/auth/register/clinic';
 
   constructor(private http: HttpClient) {}
 
@@ -25,13 +27,23 @@ export class ClinicService {
     return this.http.get<Provider[]>(`${this.apiUrl}/${id}/providers`);
   }
 
-  // Comparador de proveedores – precios por especialidad de una clínica
   preciosDeClinica(id: number): Observable<ClinicSpecialtyPrice[]> {
     return this.http.get<ClinicSpecialtyPrice[]>(`${this.apiUrl}/${id}/pricing`);
   }
 
-  // Comparador de precios – precios por especialidad de todas las clínicas activas
   compararPrecios(): Observable<ClinicSpecialtyPrice[]> {
     return this.http.get<ClinicSpecialtyPrice[]>(`${this.apiUrl}/pricing`);
+  }
+
+  getDashboard(id: number): Observable<ClinicDashboardDTO> {
+    return this.http.get<ClinicDashboardDTO>(`${this.apiUrl}/${id}/dashboard`);
+  }
+
+  registerClinic(clinic: any): Observable<any> {
+    return this.http.post(this.registerUrl, clinic);
+  }
+
+  actualizar(id: number, clinic: any): Observable<Clinic> {
+    return this.http.put<Clinic>(`${this.apiUrl}/${id}`, clinic);
   }
 }
