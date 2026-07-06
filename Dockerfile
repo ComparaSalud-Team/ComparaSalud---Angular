@@ -1,5 +1,4 @@
-# Etapa 1: Build
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -9,7 +8,6 @@ RUN npm install
 COPY . .
 RUN npm run build --configuration=production
 
-# Etapa 2: Serve con Nginx
 FROM nginx:alpine
 
 COPY --from=build /app/dist/compara-salud-angular/browser /usr/share/nginx/html
