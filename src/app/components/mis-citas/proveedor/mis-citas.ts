@@ -111,7 +111,8 @@ export class MisCitasComponent implements OnInit {
         (h as any).patientPhotoUrl ||
         h.photoUrl ||
         `https://ui-avatars.com/api/?name=${encodeURIComponent(nombrePaciente)}&background=0EA5E9&color=fff&size=128`,
-      especialidad: (h as any).reason || h.specialty || '',
+      especialidad: h.specialty || '',
+      motivo: h.notes || h.reason || '',
       calificacion: h.rating || 0,
       fecha: h.date,
       hora: h.time,
@@ -143,13 +144,9 @@ export class MisCitasComponent implements OnInit {
     this.tabActivo = tab;
   }
 
-  verDetalles(cita: Cita) {
-    this.router.navigate(['/proveedor/mis-citas', cita.appointmentId]);
-  }
+  verDetalles(cita: Cita) {}
 
-  iniciarConsulta(cita: Cita) {
-    this.router.navigate(['/proveedor/consulta', cita.appointmentId]);
-  }
+  iniciarConsulta(cita: Cita) {}
 
   confirmarCita(cita: Cita) {
     this.citasService.confirmarCita(cita.appointmentId).subscribe({
@@ -159,12 +156,6 @@ export class MisCitasComponent implements OnInit {
   }
 
   cancelarCita(cita: Cita) {
-    if (!confirm(`¿Seguro que deseas cancelar la cita ${cita.id}?`)) return;
-
-    this.citasService.cancelarCita(cita.appointmentId).subscribe({
-      next: () => this.cargarCitas(),
-      error: () => alert('No se pudo cancelar la cita. Intenta nuevamente.'),
-    });
   }
 
   getBadgeClass(estado: string) {

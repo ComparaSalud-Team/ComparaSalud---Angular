@@ -7,6 +7,7 @@ export interface Cita {
   doctorNombre: string;
   doctorImagen: string;
   especialidad: string;
+  motivo?: string;
   calificacion: number;
   fecha: string;
   hora: string;
@@ -22,7 +23,7 @@ export interface AppointmentHistoryDTO {
   appointmentId: number;
   date: string;
   time: string;
-  status: string; // 'PENDING' | 'SCHEDULED' | 'COMPLETED' | 'CANCELLED'
+  status: string;
   doctor: string;
   providerId: number;
   specialty: string;
@@ -32,4 +33,6 @@ export interface AppointmentHistoryDTO {
   durationMinutes: number;
   modality: string;
   district: string;
+  notes?: string;
+  reason?: string;
 }

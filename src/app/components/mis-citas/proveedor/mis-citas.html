@@ -54,8 +54,8 @@
                       <h3>{{ cita.doctorNombre }}</h3>
                       <span class="badge" [ngClass]="getBadgeClass(cita.estado)">{{ getBadgeLabel(cita.estado) }}</span>
                     </div>
-                    @if (cita.especialidad) {
-                      <div class="cita-especialidad">Motivo: {{ cita.especialidad }}</div>
+                    @if (cita.motivo) {
+                      <div class="cita-especialidad">Motivo: {{ cita.motivo }}</div>
                     }
                     <div class="cita-list-meta">
                       <div class="cita-meta-item">

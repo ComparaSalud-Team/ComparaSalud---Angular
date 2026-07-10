@@ -32,7 +32,6 @@
         <h1>Agendar cita médica</h1>
         <p class="agendar-subtitle">Selecciona fecha, hora y confirma los detalles de tu cita.</p>
 
-        <!-- Stepper -->
         <div class="stepper">
           <div class="step done">
             <span class="step-circle"><i class="fa-solid fa-check"></i></span>
@@ -58,7 +57,6 @@
 
             <div class="agendar-main">
 
-              <!-- Calendario semanal -->
               <section class="card">
                 <div class="cal-header">
                   <button class="cal-nav" [disabled]="!puedeRetrocederSemana" (click)="cambiarSemana(-1)">
@@ -85,7 +83,6 @@
                 </div>
               </section>
 
-              <!-- Horarios -->
               <section class="card">
                 <h3><i class="fa-regular fa-clock"></i> Horarios disponibles – {{ fechaLegible() }}</h3>
 
@@ -128,7 +125,6 @@
                 }
               </section>
 
-              <!-- Información adicional -->
               <section class="card">
                 <h3>Información adicional</h3>
 
@@ -151,7 +147,6 @@
 
             <div class="agendar-sidebar">
 
-              <!-- Médico seleccionado -->
               <section class="card">
                 <h3>Médico seleccionado</h3>
                 <img class="doc-photo" [src]="provider.photoUrl || 'assets/images/doctor-card-1.png'" [alt]="provider.fullName">
@@ -164,7 +159,6 @@
                 <button class="link-btn" (click)="cambiarMedico()">Cambiar médico <i class="fa-solid fa-arrow-right"></i></button>
               </section>
 
-              <!-- Resumen de cita -->
               <section class="card">
                 <h3>Resumen de cita</h3>
                 <div class="resumen-item">
@@ -207,7 +201,6 @@
 
             <div class="agendar-main">
 
-              <!-- Método de pago -->
               <section class="card">
                 <h3>1. Selecciona tu método de pago</h3>
                 <div class="pago-metodos">
@@ -226,7 +219,6 @@
                 </div>
               </section>
 
-              <!-- Detalles de tarjeta (simulación: no se envía ni guarda) -->
               @if (metodoPago === 'Tarjeta') {
                 <section class="card">
                   <h3>2. Detalles de tarjeta</h3>
@@ -285,7 +277,6 @@
                 </section>
               }
 
-              <!-- Facturación -->
               <section class="card">
                 <h3>3. Información de facturación</h3>
 
@@ -315,7 +306,7 @@
                       name="ciudadFacturacion">
                   </div>
                   <div>
-                    <label class="form-label">Estado</label>
+                    <label class="form-label">Distrito</label>
                     <input type="text" class="form-input" [(ngModel)]="facturacion.estado" name="estadoFacturacion">
                   </div>
                   <div>

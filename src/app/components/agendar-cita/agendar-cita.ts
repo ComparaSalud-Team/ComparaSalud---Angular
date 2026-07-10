@@ -13,10 +13,10 @@ import { Provider } from '../../models/provider.model';
 import { Availability } from '../../models/availability';
 
 interface DiaCalendario {
-  fecha: string; // YYYY-MM-DD
-  labelDia: string; // Lun, Mar...
+  fecha: string;
+  labelDia: string;
   numero: number;
-  labelMes: string; // MAY
+  labelMes: string;
   deshabilitado: boolean;
 }
 
@@ -151,7 +151,7 @@ export class AgendarCitaComponent implements OnInit {
 
   private lunesDe(d: Date): Date {
     const copia = new Date(d);
-    const dia = copia.getDay(); // 0 = domingo
+    const dia = copia.getDay();
     const diff = dia === 0 ? -6 : 1 - dia;
     copia.setDate(copia.getDate() + diff);
     copia.setHours(0, 0, 0, 0);
@@ -315,7 +315,6 @@ export class AgendarCitaComponent implements OnInit {
     this.router.navigate(['/dashboard']);
   }
 
-  // ── Filtrado de inputs de tarjeta ──
   soloNumerosTarjeta(event: Event): void {
     const input = event.target as HTMLInputElement;
     const digitos = input.value.replace(/\D/g, '').slice(0, 16);
@@ -348,7 +347,6 @@ export class AgendarCitaComponent implements OnInit {
     this.facturacion.codigoPostal = digitos;
   }
 
-  // ── Filtrado de solo letras (para Ciudad) ──
   soloLetrasCiudad(event: Event): void {
     const input = event.target as HTMLInputElement;
     const filtrado = input.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '');
@@ -370,7 +368,6 @@ export class AgendarCitaComponent implements OnInit {
     return this.aceptaTerminos && this.datosTarjetaCompletos && !this.agendando;
   }
 
-  // ── Validación completa antes de confirmar y pagar ──
   private validarPago(): boolean {
     if (this.metodoPago === 'Tarjeta') {
       const numeroDigitos = this.tarjeta.numero.replace(/\s/g, '');
