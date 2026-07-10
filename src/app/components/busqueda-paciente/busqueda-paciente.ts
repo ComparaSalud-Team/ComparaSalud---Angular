@@ -32,6 +32,7 @@ export class BusquedaPacienteComponent implements OnInit {
   ordenarPor = '';
   ordenDireccion = 'asc';
   idsDisponibles: Set<number> | null = null;
+  favoritosIds: Set<number> = new Set();
 
   constructor(
     private providerService: ProviderService,
@@ -95,6 +96,7 @@ export class BusquedaPacienteComponent implements OnInit {
     }
 
     this.cargarProveedores();
+    this.cargarFavoritos();
   }
 
   private mapearFechaADisponibilidad(fecha: string): string {
@@ -160,6 +162,28 @@ export class BusquedaPacienteComponent implements OnInit {
     });
   }
 
+  private cargarFavoritos(): void {
+    if (!this.estaLogueado()) return;
+
+    const session = this.auth.getUser();
+    const patientId = session?.profile?.id;
+    if (!patientId) return;
+
+    this.favoriteService.listarFavoritos(patientId).subscribe({
+      next: (data: any[]) => {
+        this.favoritosIds = new Set((data || []).map((f) => f.providerId));
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('No se pudieron cargar los favoritos', error);
+      },
+    });
+  }
+
+  esFavorito(doctorId: number): boolean {
+    return this.favoritosIds.has(doctorId);
+  }
+
   buscar(): void {
     const q = this.searchQuery.toLowerCase().trim();
 
@@ -188,7 +212,10 @@ export class BusquedaPacienteComponent implements OnInit {
 
       const coincideIdioma =
         !this.sidebarFiltros.idioma ||
-        normalizar(doctor.idiomas) === normalizar(this.sidebarFiltros.idioma);
+        (doctor.idiomas || '')
+          .split(',')
+          .map((idi: string) => normalizar(idi.trim()))
+          .includes(normalizar(this.sidebarFiltros.idioma));
 
       const coincideModalidad =
         !this.sidebarFiltros.modalidad ||
@@ -329,12 +356,28 @@ export class BusquedaPacienteComponent implements OnInit {
       return;
     }
 
-    this.favoriteService.agregarFavorito(patientId, doctor.id).subscribe({
-      next: () => this.router.navigate(['/favoritos']),
-      error: (err) => {
-        console.error('No se pudo agregar a favoritos', err);
-        this.router.navigate(['/favoritos']);
-      },
-    });
+    const esFavoritoActual = this.favoritosIds.has(doctor.id);
+
+    if (esFavoritoActual) {
+      this.favoriteService.eliminarFavorito(patientId, doctor.id).subscribe({
+        next: () => {
+          this.favoritosIds.delete(doctor.id);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('No se pudo quitar de favoritos', err);
+        },
+      });
+    } else {
+      this.favoriteService.agregarFavorito(patientId, doctor.id).subscribe({
+        next: () => {
+          this.favoritosIds.add(doctor.id);
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('No se pudo agregar a favoritos', err);
+        },
+      });
+    }
   }
 }
