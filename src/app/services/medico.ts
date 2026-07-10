@@ -24,6 +24,6 @@ export class MedicoService {
   }
 
   getCatalogoServicios(): Observable<ProviderMedicalService[]> {
-    return this.http.get<ProviderMedicalService[]>(`${this.apiUrl}/services`);
+    return this.http.get<ProviderMedicalService[]>(`${this.apiUrl}/services/active`);
   }
 }

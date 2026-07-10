@@ -165,7 +165,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/mis-busquedas/mis-busquedas').then((m) => m.MisBusquedasComponent),
   },
-  // "¿Qué quieres hacer hoy?" en el dashboard – Comparar proveedores / consultas
   {
     path: 'comparar-proveedores',
     canActivate: [authGuard],
@@ -190,8 +189,6 @@ export const routes: Routes = [
       import('./components/clinica-detalle/clinica-detalle').then((m) => m.ClinicaDetalleComponent),
   },
 
-  // Perfil público de un proveedor puntual. Antes esta ruta no existía y los
-  // botones "Ver perfil" (dashboard, mis-favoritos) quedaban rotos.
   {
     path: 'providers/:id',
     canActivate: [authGuard],
@@ -200,8 +197,6 @@ export const routes: Routes = [
   },
 
   // HU33 – Agendar cita con un proveedor puntual. El invitado que intenta
-  // agendar desde /busqueda pasa por registro -> login antes de llegar aquí
-  // (ver returnUrl en busqueda-medicos.ts / registro-paso2.ts / login.ts).
   {
     path: 'agendar-cita/:providerId',
     canActivate: [authGuard],
